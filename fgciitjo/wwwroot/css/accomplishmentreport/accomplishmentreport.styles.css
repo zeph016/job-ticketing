@@ -1,0 +1,182 @@
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .accompPrintDiv,
+  .accompPrintDiv * {
+    visibility: visible;
+  }
+  .accompPrintDiv {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  body {
+    margin: 0.4cm;
+    margin-top: 0.2cm !important;
+    -webkit-print-color-adjust: exact !important;
+    size: 8.5in 13in landscape;
+    page-break-before: always;
+  }
+  @page {
+    margin: 0.4cm !important;
+    size: 8.5in 13in landscape;
+    page-break-before: always;
+    margin: 0.9cm !important;
+  }
+}
+
+.headerTitle {
+  color: black;
+  font-size: 11px;
+}
+
+.accompPrintDiv {
+  width: 100%;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.accompPrintDiv .main {
+  height: 100%;
+  margin-bottom: 3%;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.Header {
+  width: 100%;
+  text-align: center;
+  overflow: auto;
+}
+
+.tableHeader {
+  color: black;
+  font-weight: bold;
+  font-size: 10px;
+  background-color: #c7e3f9;
+}
+
+.TicketDesc {
+  min-width: 120px;
+  max-width: 120px;
+  text-align: left !important;
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  border: 1px solid;
+  border-color: #ebebeb;
+}
+
+.tableText {
+  word-wrap: break-word;
+}
+
+.TicketIssue {
+  min-width: 100px;
+  max-width: 100px;
+  text-align: left !important;
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  border: 1px solid;
+  border-color: #ebebeb;
+}
+
+.ticketStatus {
+  min-width: 50px;
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  max-width: 50px;
+  border: 1px solid;
+  border-color: #ebebeb;
+}
+
+.tableTD {
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  border: 1px solid;
+  border-color: #ebebeb;
+  min-width: 45px;
+}
+
+.Table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9px;
+  page-break-after: always;
+  text-align: center;
+}
+
+.Table .dayscount {
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  max-width: 45px;
+  min-width: 45px;
+  border: 1px solid;
+  border-color: #ebebeb;
+}
+
+.ticketname {
+  text-align: left;
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  min-width: 75px;
+  max-width: 75px;
+  border: 1px solid;
+  border-color: #ebebeb;
+}
+
+.tdTHDate {
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  max-width: 65px;
+  border: 1px solid;
+  border-color: #ebebeb;
+}
+
+.branchName {
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  border: 1px solid;
+  border-color: #ebebeb;
+  min-width: 55px;
+}
+
+.ticketDept {
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  border: 1px solid;
+  border-color: #ebebeb;
+  max-width: 90px;
+}
+
+.ticketRemarks {
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  border: 1px solid;
+  border-color: #ebebeb;
+  max-width: 70px;
+  min-width: 70px;
+  text-align: left;
+}
+
+.docref {
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  min-width: 55px;
+  max-width: 55px;
+  border: 1px solid;
+  border-color: #ebebeb;
+}
+
+.signatories {
+  margin-top: 3%;
+  width: 100%;
+  font-size: 10px;
+}
+
+.signatories th,
+td {
+  min-width: 40px;
+  max-width: 40px;
+}
+/*# sourceMappingURL=accomplishmentreport.styles.css.map */

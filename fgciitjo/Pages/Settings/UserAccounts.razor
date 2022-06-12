@@ -1,0 +1,179 @@
+@page "/settings/useraccounts"
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject IEmployeeAccountService EmployeeAccountService //SAMPLE
+@inject ITicketUserAccountService ticketUserAccountService
+
+<MudContainer class='userAccountsContainer' MaxWidth='MaxWidth.ExtraExtraLarge' Fixed='false'>
+@if (!dataFetched)
+{
+    <MudPaper Class='ma-4 pa-2'>
+        <MudSkeleton SkeletonType='SkeletonType.Text' Height='100px' Animation='Animation.Wave'/>
+        <MudSkeleton SkeletonType='SkeletonType.Rectangle' Height='75vh' Animation='Animation.Wave'/>
+        <MudOverlay Visible="isVisible" DarkBackground="true" Absolute="true">
+                <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true"/>
+        </MudOverlay>
+    </MudPaper>
+}
+else
+{
+    <MudTable Class='ma-4 pa-2' Items='@ticketUserAccounts' Hover="true" Filter='new Func<TicketUserAccount,bool>(FilterItems)'
+            FixedHeader='true' FixedFooter='true' RowsPerPage='20' Striped='true'
+            Breakpoint="Breakpoint.Sm" Bordered='false' Dense='true' LoadingProgressColor="Color.Info">
+        <ToolBarContent>
+            <MudContainer>
+                <MudTextField @bind-Value='searchTerm' Placeholder='Search' Adornment='Adornment.Start' 
+                    AdornmentIcon='@Icons.Material.Filled.Search' IconSize='Size.Medium' Class='mt-0' Clearable='true'>
+                </MudTextField>
+            </MudContainer>
+            <MudSpacer/>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel InitialDirection='SortDirection.Ascending' SortBy='new Func<TicketUserAccount, object>(x=>x.EmployeeName)'>
+                    Name
+                </MudTableSortLabel>
+            </MudTh>
+            <MudTh>Department</MudTh>
+            <MudTh>Designation</MudTh>
+            <MudTh>Email Address</MudTh>
+            <MudTh>Phone Number</MudTh>
+            <MudTh class='tableActions'>Actions</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel='EmployeeName'>
+                <MudText class='tableRowWithIcon'>
+                    <MudIcon Icon='@Icons.Material.Filled.Person' Title='Person' />
+                    @context.EmployeeName
+                </MudText>
+            </MudTd>
+            <MudTd DataLabel='Department'>@context.Department</MudTd>
+            <MudTd DataLabel='Designation'>@context.Designation</MudTd>
+            <MudTd DataLabel='EmailAddress'>@context.EmailAddress</MudTd>
+            <MudTd DataLabel='ContactInfo'>@context.ContactInfo</MudTd>
+            <MudTd DataLabel='Actions'>
+                <MudMenu Icon="@Icons.Material.Filled.MoreVert" Direction='Direction.End' Dense='true' Size='Size.Small'>
+                    <MudMenuItem @onclick='@(() => Edit(context.HubUserAccountId))'>
+                        <p style='display: flex;'>
+                            <MudIcon Icon='@Icons.Material.Filled.Edit'/>
+                            <MudText style='padding-left: 10px; font-size: 14px;'>Edit Account</MudText>
+                        </p>
+                    </MudMenuItem>
+                </MudMenu>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSizeOptions='new int[]{20,40}'/>
+        </PagerContent>
+    </MudTable>
+}
+</MudContainer>
+
+
+@code {
+    public List<Department> departmentList { get; set; } = new List<Department>();
+    public List<SampleList> userSampleList { get; set; } = new List<SampleList>();
+    FilterParameter filterParameter = new FilterParameter();
+    List<TicketUserAccount> ticketUserAccounts = new List<TicketUserAccount>();
+    @* private bool _hidePosition; *@
+    @* private bool _loading; *@
+    private bool isVisible;
+    private bool dataFetched;
+    private string searchTerm = "";
+    public string Token { get; set; }
+    
+    //SAMPLE ONLY
+    public class SampleList
+    {
+        public int Id { get; set; }
+        public string EmployeeName { get; set; }
+        public string Department { get; set; }
+        public string Designation { get; set; }
+        public string EmailAddress { get; set; }
+        public string ContactInfo { get; set; }
+    }
+    //
+
+    protected override async Task OnInitializedAsync()
+    {
+        GlobalContentTitle.contentTitle = "User Accounts";
+        while (GlobalClass.CurrentUserAccount == null) {
+            await Task.Delay(1);
+        }
+        isVisible = true;
+        //SAMPLE ONLY
+        @* await GenerateSampleList(); *@
+        //
+        Task t = Task.WhenAll(GetTicketUserAccount());
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion)
+        {
+            CompletedFetch();
+        }
+    }
+
+    //SAMPLE ONLY
+    async Task GetDepartmentList()
+    {
+        departmentList = (await EmployeeAccountService.GetDepartment(Token)).ToList();
+    }
+    //
+
+    async Task GetTicketUserAccount()
+    {
+         ticketUserAccounts = await ticketUserAccountService.LoadTicketUserAccount(filterParameter, await localStorage.GetItemAsync<string>("token"));
+    }
+
+     //SAMPLE ONLY
+    public async Task GenerateSampleList()
+    {
+        for (int i = 0; i <= 40; i++) 
+        {
+            userSampleList.Add(new SampleList()
+            {
+                Id = i,
+                EmployeeName = "Name" + Convert.ToString(i),
+                Department = "Department" + Convert.ToString(i),
+                Designation = "Designation" + Convert.ToString(i),
+                EmailAddress = "EmailAddress" + Convert.ToString(i),
+                ContactInfo = "ContactInfo" + Convert.ToString(i)
+            });
+        }
+
+        await Task.WhenAll();
+    }
+    //
+
+    void CompletedFetch()
+    {
+        dataFetched = true;
+        StateHasChanged();
+    }
+
+    void Add()
+    {
+        @* NavigationManager.NavigateTo($"/settings/user/add"); *@
+    }
+
+    void Edit(long Id)
+    {
+        NavigationManager.NavigateTo($"/settings/user/{Id}");
+    }
+
+    private bool FilterItems(TicketUserAccount items)
+    {
+        if (items.EmployeeName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            return true;
+        else if(items.Department.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            return true;
+        else if(items.Designation.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            return true;
+        @* else if(items.EmailAddress.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            return true;
+        else if(items.ContactInfo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            return true; *@
+        return false;
+    }
+}

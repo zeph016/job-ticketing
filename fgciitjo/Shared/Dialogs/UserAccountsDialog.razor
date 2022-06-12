@@ -1,0 +1,55 @@
+@inject ITicketUserAccountService ticketUserAccountService
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudText>@ContentText</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick='Cancel' Variant='Variant.Text' Color='Color.Error'>No</MudButton>
+        <MudButton Color='@Color' Variant='Variant.Filled' OnClick='Submit'>@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string ContentText { get; set; }
+    [Parameter] public string ButtonText { get; set; }
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public TicketUserAccount currTicketUser { get; set; } = new TicketUserAccount();
+
+    async void Submit() 
+    {
+        if (currTicketUser.Id == 0) {
+            await ticketUserAccountService.AddTicketUserAccount(currTicketUser, await localStorage.GetItemAsync<string>("token"));
+            ShowAlert("User Added", Variant.Filled); 
+            NavigationManager.NavigateTo($"/settings/useraccounts"); }
+        else {
+            await ticketUserAccountService.UpdateTicketUserAccount(currTicketUser, await localStorage.GetItemAsync<string>("token")); 
+            ShowAlert("Account Updated", Variant.Filled); 
+            NavigationManager.NavigateTo($"/settings/useraccounts"); }
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+    
+    void Cancel()
+    {
+        MudDialog.Cancel();
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"Cancelled action", Severity.Error);
+    }
+
+    void ShowAlert(string message, Variant variant)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = variant;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"{message}", Severity.Success);
+    }
+}

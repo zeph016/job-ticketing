@@ -1,0 +1,253 @@
+@page "/subtask/{ticketId:long}"
+
+@inject ITicketListService ticketListService
+@inject ITicketService ticketService
+@inject ISubTaskService subTaskService;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+
+<MudContainer class='subTaskContainer' Fixed='true' MaxWidth='MaxWidth.ExtraSmall'>
+
+<MudPaper Class='pa-4 ma-4 paperClassTrail' Elevation='3'>
+@if (!dataFetched)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="55px" />
+        <MudCardContent>
+            <MudSkeleton Width="30%" Height="42px;" />
+            <MudSkeleton Width="80%" />
+            <MudSkeleton Width="100%" />
+        </MudCardContent>
+        <MudCardActions>
+            <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+            <MudSkeleton Width="105px" Height="40px" Class="ml-3" />
+        </MudCardActions>
+        <MudOverlay Visible="isVisible" DarkBackground="true" Absolute="true">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </MudOverlay>
+}
+else
+{
+    <MudPaper Elevation='2'>
+    <MudContainer>
+        <MudToolBar class='subTaskToolBar'>
+            <MudIcon Icon="@Icons.Material.Filled.Task" Size='Size.Medium' />
+            <MudText class='subTaskHeader'>
+                Sub Ticket
+            </MudText>
+            <MudSpacer />
+            <MudButton OnClick='Back' Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ChevronLeft" Size='Size.Small'>Back</MudButton>
+            <MudButton Disabled='@disable' id="new-sub-task" OnClick='AddSubTask' Variant="Variant.Text" StartIcon="@Icons.Material.Filled.AddComment" Size='Size.Small' >Add Sub Ticket</MudButton>
+        </MudToolBar>
+    </MudContainer>
+    </MudPaper>
+    <MudContainer class='subTaskContainer'>
+    <MudTable class="subTaskTable" Items="@listOfSubTask" Hover="true" Breakpoint="Breakpoint.Sm" Striped='true' LoadingProgressColor="Color.Info">
+    <HeaderContent>
+        <MudTh>Ticket Number</MudTh>
+        <MudTh>Ticket Date</MudTh>
+        <MudTh>Ticket Title</MudTh>
+        <MudTh>Ticket Description</MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="TicketNumber">
+          @context.TicketNumber
+          </MudTd>
+        <MudTd DataLabel="TicketDate">@Convert.ToDateTime(context.TicketDate).ToString("MM/dd/yyyy")</MudTd>
+        <MudTd DataLabel="TicketTitle">@context.IssueSummary</MudTd>
+        <MudTd DataLabel="TaskDescription">@context.TaskDescription</MudTd>
+        <MudTd DataLabel="Actions">
+          <MudMenu Icon="@Icons.Material.Filled.MoreVert" Direction='Direction.End' Dense='true' Size='Size.Small'>
+          <MudMenuItem>
+          <p style='display: flex;'>
+          <MudIcon Icon='@Icons.Material.Filled.HighlightOff' /> 
+          <MudText @onclick="@(()=> DeactivateSubTask(@context))" style='padding: 2px 0px 0px 4px; font-size: 14px; text-align: center;'>Remove Sub Ticket</MudText>        
+          </p>
+          </MudMenuItem>
+          </MudMenu>
+        </MudTd>
+    </RowTemplate>
+
+</MudTable>
+    </MudContainer>
+}
+</MudPaper>
+
+<MudPaper Class='pa-4 ma-4 paperClassSubTaskInfo' Elevation='3'>
+@if (!dataFetched)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="55px" />
+        <MudCardContent>
+            <MudSkeleton Width="30%" Height="42px;" />
+            <MudSkeleton Width="80%" />
+            <MudSkeleton Width="100%" />
+        </MudCardContent>
+        <MudCardActions>
+            <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+            <MudSkeleton Width="105px" Height="40px" Class="ml-3" />
+        </MudCardActions>
+        <MudOverlay Visible="isVisible" DarkBackground="true" Absolute="true">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </MudOverlay>
+}
+else
+{
+    <MudPaper>
+    <MudContainer>
+    <MudToolBar class='subTaskToolBar'>
+        <MudIcon Icon="@Icons.Material.Filled.Info" Size='Size.Medium' />
+        <MudSpacer/>
+        <MudText class='subTaskHeader'>
+            Ticket Details
+        </MudText>
+        <MudSpacer />
+    </MudToolBar>
+    </MudContainer>
+    </MudPaper>
+    <MudContainer>
+        <MudGrid>
+            <MudItem xs='12'>
+                <MudTextField T='string' Label='Ticket No.' ReadOnly='true' @bind-Value='currTicket.TicketNumber' style='color: red;' />
+            </MudItem>
+            <MudItem xs='12'>
+                <MudTextField T='string' Label='Requestor' ReadOnly='true' @bind-Value='currTicket.RequestorName'/>
+            </MudItem>
+            <MudItem xs='12'>
+                <MudTextField T='string' Label='Task Title' ReadOnly='true' @bind-Value='currTicket.IssueSummary' />
+            </MudItem>
+            <MudItem xs='12'>
+            <MudTextField T='string' Label='Description of issue' ReadOnly='true' @bind-Value='currTicket.TaskDescription'
+                Variant='Variant.Filled' Lines='4'/>
+            </MudItem>
+            <MudItem xs='7'>
+               <MudSelect class='subTaskSelect' Label='Priority' ReadOnly='true' Dense='true' @bind-Value='currTicket.PriorityLevelId'>
+                <MudSelectItem Value='@currTicket.PriorityLevelId'>
+                @if (currTicket.PriorityLevelId == Enums.PriorityLevel.Low)
+                {
+                    <MudChip Color='Color.Info' Size='Size.Small'>@currTicket.PriorityLevelId</MudChip>
+                }
+                @if (currTicket.PriorityLevelId == Enums.PriorityLevel.Medium)
+                {
+                    <MudChip Color='Color.Warning' Size='Size.Small'>@currTicket.PriorityLevelId</MudChip>
+                }
+                @if (currTicket.PriorityLevelId == Enums.PriorityLevel.High)
+                {
+                    <MudChip Color='Color.Error' Size='Size.Small'>@currTicket.PriorityLevelId</MudChip>
+                }
+                </MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            @* <MudItem xs='2'> *@
+                @* EMPTY GRID *@
+            @* </MudItem> *@
+            <MudItem xs='6'>
+                <MudSelect class='subTaskSelect' Label='Status' ReadOnly='true' Dense='true' @bind-Value='currTicket.TicketStatusId'>
+                <MudSelectItem Value='@currTicket.TicketStatusId'>
+                    <MudChip Color='Color.Primary' Size='Size.Small'>@currTicket.TicketStatusName</MudChip>
+                </MudSelectItem>
+                </MudSelect>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
+ </MudPaper>
+
+</MudContainer>
+
+
+
+
+@code {
+    private string Token;
+    private bool isVisible, dataFetched, disable;
+    string color;
+    [Parameter] public long ticketId { get; set; }
+    List<TicketModel> listOfSubTask = new  List<TicketModel>();
+  
+    private TicketModel currTicket { get; set; } = new TicketModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Token = await localStorage.GetItemAsync<string>("token");
+        isVisible = true;
+        dataFetched = false;
+        Task t = Task.WhenAll(GetTicket(), LoadSubTask());
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion) {
+            CompletedFetch();
+            EnableDisable();
+        }
+    }
+    private async Task LoadSubTask()
+    {
+      listOfSubTask = await subTaskService.SubTaskList(ticketId , Token);
+    }
+
+    private async Task GetTicket()
+    {
+        currTicket = await ticketService.GetTicketById(ticketId, Token);
+    }
+    void AddSubTask()
+    {
+      NavigationManager.NavigateTo($"/subtask/create/{currTicket.Id}");
+    }
+    private async Task DeactivateSubTask(TicketModel model)
+    {
+           var parameters = new DialogParameters();
+            parameters.Add("ContentText", "Remove sub ticket ?");
+            parameters.Add("ButtonText", "Confirm");
+            parameters.Add("Color", Color.Success);
+            parameters.Add("DialogContentText", "Are you sure you want to remove this sub ticket with ticket number ' " + model.TicketNumber + "' ?");
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+            var resultDialog = await DialogService.Show<Shared.Dialogs.RemoveSubTicketDialog>("Remove sub ticket", parameters,
+            options).Result;
+            if (!resultDialog.Cancelled)
+            {
+              string thisPage = "subtask";
+              model.IsTicketLinkActive = false;
+              model.Activity = "Removed Sub-Ticket: Parent-" + currTicket.TicketNumber + "; Sub-Ticket-" + model.TicketNumber ;
+              model.UserId = GlobalClass.CurrentUserAccount.EmployeeId;
+              await subTaskService.DeactivateSubTask(model, Token);
+                NavigationManager.NavigateTo($"/refresh/{thisPage}/{ticketId}");
+            }
+    }
+    void CompletedFetch()
+    {
+        isVisible = false;
+        dataFetched = true;
+        StateHasChanged();
+    }
+    private async void EnableDisable()
+    {
+        while (GlobalClass.CurrentUserAccount == null)
+        {
+            await Task.Delay(1);
+        }
+      if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.IT)
+      {
+        if (currTicket.TicketStatusTypeId == Enums.TicketStatusType.Complete
+          || currTicket.TicketStatusTypeId == Enums.TicketStatusType.None)
+        {
+          disable = true;
+          StateHasChanged();
+        }
+        else
+        {
+          disable = false;
+          StateHasChanged();
+        }
+      }
+      else
+      {
+        disable = false;
+        StateHasChanged();
+      }
+    }
+    void Back()
+    {
+        NavigationManager.NavigateTo($"/ticketlist");
+    }
+}

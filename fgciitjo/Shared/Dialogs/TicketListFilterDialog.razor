@@ -1,0 +1,526 @@
+﻿@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject ISnackbar Snackbar
+@inject ITicketStatusService ticketStatusService
+@inject IGlobalService globalService
+@inject ITicketBranchService ticketBranchService
+@inject ITicketCategoryService ticketCategoryService
+
+<MudDialog class="filterdialog">
+    <DialogContent>
+        @if (!isDataFetched)
+        {
+            <MudContainer>
+                <MudSkeleton SkeletonType='SkeletonType.Text' Height='100px' Animation='Animation.Wave' />
+                <MudSkeleton SkeletonType='SkeletonType.Rectangle' Height='30vh' Animation='Animation.Wave' />
+            </MudContainer>
+        }
+        else
+        {
+            <MudContainer Class='filterdialog__title-container' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+                <MudIcon Icon='@Icons.Material.Filled.FilterAlt' Title='Filter Tickets' Size='Size.Medium' />
+                <MudText Typo='Typo.h5'>
+                    <p>Search Filter</p>
+                </MudText>
+            </MudContainer>
+            <MudContainer Class='filterdialog__body-container' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+                <div class='filterdialog__body-lcont'>
+                    <MudGrid>
+                        <MudItem xs='5'>
+                            <MudCheckBox @bind-Checked="@filterParameter.IsDate" Label="Ticket Date" Dense="true" />
+                        </MudItem>
+                        <MudItem xs='7'>
+                            <MudDatePicker PickerVariant="PickerVariant.Inline" Label="Date From" @bind-Text="datefrom"
+                            Disabled="!filterParameter.IsDate" Margin="Margin.Dense"></MudDatePicker>
+                            <MudDatePicker PickerVariant="PickerVariant.Inline" Label="Date To" @bind-Text="@dateto"
+                            Disabled="!filterParameter.IsDate" Margin="Margin.Dense"></MudDatePicker>
+                        </MudItem>
+                        @if (((byte)accesslevel) != 2 && !isFromTicketList)
+                        {
+                            <MudItem xs="5">
+                                <MudCheckBox @bind-Checked="@filterParameter.IsActivityDate" Label="Activity Date"
+                            Dense="true" />
+                            </MudItem>
+                            <MudItem xs="7">
+                                <MudDatePicker PickerVariant="PickerVariant.Inline" Label="Date From"
+                            @bind-Text="activitydatefrom" Disabled="!filterParameter.IsActivityDate"
+                            Margin="Margin.Dense"></MudDatePicker>
+                                <MudDatePicker PickerVariant="PickerVariant.Inline" Label="Date To" @bind-Text="@activitydateto"
+                            Disabled="!filterParameter.IsActivityDate" Margin="Margin.Dense"></MudDatePicker>
+                            </MudItem>
+                        }
+                    </MudGrid>
+                </div>
+                <div class='filterdialog__body-rcont'>
+                    <MudGrid Spacing='1'>
+                        <MudItem Class='filterdialog__chkboxcont' xs="4">
+                            <MudCheckBox @bind-Checked="@filterParameter.IsName" Label="Control Number" Dense="true">
+                            </MudCheckBox>
+                        </MudItem>
+                        <MudItem xs='8'>
+                            <MudTextField Class='filterdialog__tbxctrlno' @bind-Value='@filterParameter.Name' Disabled="!filterParameter.IsName"
+                            Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Tag" />
+                        </MudItem>
+                        @if (((byte)accesslevel) != 2)
+                        {
+                            <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                                <MudCheckBox @bind-Checked="@filterParameter.IsRequestor" Label="Requestor" Dense="true" />
+                            </MudItem>
+                            <MudItem xs='8'>
+                                <BlazoredTypeahead SearchMethod='SearchEmployee' @bind-Value='selectedUser'
+                                    Disabled='!filterParameter.IsRequestor'>
+                                    <SelectedTemplate>
+                                        <div class='filterdialog__tbxrequestor'>
+                                        @if (context.Picture != null)
+                                        {
+                                            <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(@context.Picture)}")' Size='Size.Small'/>  
+                                        }
+                                        @context.EmployeeName
+                                        </div>
+                                    </SelectedTemplate>
+                                    <ResultTemplate>
+                                        <div class='filterdialog__tbxrequestor'>
+                                            <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(@context.Picture)}")'/>  
+                                            @context.EmployeeName
+                                        </div>
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </MudItem>
+                        }
+                        @if (((byte)accesslevel) != 2)
+                        {
+                            <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                                <MudCheckBox @bind-Checked="@filterParameter.IsDepartment" Label="Department" Dense="true" />
+                            </MudItem>
+                            <MudItem Class='filterdialog__grid-tbxdeptsearch' xs='8'>
+                                <BlazoredTypeahead SearchMethod='SearchDepartment' @bind-Values='selectedDepts'
+                                    EnableDropDown='true' placeholder='Choose or Search Dept.'
+                                    Disabled='!filterParameter.IsDepartment'>
+                                    <SelectedTemplate Context="dept">
+                                         @dept.Name
+                                    </SelectedTemplate>
+                                    <ResultTemplate Context="dept">
+                                        @dept.Name
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </MudItem>
+                        }
+                        <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                            <MudCheckBox @bind-Checked="@filterParameter.IsTicketStatus"
+                            Label="Ticket Status" Dense="true" />
+                        </MudItem>
+                        <MudItem xs='8'>
+                            <BlazoredTypeahead SearchMethod='SearchStatus' @bind-Values='selectedStatus'
+                            EnableDropDown='true' Disabled='!filterParameter.IsTicketStatus'>
+                                <SelectedTemplate>
+                                    @context.StatusName
+                                </SelectedTemplate>
+                                <ResultTemplate>
+                                    @context.StatusName
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </MudItem>
+                        <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                            <MudCheckBox @bind-Checked="@filterParameter.IsTicketBranch" Label="Ticket Branch"
+                            Dense="true" />
+                        </MudItem>
+                        <MudItem xs='8'>
+                            <BlazoredTypeahead SearchMethod='SearchBranch' @bind-Values='selectedBranches'
+                            EnableDropDown='true' Disabled='!filterParameter.IsTicketBranch'>
+                                <SelectedTemplate>
+                                    @context.BranchName
+                                </SelectedTemplate>
+                                <ResultTemplate>
+                                    @context.BranchName
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </MudItem>
+                        <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                            <MudCheckBox @bind-Checked="@filterParameter.IsTicketCategoryType" Label="Category Type"
+                            Dense="true" />
+                        </MudItem>
+                        <MudItem xs='8'>
+                            <BlazoredTypeahead SearchMethod='SearchCatType' @bind-Values='selectedCatType' EnableDropDown='true'
+                            Disabled='!filterParameter.IsTicketCategoryType'>
+                                <SelectedTemplate>
+                                    @context
+                                </SelectedTemplate>
+                                <ResultTemplate>
+                                    @context
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </MudItem>
+                        <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                            <MudCheckBox @bind-Checked="@filterParameter.IsTicketCategory" Label="Ticket Category" Dense="true"/>
+                        </MudItem>
+                        <MudItem xs='8'>
+                            <BlazoredTypeahead SearchMethod='SearchCategory' @bind-Values='selectedCategories' EnableDropDown='true' Disabled='!filterParameter.IsTicketCategory'>
+                                <SelectedTemplate>
+                                    @context.CategoryName
+                                </SelectedTemplate>
+                                <ResultTemplate>
+                                    @context.CategoryName
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </MudItem>
+                        <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                             <MudCheckBox @bind-Checked="@filterParameter.IsAssignee" Label="Assignee" Dense="true"/>
+                        </MudItem>
+                        <MudItem xs='8'>
+                            <BlazoredTypeahead SearchMethod='SearchAssignee' @bind-Values='selectedAssignees' EnableDropDown='true' Disabled='!filterParameter.IsAssignee'>
+                                <SelectedTemplate>
+                                    <div class='filterdialog__tbxrequestor'>
+                                    @if (context.Picture != null)
+                                    {
+                                        <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(@context.Picture)}")' Size='Size.Small'/>  
+                                    }
+                                    @context.EmployeeName
+                                    </div>
+                                </SelectedTemplate>
+                                <ResultTemplate>
+                                    <div class='filterdialog__tbxrequestor'>
+                                        <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(@context.Picture)}")'/>  
+                                        @context.EmployeeName
+                                    </div>
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </MudItem>
+                        <MudItem Class='filterdialog__chkboxcont' xs='6'>
+                            <MudCheckBox @bind-Checked="@filterParameter.IsTicketPriorityLevel" Label="Ticket Priority Level"
+                            Dense="true"/>
+                        </MudItem>
+                        <MudItem xs='6'>
+                            <BlazoredTypeahead SearchMethod='SearchPriority' @bind-Values='selectedPriority' EnableDropDown='true' 
+                                Disabled='!filterParameter.IsTicketPriorityLevel'>
+                                <SelectedTemplate>
+                                    @context
+                                </SelectedTemplate>
+                                <ResultTemplate>
+                                    @context
+                                </ResultTemplate>
+                            </BlazoredTypeahead>
+                        </MudItem>
+                    </MudGrid>
+                </div>
+                    @*<---->ControlNumber</---->*@
+                    @* <MudItem xs="5">
+                        <MudCheckBox @bind-Checked="@filterParameter.IsName" Label="Control Number" Dense="true">
+                        </MudCheckBox>
+                        </MudItem>
+                        <MudItem xs='7'>
+                        <MudTextField @bind-Value='@filterParameter.Name' Disabled="!filterParameter.IsName"
+                        Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Tag" />
+                        </MudItem> *@
+                    @*<---->ControlNumber</---->*@
+            </MudContainer>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant='Variant.Text' Color='Color.Default'>Cancel</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    #region Properties
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = default!;
+    [Parameter] public string ContentText { get; set; } = default!;
+    [Parameter] public string ButtonText { get; set; } = default!;
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public bool isvisible { get; set; }
+    [Parameter] public bool isReport { get; set; }
+    [Parameter] public bool isFromTicketList { get; set; }
+    public FilterParameter filterParameter { get; set; } = new FilterParameter();
+    private List<Employee> employeesIT = new List<Employee>();
+    private List<UserAccount> userAccounts = new List<UserAccount>();
+    private List<Department> departments = new List<Department>();
+    private List<TicketStatusModel> ticketStatusModels = new List<TicketStatusModel>();
+    private List<TicketBranchModel> ticketBranchList = new List<TicketBranchModel>();
+    private List<Enums.TicketCategoryType> categoryTypeList = new List<Enums.TicketCategoryType>();
+    private List<TicketCategoryModel> ticketCategories = new List<TicketCategoryModel>();
+    private List<Enums.PriorityLevel> priorityLevelList = new List<Enums.PriorityLevel>();
+    private IList<Department> selectedDepts = default!;
+    private IList<TicketStatusModel> selectedStatus = default!;
+    private IList<Employee> selectedAssignees = default!;
+    private IList<TicketBranchModel> selectedBranches = default!;
+    private IList<Enums.TicketCategoryType> selectedCatType = default!;
+    private IList<TicketCategoryModel> selectedCategories = default!;
+    private IList<Enums.PriorityLevel> selectedPriority = default!;
+    private UserAccount selectedUser = new UserAccount();
+    private bool isDataFetched;
+    Enums.TicketCategoryType categoryType { get; set; }
+    Enums.PriorityLevel priorityLevel { get; set; }
+    string datefrom = DateTime.Now.ToShortDateString();
+    string activitydatefrom = DateTime.Now.ToShortDateString();
+    string dateto = DateTime.Now.ToShortDateString();
+    string activitydateto = DateTime.Now.ToShortDateString();
+    List<string> stringParam = new List<string>();
+    private Enums.AccessLevel accesslevel = GlobalClass.CurrentUserAccount.AccessLevel;
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        @* filterParameter.IsRequestor = true; *@
+        Task t = Task.WhenAll(GetDepartmentEmployees(), GetTicketCategory(),
+        GetBranch(), GetAllDepartment(), GetTicketStatus(), PopulateCatTypeList(), PopulatePriorityLevelList());
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion)
+            isDataFetched = true;
+    }
+
+    #region GetTicketStatus
+    async Task GetTicketStatus()
+    {
+        ticketStatusModels = await Task.Run(() => GlobalList.ticketStatusList);
+    }
+    #endregion
+
+    #region GetAllDepartment
+    private async Task GetAllDepartment()
+    {
+        departments = await Task.Run(() => GlobalList.departmentList);
+    }
+    #endregion
+
+    #region GetBranch
+    private async Task GetBranch()
+    {
+        ticketBranchList = await Task.Run(() => GlobalList.ticketBranchList);
+    }
+    #endregion
+
+    #region Load Ticket Category
+    async Task GetTicketCategory()
+    {
+        ticketCategories = await Task.Run(() => GlobalList.ticketCategoryList);
+        ticketCategories = ticketCategories.Where(x => x.CategoryTypeId == categoryType).ToList();
+    }
+    #endregion
+
+    #region Get Department Employee
+    private async Task GetDepartmentEmployees()
+    {
+        filterParameter.IsName = false;
+        employeesIT = await Task.Run(() => GlobalList.ITDept);
+    }
+    #endregion
+
+    #region Populate Category Type Enums to List
+    private async Task PopulateCatTypeList()
+    {
+        await Task.Run(() =>
+        {
+            foreach (Enums.TicketCategoryType item in Enum.GetValues(typeof(Enums.TicketCategoryType)))
+            categoryTypeList.Add(item);
+        });
+    }
+    #endregion
+
+    #region Populate Priority Level Enums to List
+    private async Task PopulatePriorityLevelList()
+    {
+        await Task.Run(() =>
+        {
+            foreach (Enums.PriorityLevel item in Enum.GetValues(typeof(Enums.PriorityLevel)))
+            priorityLevelList.Add(item);
+        });
+    }
+    #endregion
+
+    #region Submit
+    private void Submit()
+    {
+        var deptId = "";
+        if (filterParameter.IsDepartment)
+            foreach (var item in selectedDepts) 
+                deptId = string.Join(", ", selectedDepts.Select(x => $"{x.Id}"));
+
+        var statId = "";
+        if (filterParameter.IsTicketStatus)
+            foreach (var item in selectedStatus)
+                statId = string.Join(", ", selectedStatus.Select(x => $"{x.Id}"));
+
+        var branchId = "";
+        if (filterParameter.IsTicketBranch)
+            foreach (var item in selectedBranches)
+                branchId = string.Join(", ", selectedBranches.Select(x => $"{x.Id}"));
+
+        var categoryId = "";
+        if (filterParameter.IsTicketCategory)
+            foreach (var item in selectedCategories)
+                categoryId = string.Join(", ", selectedCategories.Select(x => $"{x.Id}"));
+
+        var employeeId = "";
+        if (filterParameter.IsAssignee)
+            foreach (var item in selectedAssignees)
+                employeeId = string.Join(", ", selectedAssignees.Select(x => $"{x.EmployeeId}"));
+
+        filterParameter = new FilterParameter()
+        {
+            IsRequestor = filterParameter.IsRequestor,
+            RequestorId = selectedUser.EmployeeId,
+            IsName = filterParameter.IsName,
+            Name = filterParameter.Name,
+            IsDepartment = filterParameter.IsDepartment,
+            DepartmentId = deptId,
+            IsDate = filterParameter.IsDate,
+            DateFrom = Convert.ToDateTime(datefrom),
+            DateTo = Convert.ToDateTime(dateto),
+            IsTicketStatus = filterParameter.IsTicketStatus,
+            TicketStatusId = statId,
+            IsTicketBranch = filterParameter.IsTicketBranch,
+            TicketBranchId = branchId,
+            IsTicketCategory = filterParameter.IsTicketCategory,
+            TicketCategoryId = categoryId,
+            IsAssignee = filterParameter.IsAssignee,
+            AssigneeId = employeeId,
+            IsTicketCategoryType = filterParameter.IsTicketCategoryType,
+            TicketCategoryTypeId = ((byte)categoryType).ToString(),
+            IsTicketPriorityLevel = filterParameter.IsTicketPriorityLevel,
+            TicketPriorityLevel = priorityLevel,
+            IsActivityDate = filterParameter.IsActivityDate,
+            ActivityDateFrom = Convert.ToDateTime(activitydatefrom),
+            ActivityDateTo = Convert.ToDateTime(activitydateto)
+
+        };
+        if(isReport)
+            GetReportHeader();
+
+        MudDialog.Close(DialogResult.Ok(filterParameter));
+    }
+    #endregion
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    #region Get Report Header
+    void GetReportHeader()
+    {
+        if (filterParameter.IsRequestor)
+            stringParam.Add("Requestor: " + selectedUser.EmployeeName);
+
+        if (filterParameter.IsDate)
+            stringParam.Add("Ticket Date: " + filterParameter.DateFrom.Value.ToShortDateString() + " - " +
+            filterParameter.DateTo.Value.ToShortDateString());
+
+        if (filterParameter.IsActivityDate)
+            stringParam.Add("Activity Date: " + filterParameter.ActivityDateFrom.Value.ToShortDateString() + " - " +
+            filterParameter.ActivityDateTo.Value.ToShortDateString());
+
+        if (filterParameter.IsName)
+            stringParam.Add("Control Number: " + filterParameter.Name);
+
+        if (filterParameter.IsDepartment)
+        {
+            var dept = "";
+            foreach (var item in selectedDepts)
+            {
+                dept = string.Join(", ", selectedDepts.Select(x => $"{x.Name}"));
+            }
+            stringParam.Add("Department: " + dept);
+        }
+        if (filterParameter.IsTicketStatus)
+        {
+            var stat = "";
+            foreach (var item in selectedStatus)
+            {
+                stat = string.Join(", ", selectedStatus.Select(x => $"{x.StatusName}"));
+            }
+            stringParam.Add("Ticket Status: " + stat);
+        }
+        if (filterParameter.IsTicketBranch)
+        {
+            var branch = "";
+            foreach (var item in selectedBranches)
+            {
+                branch = string.Join(", ", selectedBranches.Select(x => $"{x.BranchName}"));
+            }
+            stringParam.Add("Ticket Branch: " + branch);
+        }
+
+        if (filterParameter.IsTicketCategoryType)
+            stringParam.Add("Ticket Category Type: " + filterParameter.TicketCategoryType);
+
+        if (filterParameter.IsTicketCategory)
+        {
+            var cat = "";
+            foreach (var item in selectedCategories)
+            {
+                cat = string.Join(", ", selectedCategories.Select(x => $"{x.CategoryName}"));
+            }
+            stringParam.Add("Ticket Category: " + cat);
+        }
+        if (filterParameter.IsAssignee)
+        {
+            var assig = "";
+            foreach (var item in selectedAssignees)
+            {
+                assig = string.Join(", ", selectedAssignees.Select(x => $"{x.EmployeeName}"));
+            }
+            stringParam.Add("Assignee: " + assig);
+        }
+
+        if (filterParameter.IsTicketPriorityLevel)
+            stringParam.Add("Ticket Priority Level: " + filterParameter.TicketPriorityLevel);
+
+        filterParameter.ReportHeader = String.Join(";", stringParam);
+    }
+    #endregion
+
+    private async Task<IEnumerable<Department>> SearchDepartment(string searchText)
+    {
+        return await Task.FromResult(departments.Where(x => x.Name.Contains(searchText,
+        StringComparison.InvariantCultureIgnoreCase)).ToList());
+    }
+
+    private async Task<IEnumerable<UserAccount>> SearchEmployee(string searchText)
+    {
+        FilterParameter _filterParameter = new FilterParameter()
+        {
+            IsName = true,
+            Name = searchText,
+            IsLookUp = true
+        };
+        return await globalService.GetAllEmployees(_filterParameter, await
+        localStorage.GetItemAsync<string>("token"));
+    }
+
+    private async Task<IEnumerable<TicketStatusModel>> SearchStatus(string searchText)
+    {
+        return await Task.FromResult(ticketStatusModels.Where(x => x.StatusName.Contains(searchText,
+        StringComparison.InvariantCultureIgnoreCase)).ToList());
+    }
+
+    private async Task<IEnumerable<TicketBranchModel>> SearchBranch(string searchText)
+    {
+        return await Task.FromResult(ticketBranchList.Where(x => x.BranchName.Contains(searchText,
+        StringComparison.InvariantCultureIgnoreCase)).ToList());
+    }
+
+    private async Task<IEnumerable<Enums.TicketCategoryType>> SearchCatType(string searchText)
+    {
+        return await Task.FromResult(categoryTypeList.Where(x => x.ToString().Contains(searchText,
+        StringComparison.InvariantCultureIgnoreCase)).ToList());
+    }
+
+    private async Task<IEnumerable<TicketCategoryModel>> SearchCategory(string searchText)
+    {
+        return await Task.FromResult(ticketCategories.Where(x => x.CategoryName.Contains(searchText,
+        StringComparison.InvariantCultureIgnoreCase)).ToList());
+    }
+
+    private async Task<IEnumerable<Employee>> SearchAssignee(string searchText)
+    {
+        return await Task.FromResult(employeesIT.Where(x => x.EmployeeName.Contains(searchText,
+        StringComparison.InvariantCultureIgnoreCase)).ToList());
+    }
+
+    private async Task<IEnumerable<Enums.PriorityLevel>> SearchPriority(string searchText)
+    {
+        return await Task.FromResult(priorityLevelList.Where(x => x.ToString().Contains(searchText,
+        StringComparison.InvariantCultureIgnoreCase)).ToList());
+    }
+}

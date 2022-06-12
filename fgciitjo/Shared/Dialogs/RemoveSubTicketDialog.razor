@@ -1,0 +1,43 @@
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo='Typo.h6'>
+            <p class='pSubTicket'>
+                <MudIcon Icon="@Icons.Material.Filled.ConfirmationNumber" Size='Size.Large' />
+                @ContentText
+            </p>
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudText>
+            @DialogContentText
+        </MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton  Variant='Variant.Text' Color='Color.Error' OnClick='Cancel'>Cancel</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick='Submit'>@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+@code
+{
+  [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string ContentText { get; set; }
+    [Parameter] public string ButtonText { get; set; }
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public string DialogContentText { get; set; }
+    void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+    void Cancel()
+    {
+        MudDialog.Cancel();
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"Cancelled action", Severity.Normal);
+    }
+
+}

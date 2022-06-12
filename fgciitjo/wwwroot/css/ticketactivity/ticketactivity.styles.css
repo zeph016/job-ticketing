@@ -1,0 +1,183 @@
+.activitycontainer {
+  background-color: #e0e0e0;
+  display: -ms-grid !important;
+  display: grid !important;
+  gap: 2px;
+  -ms-grid-columns: 1fr 0.3fr;
+      grid-template-columns: 1fr 0.3fr;
+  -ms-grid-rows: 50px 1fr;
+      grid-template-rows: 50px 1fr;
+      grid-template-areas: 'topcontainer topcontainer' 'centercontainer rightcontainer';
+  height: 100%;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+}
+
+.activitycontainer__subcontainer {
+  padding: 0px !important;
+}
+
+.activitycontainer__subcontainer:nth-child(1) {
+  background-color: white;
+  -ms-grid-row: 1;
+  -ms-grid-column: 1;
+  -ms-grid-column-span: 2;
+  grid-area: topcontainer;
+}
+
+.activitycontainer__subcontainer:nth-child(2) {
+  -ms-grid-row: 2;
+  -ms-grid-column: 1;
+  grid-area: centercontainer;
+}
+
+.activitycontainer__subcontainer:nth-child(3) {
+  background-color: white;
+  -ms-grid-row: 2;
+  -ms-grid-column: 2;
+  grid-area: rightcontainer;
+}
+
+.activitycontainer .activitytable {
+  height: calc(100vh - 165px);
+}
+
+.activitycontainer .activitytable .mud-toolbar {
+  background-color: white;
+  border-radius: 5px;
+  height: 40px !important;
+}
+
+.activitycontainer .activitytable .mud-toolbar .mud-button-label {
+  font-size: 12px;
+}
+
+.activitycontainer .activitytable .mud-toolbar .mud-input-root-text {
+  font-size: 12px;
+}
+
+.activitycontainer .activitytable .mud-table-container {
+  height: calc(100vh - 245px);
+  width: 100% !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.activitycontainer .activitytable__txtsearch {
+  margin-top: 0px !important;
+  margin-left: 5px !important;
+  margin-bottom: 15px !important;
+}
+
+.activitycontainer .activitytable__txtsearch .mud-input-control-input-container {
+  width: calc(20vw - 30px);
+}
+
+.activitycontainer .activitytable .mud-table-cell {
+  font-size: 13px;
+}
+
+.activitycontainer .activitytable .mud-table-pagination-information {
+  font-size: 12px;
+}
+
+.activitycontainer .activitytable .mud-table-pagination-caption {
+  font-size: 12px;
+}
+
+.activitycontainer .activitytable__tableheader {
+  text-align: center;
+}
+
+.activitycontainer .activitytable__tableheader:nth-child(1) {
+  width: 15vw;
+}
+
+.activitycontainer .activitytable__tableheader:nth-child(2) {
+  width: 45vw;
+}
+
+.activitycontainer .activitytable__tableheader:nth-child(3) {
+  width: 40vw;
+}
+
+.activitycontainer .activitytable__tableheader:nth-child(4) {
+  width: 70px;
+}
+
+.activitycontainer .activitytable__rowcontainer {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+.activitycontainer .activitytable__rowcontainer .mud-typography {
+  font-size: 12px;
+}
+
+.activitycontainer .activitytable__rowcontainer:nth-child(1) {
+  -ms-flex-line-pack: center;
+      align-content: center;
+  display: -ms-grid;
+  display: grid;
+  text-align: center;
+}
+
+.activitycontainer .activitytable__itemchip {
+  color: white;
+  font-weight: bold;
+  border-radius: 2px !important;
+  width: 100%;
+}
+
+.activitycontainer .ticketinfo__container {
+  padding: 16px;
+}
+
+.activitycontainer .ticketinfo__title {
+  text-align: center;
+}
+
+.activitycontainer .ticketinfo .mud-input-control .mud-input {
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.activitycontainer .ticketinfo__txtchip {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  font-size: 13px;
+}
+
+.activitycontainer .ticketinfo__txtchip .mud-chip-content {
+  color: white;
+}
+
+.activitycontainer__toolbar {
+  -webkit-box-align: center !important;
+      -ms-flex-align: center !important;
+          align-items: center !important;
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+}
+
+.activitycontainer__itemchipset {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.activitycontainer__itemchipset .mud-chip {
+  border-radius: 2px !important;
+  color: white;
+}
+/*# sourceMappingURL=ticketactivity.styles.css.map */

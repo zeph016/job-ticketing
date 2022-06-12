@@ -1,0 +1,3 @@
+function PrintInvoke(){
+    window.print();
+  }

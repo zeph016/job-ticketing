@@ -1,0 +1,237 @@
+//IMPROVED SCSS/SASS REFACTORED CSS PERFORMANCE
+
+.ticketcontainer {
+    display: grid !important;
+    grid-template-columns: 1fr 0.3fr;
+    grid-template-rows: 50px 1fr;
+    grid-template-areas: 
+    'topcontainer topcontainer'
+    'centercontainer rightcontainer';
+    height: 100%;
+    padding: 0px 0px 0px 0px!important;
+
+    &__subcontainer:nth-child(1) {
+        border-top: none;
+        grid-area: topcontainer;
+        padding: 0px !important
+    }
+    // &__subcontainer:nth-child(2) {
+    //     background-color: #ebebeb40;
+    //     grid-area: leftcontainer;
+    // }
+    &__subcontainer:nth-child(2) {
+        background-color: #e0e0e0;
+        grid-area: centercontainer;
+        padding: 0px 0px 35px 0px !important
+    }
+    &__subcontainer:nth-child(3) {
+        grid-area: rightcontainer;
+        padding: 0px 0px 35px 0px !important
+    }
+    &__subcontainer {
+        border-style: solid;
+        border-width: thin;
+        border-color: gainsboro;
+        
+    }
+
+    &__txt {
+       .mud-input-slot {
+           font-weight: bold;
+       }
+       .mud-input-label {
+           font-size: 14px !important;
+           font-weight: bold !important;
+       }
+    }
+    &__txtinfo {
+        .mud-input-slot {
+            font-size: 14px !important;
+            font-weight: bold;
+        }
+        .mud-input-label {
+            font-size: 14px !important;
+            font-weight: bold !important;
+        }
+    }
+    &__lbl {
+        display: flex;
+
+        .mud-typography {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .mud-chip {
+            color: white;
+            font-weight: bold;
+        }
+    }
+    &__txtrequestorname {
+        .mud-input-label {
+            font-size: 14px !important;
+            font-weight: bold !important;
+        }
+        .mud-input-slot {
+            padding: 0px !important;
+        }
+    }
+    .blazored-typeahead__input {
+        flex: 1;
+        max-width: 100%;
+        border: none;
+        padding: .5rem;
+        border-radius: 5px;
+    }
+    .blazored-typeahead:focus-within {
+        box-shadow: 0 0 0 0.1rem #012340 !important;
+    }
+}
+
+.toolbartop {
+    background-color: white !important;
+    height: 100% !important;
+
+    &__grid {
+        border-style: solid;
+        border-width: thin;
+        border-radius: 4px;
+        border-color: gainsboro;
+        width: auto !important;
+        .mud-typography {
+            font-size: 12px;
+            font-weight: bold;
+            padding: 0px 8px;
+        }
+        .mud-chip-content {
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .mud-grid-item {
+            align-self: center;
+        }
+        .mud-grid-item:nth-child(2) {
+            background-color: #ebebeb;
+        }
+    }
+
+    .mud-button-label {
+        font-size: 12px;
+        padding-top: 1px;
+    }
+}
+
+.toolbarcenter {
+    background-color: #ebebeb40;
+    // border-style: solid;
+    // border-width: thin;
+    // border-top: none;
+    // border-right: none;
+    // border-left: none;
+    // border-color: gainsboro;
+    height: 48px !important;
+
+    &__title {
+        color: rgba(0, 0, 0, 0.6);
+        font-family: 'Theramin' !important;
+        font-size: 20px !important;
+        font-weight: bold !important;
+        margin-left: 20px !important;
+    }
+    &__titleicon {
+        color: rgba(0, 0, 0, 0.6);;
+    }
+}
+
+.ticketexpandpanel {
+    .mud-expand-panel-header {
+        padding: 0px 12px !important;
+    }
+    .mud-expand-panel-header {
+        background-color: #ebebeb40;
+    }
+    .mud-expand-panel-content,
+    .mud-expand-panel-header {
+        border-style: solid ;
+        border-width: thin ;
+        border-top: none ;
+        border-right: none ;
+        border-left: none ;
+        border-color: gainsboro;
+    }
+
+    .mud-expand-panel-content {
+        padding-bottom: 8px !important;
+    }
+}
+
+.ticketradiogroup {
+    &__option {
+        .mud-typography {
+            align-items: center;
+            display: flex;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .mud-icon-root {
+            margin: 0px 4px;
+        }
+    }
+}
+
+.ticketselectpanel {
+    margin: 0px 15% !important;
+    .mud-input {
+        margin-top: 0px !important;
+        .mud-input-slot {
+            padding: 10px;
+        }
+    }
+    .mud-chip {
+        width: 100%;
+    }
+    .mud-input-underline:before {
+        border-bottom: none !important;
+    }
+    &__popover {
+        .mud-chip {
+            width: 100%;
+        }
+    }
+}
+
+.ticketgrid {
+    // padding: 4px 5%;
+
+    .mud-input-label {
+        font-size: 14px !important;
+        font-weight: bold !important;
+    }
+    &__btnitem {
+        text-align: right;
+    }
+}
+
+.ticketfileattachment {
+    width: 100%;
+
+    &__filename {
+        font-size: 10px !important;
+        font-weight: bold !important;
+        max-width: 200px;
+        overflow: hidden;
+        padding-right: 14px;
+        padding-left: 14px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    &__filename,
+    .mud-grid-item {
+        align-self: center !important;
+    }
+}
+.smalltypog {
+    align-self: center !important;
+    font-size: 12px !important;
+    font-weight: bold !important;
+}

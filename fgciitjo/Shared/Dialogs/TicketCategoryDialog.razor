@@ -1,0 +1,120 @@
+@inject ITicketCategoryService ticketCategoryService
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject ISnackbar Snackbar
+
+<MudDialog class='ticketCategoryDialog'>
+    <TitleContent>
+        <MudText Type='Typo.h6'>
+            <p class='pAddTicketCategory'>
+                <MudIcon Icon="@Icons.Material.Filled.Article" Size='Size.Large' />
+                @ContentText
+            </p>
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs='8'>
+                <MudSelect @bind-Value="categoryType" Label="Category Type">
+                    @foreach (Enums.TicketCategoryType item in Enum.GetValues(typeof(Enums.TicketCategoryType)))
+                    {
+                        <MudSelectItem Value="@item">@item</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs='4'>
+                @* EMPTY GRID *@
+            </MudItem>
+            <MudItem xs='8'>
+                <MudTextField @bind-Value='@currTicketCategory.CategoryName' Label='Category Name' Error='@error'
+                    AutoFocus='@autofocus' />
+            </MudItem>
+            <MudItem xs='4'>
+                <MudCheckBox @bind-Checked='@currTicketCategory.IsActive' Label='Active' />
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick='Cancel' Variant='Variant.Text' Color='Color.Error'>Cancel</MudButton>
+        <MudButton OnClick='Submit' Variant='Variant.Filled' Color='@Color'>@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string ContentText { get; set; }
+    [Parameter] public string ButtonText { get; set; }
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public TicketCategoryModel currTicketCategory { get; set; } = new TicketCategoryModel();
+    [Parameter] public Enums.CrudeMode _action { get; set; }
+    private Enums.TicketCategoryType categoryType { get; set; }
+    public bool error, autofocus;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (currTicketCategory.Id == 0)
+        {
+            currTicketCategory.IsActive = true;
+        }
+        else
+            categoryType = currTicketCategory.CategoryTypeId;
+        autofocus = true;
+    }
+    async void Submit()
+    {
+        if (!string.IsNullOrWhiteSpace(currTicketCategory.CategoryName))
+        {
+            if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Administrator)
+            {
+                if (currTicketCategory.Id == 0)
+                {
+                    currTicketCategory.CategoryTypeId = categoryType;
+                    await ticketCategoryService.AddTicketCategory(currTicketCategory, await localStorage.GetItemAsync<string>("token"));
+                    ShowAlert("Ticket Category Added", Variant.Filled);
+                }
+                else
+                {
+                    currTicketCategory.CategoryTypeId = categoryType;
+                    await ticketCategoryService.UpdateTicketCategory(currTicketCategory, await localStorage.GetItemAsync<string>("token"));
+                    ShowAlert("Ticket Category Updated", Variant.Filled);
+                }
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                ShowAlert1("Access is denied, Please ask Administrator for assistance! ", Variant.Filled, Severity.Error);
+            }
+        }
+        else
+        {
+            error = true;
+            autofocus = true;
+        }
+    }
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"Cancelled action", Severity.Error);
+    }
+
+    void ShowAlert(string message, Variant variant)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = variant;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"{message}", Severity.Success);
+    }
+    void ShowAlert1(string message, Variant variant, Severity severity)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = variant;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"{message}", severity);
+    }
+}

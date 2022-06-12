@@ -1,0 +1,27 @@
+﻿@page "/"
+
+@inject NavigationManager navigationManager
+
+
+<div class='loader'>
+
+</div>
+
+@code {
+
+    #region Properties
+    private bool isMainLayoutDone;
+    #endregion
+    protected override async Task OnInitializedAsync()
+    {
+        while (!isMainLayoutDone) 
+        {
+            if (GlobalClass.CurrentUserAccount != null) {
+                isMainLayoutDone = true;
+            }
+            await Task.Delay(20);
+            @* Console.WriteLine("20ms"); *@
+        }
+        navigationManager.NavigateTo("/dashboard");
+    }
+}

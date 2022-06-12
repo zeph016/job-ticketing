@@ -1,0 +1,140 @@
+.activitycontainer {
+    background-color: #e0e0e0;
+    display: grid !important;
+    gap: 2px;
+    grid-template-columns: 1fr 0.3fr;
+    grid-template-rows: 50px 1fr;
+    grid-template-areas: 
+    'topcontainer topcontainer'
+    'centercontainer rightcontainer';
+    height: 100%;
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+
+    &__subcontainer {
+        padding: 0px !important;
+    }
+    &__subcontainer:nth-child(1) {
+        background-color: white;
+        grid-area: topcontainer;
+    }
+    &__subcontainer:nth-child(2) {
+        grid-area: centercontainer;
+    }
+    &__subcontainer:nth-child(3) {
+        background-color: white;
+        grid-area: rightcontainer;
+    }
+
+    .activitytable {
+        height: calc(100vh - 165px);
+        .mud-toolbar {
+            background-color: white;
+            border-radius: 5px;
+            height: 40px !important;
+            .mud-button-label {
+                font-size: 12px;
+            }
+            .mud-input-root-text {
+                font-size: 12px;
+            }
+        }
+        .mud-table-container {
+            height: calc(100vh - 245px);
+            width: 100% !important;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        &__txtsearch {
+            margin-top: 0px !important;
+            margin-left: 5px !important;
+            margin-bottom: 15px !important;
+            .mud-input-control-input-container {
+                width: calc(20vw - 30px);
+              }
+        }
+        .mud-table-cell {
+            font-size: 13px;
+        }
+        .mud-table-pagination-information {
+            font-size: 12px;
+        }
+        .mud-table-pagination-caption {
+            font-size: 12px;
+        }
+
+        &__tableheader {
+            text-align: center;
+        }
+        &__tableheader:nth-child(1) {
+            width: 15vw
+        }
+        &__tableheader:nth-child(2) {
+            width: 45vw;
+        }
+        &__tableheader:nth-child(3) {
+            width: 40vw
+        }
+        &__tableheader:nth-child(4) {
+            width: 70px;
+        }
+        
+        &__rowcontainer {
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+            .mud-typography {
+                font-size: 12px;
+            }
+        }
+        &__rowcontainer:nth-child(1) {
+            align-content: center;
+            display: grid;
+            text-align: center;
+        }
+
+
+        &__itemchip {
+            color: white;
+            font-weight: bold;
+            border-radius: 2px !important;
+            width: 100%;
+        }
+    }
+    .ticketinfo {
+        &__container {
+            padding: 16px;
+        }
+        &__title {
+            text-align: center;
+        }
+        .mud-input-control {
+            .mud-input {
+                font-size: 12px;
+                font-weight: bold;
+            }
+        }
+        &__txtchip {
+            align-items: center;
+            display: flex;
+            font-size: 13px;
+            .mud-chip-content {
+                color: white;
+            }
+        }
+    }
+    &__toolbar {
+        align-items: center !important;
+        display: flex !important;
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+
+    }
+    &__itemchipset {
+        align-items: center;
+        display: flex;
+        .mud-chip {
+            border-radius: 2px !important;
+            color: white;
+        }
+    }
+}

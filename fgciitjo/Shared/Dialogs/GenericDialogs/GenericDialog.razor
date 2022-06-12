@@ -1,0 +1,41 @@
+<MudDialog>
+    <DialogContent>
+        <MudText>@ContentText</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" style='@styleString'>Cancel</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public string ContentText { get; set; }
+
+    [Parameter] public string ButtonText { get; set; }
+
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public Enums.DialogMode DialogMode { get; set; }
+    public string styleString { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync() 
+    {
+        await Task.Delay(1);
+        if (DialogMode == Enums.DialogMode.Inform)
+            styleString = "display: none;";
+        if (DialogMode == Enums.DialogMode.Warning)
+            styleString = "display: block; color: red;";
+        StateHasChanged();
+    }
+
+    void Submit() 
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+    
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+}

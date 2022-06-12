@@ -1,0 +1,73 @@
+<MudDialog class='dashpcdialog'>
+    <DialogContent>
+        <MudContainer Class='dashbcdialog__header' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+            <div class="d-flex">
+                <MudIcon Icon="@Icons.Material.Filled.Analytics" class="mr-3" Size='Size.Medium'></MudIcon>
+                <MudText Typo='Typo.h5'><strong>Analytics</strong></MudText>
+            </div>
+        </MudContainer>
+        <MudExpansionPanels Elevation='0'>
+            <MudExpansionPanel Text='Pie Chart' IsInitiallyExpanded='true'>
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.PieChart" class="mr-3"></MudIcon>
+                        <MudText><strong>Pie Chart</strong></MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudContainer Class='dashpcdialog__subcont dashpcdialog__piecontainer'>
+                        <MudChart ChartType='ChartType.Pie' InputData='pieDataX' InputLabels='xAxisPieLabels'
+                            Width='80%' Height='80%'>
+                        </MudChart>
+                    </MudContainer>
+                </ChildContent>
+            </MudExpansionPanel>
+            <MudExpansionPanel Text='Raw Data'>
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.Poll" class="mr-3"></MudIcon>
+                        <MudText><strong>Raw Data</strong></MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <div class='dashpcdialog__pie-r-datacontainer'>
+                        <div>
+                            @foreach (var item in xAxisPieLabels)
+                            {
+                                <MudText>@item</MudText>
+                            }
+                        </div>
+                        <div class='dashpcdialog__pie-r-content2'>
+                            @foreach (var item in pieDataX)
+                            {
+                                <MudText>@item</MudText>
+                            }
+                        </div>
+                    </div>
+                </ChildContent>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    </DialogContent>
+    <DialogActions>
+        @* <MudButton OnClick="Cancel" style='@styleString'>Cancel</MudButton> *@
+        <MudButton Color="@color" Variant="Variant.Filled" OnClick="Submit">@buttonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance mudDialog { get; set; }
+    [Parameter] public List<TicketModel> ticketList { get; set; } = new List<TicketModel>();
+    [Parameter] public string buttonText { get; set; }
+    [Parameter] public Color color { get; set; }
+    [Parameter] public string[] xAxisPieLabels { get; set; }
+    [Parameter] public double[] pieDataX { get; set; }
+
+    void Submit()
+    {
+        mudDialog.Close(DialogResult.Ok(true));
+    }
+    void Cancel()
+    {
+        mudDialog.Cancel();
+    }
+}

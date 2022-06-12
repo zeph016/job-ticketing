@@ -1,0 +1,202 @@
+.dashbcdialog__header {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  background-color: #012340;
+  color: white;
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  height: 5vh;
+  text-align: center;
+}
+
+.dashbcdialog__header .d-flex {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.dashbcdialog .mud-dialog-title {
+  background-color: #012340;
+  color: white;
+}
+
+.dashbcdialog .mud-dialog-title .mud-icon-button-label {
+  color: white;
+}
+
+.dashbcdialog .mud-dialog-content {
+  padding: 0px !important;
+}
+
+.dashbcdialog__subcont {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+  width: calc(55vw - 20px) !important;
+}
+
+.dashbcdialog__bchart {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: horizontal !important;
+  -webkit-box-direction: reverse !important;
+      -ms-flex-direction: row-reverse !important;
+          flex-direction: row-reverse !important;
+  gap: 5px;
+}
+
+.dashbcdialog__bchart .mud-chart-legend {
+  display: -ms-grid !important;
+  display: grid !important;
+  -webkit-box-pack: start !important;
+      -ms-flex-pack: start !important;
+          justify-content: flex-start !important;
+  margin: 0px 0px auto 0px !important;
+  width: 20% !important;
+}
+
+.dashbcdialog__bchart .mud-chart-legend .mud-chart-legend-marker {
+  width: 10px !important;
+  height: 10px !important;
+}
+
+.dashbcdialog__bchart .mud-chart-legend .mud-typography {
+  font-size: .7rem;
+}
+
+.dashbcdialog__rdatacontainer {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 0.2fr 1fr;
+      grid-template-columns: 0.2fr 1fr;
+  -ms-grid-rows: 0.1fr 1fr;
+      grid-template-rows: 0.1fr 1fr;
+  gap: 5px;
+      grid-template-areas: "toplcont toprcont" "bottomlcont bottomrcont";
+}
+
+.dashbcdialog__rwcontainer {
+  padding-left: 0px 8px 0px 8px;
+}
+
+.dashbcdialog__rwcontainer .mud-typography {
+  font-size: 12px;
+  width: 100%;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+
+.dashbcdialog__rwcontainer:nth-child(1) {
+  -ms-grid-row: 1;
+  -ms-grid-column: 1;
+  grid-area: toplcont;
+}
+
+.dashbcdialog__rwcontainer:nth-child(2) {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-grid-row: 1;
+  -ms-grid-column: 2;
+  grid-area: toprcont;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.dashbcdialog__rwcontainer:nth-child(3) {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-row: 2;
+  -ms-grid-column: 1;
+  grid-area: bottomlcont;
+  text-align: left !important;
+}
+
+.dashbcdialog__rwcontainer:nth-child(3) .mud-typography {
+  padding-bottom: calc(5vh - 30px);
+}
+
+.dashbcdialog__rwcontainer:nth-child(4) {
+  background-color: whitesmoke;
+  -ms-grid-row: 2;
+  -ms-grid-column: 2;
+  grid-area: bottomrcont;
+}
+
+.dashbcdialog__rwcontainer-monthlistcount {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.dashbcdialog__rwcontainer-monthlistcount .mud-typography {
+  padding-bottom: calc(5vh - 30px);
+}
+
+.dashpcdialog__header {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  background-color: #012340;
+  color: white;
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  height: 5vh;
+  text-align: center;
+}
+
+.dashpcdialog__header .d-flex {
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.dashpcdialog .mud-dialog-title {
+  background-color: #012340;
+  color: white;
+}
+
+.dashpcdialog .mud-dialog-title .mud-icon-button-label {
+  color: white;
+}
+
+.dashpcdialog .mud-dialog-content {
+  padding: 0px !important;
+}
+
+.dashpcdialog__subcont {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+.dashpcdialog__piecontainer {
+  width: calc(50vh - 100px) !important;
+}
+
+.dashpcdialog__pie-r-datacontainer {
+  display: -ms-grid;
+  display: grid;
+  gap: 1rem;
+  -ms-grid-columns: 0.3fr 1fr;
+      grid-template-columns: 0.3fr 1fr;
+  grid-row: auto;
+}
+
+.dashpcdialog__pie-r-content2 {
+  background-color: whitesmoke;
+}
+/*# sourceMappingURL=dashboarddialog.styles.css.map */

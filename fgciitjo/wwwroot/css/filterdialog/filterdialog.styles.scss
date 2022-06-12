@@ -1,0 +1,56 @@
+.filterdialog {
+    .mud-dialog-content {
+        padding: 0px !important;
+    }
+    &__title-container {
+        align-items: center;
+        background-color: #012340;
+        border-top-right-radius: 3px;
+        border-top-left-radius: 3px;
+        color: white;
+        display: flex !important;
+        padding: 8px 16px;
+        gap: 0.5rem;
+        .mud-typography {
+            font-family: 'Theramin';
+        }
+    }
+    &__body-container {
+        display: grid !important;
+        grid-template-columns: 0.8fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 0px 1rem;
+        grid-template-areas: 
+        "lcont rcont"
+        "lcont rcont";
+        padding: 1rem;
+    }
+    &__body-lcont {
+        grid-area: lcont;
+    }
+    &__body-rcont {
+        grid-area: rcont
+    }
+    &__grid-tbxdeptsearch {
+        .blazored-typeahead__input-mask-wrapper,
+        .blazored-typeahead__input-mask-wrapper--disabled {
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+    }
+    &__chkboxcont {
+        align-self: center;
+    }
+    &__tbxrequestor {
+        align-items: center;
+        display: flex;
+        gap: 1rem;
+    }
+    &__tbxctrlno {
+        .mud-input {
+            margin-top: 0px !important;
+        }
+    }
+}
+

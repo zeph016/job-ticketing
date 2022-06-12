@@ -1,0 +1,200 @@
+<MudDialog class='dashbcdialog'>
+    <DialogContent>
+        <MudContainer Class='dashbcdialog__header' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+            <div class="d-flex">
+                <MudIcon Icon="@Icons.Material.Filled.Analytics" class="mr-3" Size='Size.Medium'></MudIcon>
+                <MudText Typo='Typo.h5'><strong>Analytics</strong></MudText>
+            </div>
+        </MudContainer>
+        <MudExpansionPanels Elevation='0'>
+            <MudExpansionPanel Text='Bar Chart' IsInitiallyExpanded='true'>
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.BarChart" class="mr-3"></MudIcon>
+                        <MudText><strong>Bar Chart</strong></MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudContainer Class='dashbcdialog__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+                        <MudChart Class='dashbcdialog__bchart' ChartType="ChartType.Bar" ChartSeries="@barChartSeries"
+                            @bind-SelectedIndex="index" XAxisLabels="@xAxisLabels" Width='100%' Height='100%'>
+                        </MudChart>
+                    </MudContainer>
+                </ChildContent>
+            </MudExpansionPanel>
+            <MudExpansionPanel Text='Raw Data'>
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudIcon Icon="@Icons.Material.Filled.Poll" class="mr-3"></MudIcon>
+                        <MudText><strong>Raw Data</strong></MudText>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <MudContainer Class='dashbcdialog__subcont' Fixed='true' MaxWidth='MaxWidth.ExtraExtraLarge'>
+                        <div class='dashbcdialog__rdatacontainer'>
+                            <div class='dashbcdialog__rwcontainer'>
+                                @* Sample *@
+                            </div>
+                            <div class='dashbcdialog__rwcontainer'>
+                                @foreach (var item in xAxisLabels)
+                                {
+                                    <MudText>
+                                        @item
+                                    </MudText>
+                                }
+                            </div>
+                            <div class='dashbcdialog__rwcontainer'>
+                                @foreach (var item in ticketStatusListCBList)
+                                {
+                                    @if (item.IsChecked)
+                                    {
+                                        <MudText>
+                                            @item.selectedTicketStatus.StatusName
+                                        </MudText>
+                                    }
+                                }
+                            </div>
+                            <div class='dashbcdialog__rwcontainer'>
+                                @foreach (var item in ticketStatusListCBMonthCount)
+                                {
+                                    <div class='dashbcdialog__rwcontainer-monthlistcount'>
+                                        @foreach (var monthCount in item.MonthCount)
+                                        {
+
+                                            <MudText>@monthCount</MudText>
+
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </MudContainer>
+                </ChildContent>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    </DialogContent>
+    <DialogActions>
+        @* <MudButton OnClick="Cancel" style='@styleString'>Cancel</MudButton> *@
+        <MudButton Color="@color" Variant="Variant.Filled" OnClick="Submit">@buttonText</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public List<TicketStatusModel> ticketStatusList { get; set; } = new List<TicketStatusModel>();
+    [Parameter] public List<TicketModel> ticketList { get; set; } = new List<TicketModel>();
+    [Parameter] public List<TicketStatusCBModel> ticketStatusListCBList { get; set; } = new List<TicketStatusCBModel>();
+    [Parameter] public string buttonText { get; set; }
+    [Parameter] public Color color { get; set; }
+    [Parameter] public List<ChartSeries> barChartSeries { get; set; } = new List<ChartSeries>();
+    [Parameter] public string[] xAxisLabels { get; set; }
+    public string styleString { get; set; } = default!;
+    private List<TicketStatusCBModel> ticketStatusListCBMonthCount = new List<TicketStatusCBModel>();
+    private int index = -1;
+    private double[] sample;
+
+    protected override async Task OnInitializedAsync()
+    {
+        PopulateTicketStatusCBMonths();
+    }
+
+    void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void PopulateTicketStatusCBMonths()
+    {
+        foreach (var item in ticketStatusListCBList)
+        {
+            TicketStatusCBModel addMonths = new TicketStatusCBModel();
+            if (item.IsChecked)
+            {
+                addMonths.Id = item.Id;
+                addMonths.selectedTicketStatus = item.selectedTicketStatus;
+                addMonths.MonthCount = new double[]
+                {
+countJan(item.Id), countFeb(item.Id), countMar(item.Id), countApr(item.Id),
+countMay(item.Id), countJun(item.Id), countJul(item.Id), countAug(item.Id),
+countSep(item.Id), countOct(item.Id), countNov(item.Id), countDec(item.Id)
+                };
+                ticketStatusListCBMonthCount.Add(addMonths);
+            }
+        }
+    }
+
+    private double countJan(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 1 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+    private double countFeb(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 2 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+    private double countMar(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 3 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+
+    private double countApr(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 4 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+
+    private double countMay(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 5 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+
+    private double countJun(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 6 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+
+    private double countJul(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 7 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+
+    private double countAug(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 8 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+
+    private double countSep(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 9 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+
+    private double countOct(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 10 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+
+    private double countNov(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 11 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+
+    private double countDec(long statusId)
+    {
+        double count = ticketList.Where(x => x.TicketDate.Value.Month == 12 && x.TicketStatusId == statusId).ToList().Count();
+        return count;
+    }
+
+}

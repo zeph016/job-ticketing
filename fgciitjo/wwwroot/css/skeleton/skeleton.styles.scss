@@ -1,0 +1,33 @@
+.skeletonCardUserDetails {
+  height: 500px;
+  width: 40vw;
+  margin: auto;
+}
+
+.skeletoncontainer {
+  margin: 0px !important;
+  &__flex, &__grid {
+    padding: 0px 0px !important;
+  }
+  &__flex {
+    display: flex !important;
+    margin: 0px !important;
+  }
+  &__grid {
+    display: grid !important;
+  }
+  &__headerbox {
+    height: 50px !important;  
+  }
+  &__textbox {
+    height: 25px !important;
+  }
+  &__contentbox {
+    height: 25vh !important;
+  }
+  &__skelbtn {
+    margin: 0px 10px;
+    width: 75px;
+    height: 50px !important;
+  }
+}

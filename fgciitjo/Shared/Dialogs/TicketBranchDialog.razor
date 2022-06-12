@@ -1,0 +1,83 @@
+﻿@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject ITicketBranchService ticketBranchService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo='Typo.h6'>
+            <p class='pTicketBranch'>
+                <MudIcon Icon="@Icons.Material.Filled.CorporateFare" Size='Size.Large' />
+                @ContentText
+            </p>
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+      <MudForm >
+        <MudGrid>
+            <MudItem xs='8'>
+                <MudTextField Error='notValid' Required='true' RequiredError='Branch name is required!' @bind-Value='@currentBranch.BranchName' Label='Branch Name' />
+            </MudItem>
+            <MudItem xs='4'>
+                <MudCheckBox @bind-Checked='@currentBranch.IsActive' Label='Active' />
+            </MudItem>
+        </MudGrid>
+      </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant='Variant.Text' Color='Color.Error'>Cancel</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string ContentText { get; set; }
+    [Parameter] public string ButtonText { get; set; }
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public TicketBranchModel currentBranch { get; set; } = new TicketBranchModel();
+    [Parameter] public Enums.CrudeMode _action { get; set; }
+    bool notValid;
+    async void Submit()
+    {
+     
+        if (!string.IsNullOrWhiteSpace(currentBranch.BranchName))
+        {
+          if (currentBranch.Id == 0)
+        {
+            await ticketBranchService.AddBranch(currentBranch, await localStorage.GetItemAsync<string>("token"));
+            ShowAlert("Ticket Branch Added", Variant.Filled, Severity.Success);
+        }
+        else
+        {
+            await ticketBranchService.UpdateBranch(currentBranch, await localStorage.GetItemAsync<string>("token"));
+            ShowAlert("Ticket Branch Updated", Variant.Filled, Severity.Success);
+        }
+        MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+          notValid = true;
+        }
+        
+    }
+        
+    void Cancel()
+    {
+        MudDialog.Cancel();
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"Cancelled action", Severity.Error);
+    }
+
+    void ShowAlert(string message, Variant variant, Severity severity)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = variant;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"{message}", severity);
+    }
+}

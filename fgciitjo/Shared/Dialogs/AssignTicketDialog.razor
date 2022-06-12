@@ -1,0 +1,233 @@
+@inject ITicketService ticketService;
+@inject IGlobalService globalService;
+@inject ITicketStatusService ticketStatusService;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject ISnackbar Snackbar;
+
+<MudDialog>
+  <TitleContent>
+    <MudText Typo='Typo.h6'>
+      <p class='pAssignTicket'>
+        <MudIcon Icon="@Icons.Material.Filled.SupportAgent" Size='Size.Large' />
+        @ContentText
+      </p>
+    </MudText>
+  </TitleContent>
+  <DialogContent>
+     <div class="diaglog-container">
+        
+        <div class="dfields">
+          <span>@currentTicket.TicketNumber</span>
+          <small>Ticket Number</small>
+        </div>
+        <div class="dpriority-field">
+          @if (currentTicket.PriorityLevelId == Enums.PriorityLevel.Low)
+          {
+              <MudChip style="height: 18px;" Color='Color.Info' Size='Size.Small'>
+              @currentTicket.PriorityLevelId
+              </MudChip>
+            <small>Priority Level</small>
+          }
+          @if(currentTicket.PriorityLevelId == Enums.PriorityLevel.Medium)
+          {
+            <MudChip style="height: 18px;"  Color='Color.Warning' Size='Size.Small'>
+              @currentTicket.PriorityLevelId
+              </MudChip>
+            <small>Priority Level</small>
+          }
+          @if(currentTicket.PriorityLevelId == Enums.PriorityLevel.High)
+          {
+              <MudChip style="height: 18px;" Color='Color.Error' Size='Size.Small'>
+              @currentTicket.PriorityLevelId
+              </MudChip>
+            <small>Priority Level</small>
+          }
+        </div>
+         <div class="desc-name">
+          <span>@currentTicket.TaskDescription</span>
+          <small>Description</small>
+        </div>
+        <div class="dfields">
+          <span>@converteDate</span>
+          <small>Date</small>
+        </div>
+         <div class="dfields">
+          <span>@currentTicket.TicketStatusName</span>
+          <small>Status</small>
+        </div>
+        <div class="dissue-summary">
+          <span>@currentTicket.TicketCategoryTypeId</span>
+          <small>Category Type</small>
+        </div>
+          <div class="dreq-name">
+          <span>@currentTicket.TicketCategoryName</span>
+          <small>Category</small>
+        </div>
+         <div class="dfields">
+          <span>@currentTicket.TicketBranchName</span>
+          <small>Branch</small>
+        </div>
+         <div class="dissue-summary" title="@currentTicket.IssueSummary">
+          <span>@currentTicket.IssueSummary</span>
+          <small>Issue Summary</small>
+        </div>
+         <div class="dreq-name">
+          <span>@currentTicket.RequestorName</span>
+          <small>Requestor</small>
+        </div>
+
+      </div>
+    <MudDivider />
+    @if (!dataFetched)
+    { 
+  <MudSkeleton SkeletonType='SkeletonType.Text' Height='120px' Animation='Animation.Wave' />
+  <MudSkeleton SkeletonType='SkeletonType.Rectangle' Height='120px' Animation='Animation.Wave' />
+  <MudOverlay  DarkBackground="true" Absolute="true">
+    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+  </MudOverlay>
+    }
+    else{
+      <MudGrid id="dgrid-container">
+      <MudItem xs='8'>
+        <MudSelect Label="IT Personnel" @bind-Value="@employee.EmployeeId">
+          @foreach (Employee item in listOfIT)
+          {<MudSelectItem Value="@item.EmployeeId">@item.EmployeeName</MudSelectItem>}
+                    </MudSelect>
+                  </MudItem>
+                  <MudItem xs='4'>
+                    <MudDatePicker PickerVariant='PickerVariant.Dialog' ReadOnly="true" Label="Assign Date" MinDate='DateTime.Now.Date' MaxDate='DateTime.Now.Date' @bind-Date="@currentTicket.AssignDate" />
+                  </MudItem>
+                </MudGrid>
+    }
+    
+              </DialogContent>
+              <DialogActions>
+                <MudButton OnClick='Cancel' Variant='Variant.Text' Color='Color.Error'>Cancel</MudButton>
+                <MudButton Color="@Color.Primary" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+              </DialogActions>
+            </MudDialog>
+
+  @code {
+
+  [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+  [Parameter] public TicketModel currentTicket { get; set; } = new TicketModel();
+  [Parameter] public string ContentText { get; set; }
+  [Parameter] public string ButtonText { get; set; }
+  [Parameter] public Color Color { get; set; }
+  Employee employee { get; set; } = new Employee();
+  List<Employee> listOfIT = new List<Employee>();
+    List<TicketStatusModel> ticketStatusList = new List<TicketStatusModel>();
+  TicketStatusModel status = new TicketStatusModel();
+  TicketModel ticket = new TicketModel();
+  DateTime date,ticketDate = new DateTime();
+  private Int64 statusId;
+  string converteDate;
+  bool dataFetched;
+  protected override async Task OnInitializedAsync()
+  {
+   
+   Task t = Task.WhenAll(GetAllEmployees(),GetAllStatus());
+   await t;
+   if(t.Status == TaskStatus.RanToCompletion)
+   {
+    await GetCurrentUser();
+    await GetCurrentStatus();
+    currentTicket.AssignDate = DateTime.Today;
+    ConvertDate();
+    CompletedFetch();
+   }
+  }
+  void ShowAlert(string message, Severity severity)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"{message}", severity);
+    }
+  TicketModel MapProperties()
+  {
+    
+    ticket.Id = currentTicket.Id;
+    ticket.IsActive = currentTicket.IsActive;
+    ticket.ControlCount = currentTicket.ControlCount;
+    ticket.TicketNumber = currentTicket.TicketNumber;
+    ticket.IssueSummary = currentTicket.IssueSummary;
+    ticket.TaskDescription = currentTicket.TaskDescription;
+    ticket.PriorityLevelId = currentTicket.PriorityLevelId;
+    ticket.DocumentReference = currentTicket.DocumentReference;
+    ticket.TicketCategoryId = currentTicket.TicketCategoryId;
+    ticket.TicketCategoryName = currentTicket.TicketCategoryName;
+    ticket.TicketBranchId = currentTicket.TicketBranchId;
+    ticket.TicketBranchName = currentTicket.TicketBranchName;
+    ticket.TicketStatusId = statusId;
+    ticket.TicketStatusName = status.StatusName;
+    ticket.Remarks = currentTicket.Remarks;
+    ticket.AssignDate = currentTicket.AssignDate;
+    ticket.AssigneeId = employee.EmployeeId;
+
+    ticket.UserId = GlobalClass.CurrentUserAccount.EmployeeId;
+    ticket.TicketId = currentTicket.Id;
+    var assignee = listOfIT.FirstOrDefault(x=>x.EmployeeId == employee.EmployeeId).EmployeeName;
+    ticket.Activity = "Assigned ticket to " + assignee + ";Changed status: " + status.StatusName;
+    ticket.PCName = "";
+
+    return ticket;
+  }
+  async Task Submit()
+  {
+    try
+    {
+      await ticketService.AssignTicket(MapProperties(), await localStorage.GetItemAsync<string>("token"));
+      MudDialog.Close(DialogResult.Ok(true));
+      ShowAlert("Ticket assigned", Severity.Success);
+    }
+    catch (System.Exception ex)
+    {
+       ShowAlert(ex.ToString(), Severity.Error);
+    }
+   
+  }
+  async Task GetCurrentUser()
+  {
+    employee = listOfIT.FirstOrDefault(x=>x.EmployeeId == GlobalClass.CurrentUserAccount.EmployeeId);
+  }
+  async Task<IEnumerable<Employee>> GetAllEmployees()
+  {
+     var filterParameter = new FilterParameter()
+     {
+          IsName = false,
+          Name = "",
+          DepartmentId = "8"
+      };
+    listOfIT = await globalService.GetDepartmentEmployees(filterParameter, await localStorage.GetItemAsync<string>("token"));
+    return listOfIT.OrderBy(x=>x.FirstName);
+  }
+  async Task<TicketStatusModel> GetCurrentStatus()
+  {
+    statusId = ticketStatusList.Where(x=>x.StatusTypeId == Enums.TicketStatusType.Assign).Select(x=>x.Id).FirstOrDefault();
+    status = await ticketStatusService.GetTicketStatusById(statusId, await localStorage.GetItemAsync<string>("token"));
+    return status;
+  }
+  async Task<IEnumerable<TicketStatusModel>> GetAllStatus()
+  {
+    var filterParameter = new FilterParameter();
+    ticketStatusList = await ticketStatusService.GetTicketStatus(filterParameter, await localStorage.GetItemAsync<string>("token"));
+    return ticketStatusList;
+  }
+   void ConvertDate()
+    {
+      ticketDate = (DateTime)currentTicket.TicketDate;
+      converteDate = ticketDate.ToString("MMM dd, yyyy");
+    }
+  void Cancel()
+  {
+    MudDialog.Cancel();
+  }
+   void CompletedFetch()
+    {
+        dataFetched = true;
+        StateHasChanged();
+    }
+  
+}

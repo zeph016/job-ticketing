@@ -1,0 +1,223 @@
+.ticketStatusDialog .mud-grid .mud-grid-item:nth-child(2),
+.ticketCategoryDialog .mud-grid .mud-grid-item:nth-child(2) {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: end;
+}
+
+.ticketStatusDialog .mud-grid .mud-grid-item:nth-child(2) .mud-input-slot,
+.ticketCategoryDialog .mud-grid .mud-grid-item:nth-child(2) .mud-input-slot {
+  font-size: 12px;
+}
+
+.ticketStatusDialog .mud-grid .mud-grid-item:nth-child(4),
+.ticketCategoryDialog .mud-grid .mud-grid-item:nth-child(4) {
+  -ms-flex-item-align: end;
+      align-self: flex-end;
+  text-align: center;
+}
+
+.ticketStatusDialog .smallColorBox,
+.ticketCategoryDialog .smallColorBox {
+  float: left;
+  width: 20px;
+  height: 20px;
+  margin: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.pTicketStatus,
+.pAddTicketCategory,
+.pMasterListSearch,
+.pTicketListFilter,
+.pTicketBranch,
+.pAssignTicket,
+.pSubmitTicket,
+.pAttachFiles,
+.pSubTicket,
+.pUpdateTicketStatus {
+  font-family: 'Theramin';
+  font-size: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.pTicketStatus .mud-icon-root,
+.pAddTicketCategory .mud-icon-root,
+.pMasterListSearch .mud-icon-root,
+.pTicketListFilter .mud-icon-root,
+.pTicketBranch .mud-icon-root,
+.pAssignTicket .mud-icon-root,
+.pSubmitTicket .mud-icon-root,
+.pAttachFiles .mud-icon-root,
+.pSubTicket .mud-icon-root,
+.pUpdateTicketStatus .mud-icon-root {
+  padding-right: 10px;
+}
+
+.dialogFileAttachments .tbarFileAttachment {
+  background-color: whitesmoke;
+}
+
+.dialogFileAttachments .attachedListContainer {
+  overflow: auto;
+  background-color: whitesmoke;
+  min-height: 75px;
+  max-height: 300px;
+  margin-top: 10px;
+}
+
+.dialogFileAttachments .attachedListContainer .mud-grid {
+  padding-top: 15px;
+}
+
+.dialogFileAttachments .attachedListContainer .mud-grid .mud-typography {
+  word-break: break-all;
+  padding-left: 5px;
+}
+
+.dialogFileAttachments .attachedListContainer .mud-grid-item {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.dialogFileAttachments .attachedListContainer .mud-grid-item code {
+  text-align: left;
+  font-weight: bold;
+  padding: 0px 5px;
+}
+
+.dialog-container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.dfields {
+  display: -ms-inline-grid;
+  display: inline-grid;
+}
+
+.dfields span {
+  border-bottom: 1px dotted;
+  margin: 10px 10px 0px 10px;
+  font-family: 'Roboto';
+  font-weight: bold;
+  font-size: 12px;
+  width: 220px;
+}
+
+.dfields small {
+  margin: 0px 15px 15px 11px;
+}
+
+.dreq-name {
+  display: -ms-inline-grid;
+  display: inline-grid;
+}
+
+.dreq-name span {
+  border-bottom: 1px dotted;
+  margin: 10px 10px 0px 10px;
+  font-family: 'Roboto';
+  font-weight: bold;
+  font-size: 12px;
+  width: 220px;
+}
+
+.dreq-name small {
+  margin: 0px 15px 15px 11px;
+}
+
+.desc-name {
+  display: -ms-inline-grid;
+  display: inline-grid;
+}
+
+.desc-name span {
+  border-bottom: 1px dotted;
+  margin: 10px 10px 0px 10px;
+  font-family: 'Roboto';
+  font-weight: bold;
+  font-size: 12px;
+  width: 450px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.desc-name small {
+  margin: 0px 15px 15px 11px;
+}
+
+.dissue-summary {
+  display: -ms-inline-grid;
+  display: inline-grid;
+}
+
+.dissue-summary span {
+  border-bottom: 1px dotted;
+  margin: 10px 10px 0px 10px;
+  font-family: 'Roboto';
+  font-weight: bold;
+  font-size: 12px;
+  width: 220px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.dissue-summary small {
+  margin: 0px 15px 15px 11px;
+}
+
+.dpriority-field {
+  display: -ms-inline-grid;
+  display: inline-grid;
+  height: 18px;
+  width: 247px;
+}
+
+.dpriority-field .mud-chip-filled {
+  height: 18px;
+}
+
+.dpriority-field small {
+  border-top: 1px dotted;
+  margin: 0px 15px 15px 15px;
+}
+
+.dpriority-field .mud-chip {
+  border-bottom: 1px dotted;
+  margin: 10px 10px 0px 10px;
+  font-family: 'Roboto';
+  font-weight: bold;
+  font-size: 10px;
+  width: 100px;
+}
+
+#dgrid-container {
+  margin-top: 20px;
+  border-top: 1.5px dotted #525252;
+}
+
+.releaseImage {
+  width: 140px;
+  height: 40px;
+}
+/*# sourceMappingURL=dialogs.styles.css.map */

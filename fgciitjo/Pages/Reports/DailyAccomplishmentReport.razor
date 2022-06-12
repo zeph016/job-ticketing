@@ -1,0 +1,144 @@
+@page "/dailyaccompReport"
+
+@using System.Net.Http.Headers
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+
+@* activityreport.styles.css *@
+<MudContainer class='DailyAccomplishmentContainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
+    <MudOverlay Visible='ShowLoadingOverlay' Absolute='true' DarkBackground='true'>
+        <MudProgressCircular class='loader-2' Size="Size.Large" Indeterminate="true" />
+    </MudOverlay>
+    @if (!dataFetched)
+    {
+        <MudPaper Class='ma-4 pa-2'>
+            <MudSkeleton SkeletonType='SkeletonType.Text' Height='100px' Animation='Animation.Wave' />
+            <MudSkeleton SkeletonType='SkeletonType.Rectangle' Height='75vh' Animation='Animation.Wave' />
+        </MudPaper>
+    }
+    else
+    {
+
+        <MudPaper class="paper">
+            <MudPaper Class="d-flex justify-space-around">
+                @* <MudText Typo='Typo.h6' Style="margin:5px;"> </MudText> *@
+                <MudSpacer />
+                <MudButton OnClick='@(() => SearchFilterParameterDialog())' Variant='Variant.Text'
+                StartIcon='@Icons.Material.Filled.Tune'>Filter</MudButton>
+                <MudMenu Label='More' StartIcon="@Icons.Material.Filled.MoreVert" Direction='Direction.End' Dense='true'
+                OffsetY='true'>
+                    <MudMenuItem class='menuList' @onclick='@(() => ShowCreateActivityPage())'>
+                        <p style='display: flex;'>
+                            <MudIcon Icon='@Icons.Material.Filled.Add' />
+                            <MudText style='padding-left: 10px; font-size: 14px; align-self: center;'>Create Activity
+                            </MudText>
+                        </p>
+                    </MudMenuItem>
+                </MudMenu>
+            </MudPaper>
+            <iframe class="frameReport" src="@pdfContent"></iframe>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    private bool ShowLoadingOverlay, dataFetched, disable;
+    HttpClient client = new HttpClient();
+    FilterParameter filterParameter = new FilterParameter();
+    string pdfContent;
+    private string searchTerm = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        client.BaseAddress = new Uri("http://10.0.0.7:9000/");
+        GlobalContentTitle.contentTitle = "Daily Accomplishment Report";
+        ShowLoadingOverlay = true;
+        while (GlobalClass.CurrentUserAccount == null)
+        {
+            //Delay UI if GlobalClass is not loaded yet
+            await Task.Delay(250);
+        }
+        filterParameter.IsAssignee = true;
+        filterParameter.AssigneeId = GlobalClass.CurrentUserAccount.EmployeeId.ToString();
+        Task t = Task.WhenAll(LoadReport());
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion)
+        {
+            CompletedFetch();
+        }
+    }
+
+    async Task LoadReport()
+    {
+        try
+        {
+            @* client = new HttpClient(); *@
+            @* client.BaseAddress = new Uri("http://10.0.0.7:9000/"); *@
+            filterParameter.Token = await localStorage.GetItemAsync<string>("token");
+            filterParameter.PreparedBy = GlobalClass.CurrentUserAccount.EmployeeName;
+            filterParameter.PreparedByDesignation = GlobalClass.CurrentUserAccount.Designation;
+            var response = await client.PostAsJsonAsync("api/getdailyaccomplishmentreport", filterParameter);
+
+            pdfContent = "data:application/pdf;base64,";
+            pdfContent += Convert.ToBase64String(await response.Content.ReadAsByteArrayAsync());
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            // return null;
+        }
+    }
+
+    void CompletedFetch()
+    {
+        dataFetched = true;
+        ShowLoadingOverlay = false;
+        StateHasChanged();
+    }
+
+    #region FilterDialog
+    private async Task SearchFilterParameterDialog()
+    {
+        ShowLoadingOverlay = true;
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", "Search Filter");
+        parameters.Add("ButtonText", "Search");
+        parameters.Add("Color", Color.Success);
+        parameters.Add("isvisible", true);
+        parameters.Add("isReport", true);
+        var options = new DialogOptions()
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
+            NoHeader = true,
+            DisableBackdropClick = true
+        };
+
+        var resultDialog = await DialogService.Show<Shared.Dialogs.TicketListFilterDialog>("Search Filter", parameters,
+        options).Result;
+        if (!resultDialog.Cancelled)
+        {
+            ShowLoadingOverlay = false;
+            filterParameter = (FilterParameter)resultDialog.Data;
+            filterParameter.PageSize = 0;
+            Task t = Task.WhenAll(LoadReport());
+            await t;
+            if (t.Status == TaskStatus.RanToCompletion)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+    #endregion
+
+    #region Create Activity
+
+    void ShowCreateActivityPage()
+    {
+        NavigationManager.NavigateTo($"/createactivity/");
+    }
+
+    #endregion
+}

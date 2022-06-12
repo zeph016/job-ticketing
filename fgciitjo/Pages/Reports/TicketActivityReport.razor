@@ -1,0 +1,194 @@
+@page "/activityreport"
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IJSRuntime IJSrun
+@inject ITicketActivityService ticketActivityService
+
+<MudPaper Class="d-flex justify-space-around">
+    <MudText Typo='Typo.h6' Style="margin:5px;"> </MudText>
+    <MudSpacer />
+    <MudButton StartIcon="@Icons.Material.Filled.LocalPrintshop" @onclick='@(() => Print())'>Print</MudButton>
+    <MudText Style="font-size:30px">|</MudText>
+    <MudButton StartIcon="@Icons.Material.Filled.Tune">Filter</MudButton>
+</MudPaper>
+
+<div class='activityPrintDiv'>
+    <table id="Table">
+        <thead>
+            <tr>
+                <th colspan="17">
+                    <div id="HeaderActivity">
+                        <img style="height:50px;" class="fg-header" src="images/FGHeader.png" />
+                        <h3 id="headerTitle">Daily Accomplishment Report</h3><br />
+                    </div>
+                </th>
+            </tr>
+            <tr id="tableHeaderActivity">
+                <th>Assignee Name</th>
+                <th>Activity Date</th>
+                <th>Activity Status</th>
+                <th>Activity</th>
+                <th>Ticket Number</th>
+                <th>Ticket Date</th>
+                <th>Ticket Status</th>
+                <th>Issue</th>
+                <th>Description</th>
+                <th>Branch</th>
+                <th>Requestor</th>
+                <th>Department</th>
+                <th>Activity Remarks</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (ticketActivityReports.Count() != 0)
+            {
+                @foreach (var item in ticketActivityReports)
+                {
+                    <tr id="tableText">
+                        <td>@item.AssigneeName</td>
+                        <td>@Convert.ToDateTime(item.ActivityDate).ToString("MM/dd/yyyy")</td>
+                        <td>@item.StatusName</td>
+                        <td>@item.ActivityName</td>
+                        <td>@item.TicketNumber</td>
+                        <td>@Convert.ToDateTime(item.TicketDate).ToString("MM/dd/yyyy")</td>
+                        <td>@item.TicketStatusName</td>
+                        <td>@item.IssueSummary</td>
+                        <td>@item.TaskDescription</td>
+                        <td>@item.TicketBranchName</td>
+                        <td>@item.RequestorName</td>
+                        <td>@item.RequestorDepartment</td>
+                        <td>@item.Remarks</td>
+                    </tr>
+
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="15">
+                        <h2>
+                            No Data Found!
+                        </h2>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <table class="signatories">
+        <tr>
+            <th style="max-width: 8s0px;  min-width: 80px;">Prepared by:</th>
+        </tr>
+        <tr>
+            <td></td>
+            <td style="max-width: 100px;  min-width: 100px;">
+                <hr />
+            </td>
+            <td></td>
+            <td style="max-width: 100px;  min-width: 100px;"></td>
+            <td></td>
+            <td style="max-width: 100px;  min-width: 100px;"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <th></th>
+            <th style="max-width: 100px;  min-width: 100px; text-transform: uppercase">
+                @GlobalClass.CurrentUserAccount.EmployeeName</th>
+            <th></th>
+            <th style="max-width: 100px;  min-width: 100px;"></th>
+            <th></th>
+            <th style="max-width: 100px;  min-width: 100px;"></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        <tr>
+            <td></td>
+            <td style="max-width: 100px;  min-width: 100px;">@GlobalClass.CurrentUserAccount.Designation</td>
+            <td></td>
+            <td style="max-width: 100px;  min-width: 100px;"></td>
+            <td></td>
+            <td style="max-width: 100px;  min-width: 100px;"></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+    <table class="signatories">
+        <tr>
+            <th style="max-width: 80px;  min-width: 80px;">Signatories:</th>
+        </tr>
+        <tr>
+            <td></td>
+            <td c>
+                <hr />
+            </td>
+            <td></td>
+            <td style="max-width: 100px;  min-width: 100px;">
+                <hr />
+            </td>
+            <td></td>
+            <td style="max-width: 100px;  min-width: 100px;">
+                <hr />
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <th></th>
+            <th style="max-width: 100px;  min-width: 100px;">KRISTINE S. GENOGALING</th>
+            <th></th>
+            <th style="max-width: 100px;  min-width: 100px;">FERN IVES L. GURREA</th>
+            <th></th>
+            <th style="max-width: 100px;  min-width: 100px;">FELIX Q. GURREA</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        <tr>
+            <td></td>
+            <td style="max-width: 100px;  min-width: 100px;">IT Manager</td>
+            <td></td>
+            <td style="max-width: 100px;  min-width: 100px;">AVP-Finance / IT</td>
+            <td></td>
+            <td style="max-width: 100px; min-width: 100px;">President</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>
+
+@code {
+    FilterParameter filterParameter = new FilterParameter();
+    List<TicketActivityReportModel> ticketActivityReports = new List<TicketActivityReportModel>();
+    private bool dataFetched;
+    List<string> assignee;
+
+    protected override async Task OnInitializedAsync()
+    {
+        GlobalContentTitle.contentTitle = "Daily Accomplishment Report";
+        Task t = Task.WhenAll(LoadActivityReport());
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion)
+        {
+            CompletedFetch();
+        }
+    }
+    async Task LoadActivityReport()
+    {
+        ticketActivityReports = await ticketActivityService.GetActivityReport(filterParameter, await localStorage.GetItemAsync<string>("token"));
+    }
+    void CompletedFetch()
+    {
+        dataFetched = true;
+        StateHasChanged();
+    }
+    private async Task Print()
+    {
+        await IJSrun.InvokeVoidAsync("PrintInvoke");
+    }
+}

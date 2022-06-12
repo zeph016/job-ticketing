@@ -1,0 +1,328 @@
+﻿@page "/accomplishmentreport"
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject ITicketListService ticketListService
+@inject IGlobalService globalService
+@inject ITicketBranchService ticketBranchService
+@inject ITicketCategoryService ticketCategoryService
+@inject ITicketStatusService ticketStatusService
+@inject IJSRuntime IJSrun
+
+<MudPaper Class="d-flex justify-space-around">
+    <MudText Typo='Typo.h6' Style="margin:5px;"> </MudText>
+    <MudSpacer />
+    @*<MudMenu Class="Menu" Label='More' StartIcon="@Icons.Material.Filled.MoreVert" Direction='Direction.End'
+        Dense='true'
+        OffsetY='true'>
+        <MudMenuItem @onclick='@(() => Print())'>
+        <p style='display: flex;'>
+        <MudIcon Icon='@Icons.Material.Filled.LocalPrintshop' />
+        <MudText style='padding-left: 10px; font-size: 14px;'>Print</MudText>
+        </p>
+        </MudMenuItem>
+        <MudMenuItem @onclick='@(() => SearchFilterParameterDialog())'>
+        <p style='display: flex;'>
+        <MudIcon Icon='@Icons.Material.Filled.Search' />
+        <MudText style='padding-left: 10px; font-size: 14px;'>Search</MudText>
+        </p>
+        </MudMenuItem>
+        </MudMenu>*@
+    <MudButton Disabled="@printBtn" @onclick='@(() => Print())' StartIcon="@Icons.Material.Filled.LocalPrintshop">Print
+    </MudButton>
+    <MudText Style="font-size:30px">|</MudText>
+    <MudButton @onclick='@(() => SearchFilterParameterDialog())' StartIcon="@Icons.Material.Filled.Tune">Filter
+    </MudButton>
+</MudPaper>
+
+<div class='accompPrintDiv'>
+    <div class="main">
+        <table class="Table">
+            <thead>
+                <tr>
+                    <th colspan="17">
+                        <div class="Header">
+                            <img style="height:50px;" class="fg-header" src="images/FGHeader.png" />
+                            <h3 class="headerTitle">Accomplishment Report</h3><br />
+                        </div>
+                    </th>
+                </tr>
+                <tr class="tableHeader">
+                    <th class="tableTD">Ticket Number</th>
+                    <th class="tdTHDate">Date</th>
+                    <th class="ticketStatus">Status</th>
+                    <th class="tableTD">Issue</th>
+                    <th class="tableTD">Description</th>
+                    <th class="tableTD">Branch</th>
+                    <th class="tableTD">Requestor</th>
+                    <th class="ticketDept">Department</th>
+                    <th class="tableTD">Assignee</th>
+                    <th class="tdTHDate">Assigned Date</th>
+                    <th class="docref">Document Ref.</th>
+                    <th class="tdTHDate">Date Started</th>
+                    <th class="tdTHDate">Date Completed</th>
+                    <th class="tdTHDate">Date Released</th>
+                    <th class="dayscount">Duration Day</th>
+                    <th class="dayscount">Working Day</th>
+                    <th class="tableTD">Remarks</th>
+                </tr>
+            </thead>
+            @* <tfoot>
+                <tr>
+                <td colspan="3" style="text-align:left; padding-left:5px; padding-top:5px;">
+                @DateTime.Now
+                </td>
+                </tr>
+                </tfoot> *@
+            <tbody>
+                @if (ticketModels.Count() != 0)
+                {
+                    @foreach (var item in ticketModels)
+                    {
+                        <tr class="tableText">
+                            <td class="tableTD">@item.TicketNumber</td>
+                            <td class="tdTHDate">@Convert.ToDateTime(item.TicketDate).ToString("MM/dd/yyyy")</td>
+                            <td class="ticketStatus">@item.TicketStatusName</td>
+                            <td class="TicketIssue">@item.IssueSummary</td>
+                            <td class="TicketDesc">@item.TaskDescription</td>
+                            <td class="branchName">@item.TicketBranchName</td>
+                            <td class="ticketname">@item.RequestorName</td>
+                            <td class="ticketDept">@item.RequestorDepartment</td>
+                            <td class="ticketname">@item.AssigneeName</td>
+                            <td class="tdTHDate">
+                                @if (item.AssignDate != null)
+                                {
+                                    @Convert.ToDateTime(item.AssignDate).ToString("MM/dd/yyyy")
+                                }
+                            </td>
+                            <td class="docref">@item.DocumentReference</td>
+                            <td class="tdTHDate">
+                                @if (item.StartDate != null)
+                                {
+                                    @Convert.ToDateTime(item.StartDate).ToString("MM/dd/yyyy")
+                                }
+                            </td>
+                            <td class="tdTHDate">
+                                @if (item.CompletionDate != null)
+                                {
+                                    @Convert.ToDateTime(item.CompletionDate).ToString("MM/dd/yyyy")
+                                }
+                            </td>
+                            <td class="tdTHDate">
+                                @if (item.ReleasedDate != null)
+                                {
+                                    @Convert.ToDateTime(item.ReleasedDate).ToString("MM/dd/yyyy")
+                                }
+                            </td>
+                            <td class="dayscount">@item.DurationDay</td>
+                            <td class="dayscount">@item.WorkingDay</td>
+                            <td class="ticketRemarks">@item.Remarks</td>
+                        </tr>
+
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="15">
+                            <h2>
+                                No Data Found!
+                            </h2>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <table class="signatories">
+            <tr>
+                <th style="max-width: 8s0px;  min-width: 80px;">Prepared by:</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="max-width: 100px;  min-width: 100px;">
+                    <hr />
+                </td>
+                <td></td>
+                <td style="max-width: 100px;  min-width: 100px;"></td>
+                <td></td>
+                <td style="max-width: 100px;  min-width: 100px;"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th style="max-width: 100px;  min-width: 100px; text-transform: uppercase">
+                    @GlobalClass.CurrentUserAccount.EmployeeName</th>
+                <th></th>
+                <th style="max-width: 100px;  min-width: 100px;"></th>
+                <th></th>
+                <th style="max-width: 100px;  min-width: 100px;"></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="max-width: 100px;  min-width: 100px;">@GlobalClass.CurrentUserAccount.Designation</td>
+                <td></td>
+                <td style="max-width: 100px;  min-width: 100px;"></td>
+                <td></td>
+                <td style="max-width: 100px;  min-width: 100px;"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <table class="signatories">
+            <tr>
+                <th style="max-width: 80px;  min-width: 80px;">Signatories:</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td c>
+                    <hr />
+                </td>
+                <td></td>
+                <td style="max-width: 100px;  min-width: 100px;">
+                    <hr />
+                </td>
+                <td></td>
+                <td style="max-width: 100px;  min-width: 100px;">
+                    <hr />
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th></th>
+                <th style="max-width: 100px;  min-width: 100px;">KRISTINE S. GENOGALING</th>
+                <th></th>
+                <th style="max-width: 100px;  min-width: 100px;">FERN IVES L. GURREA</th>
+                <th></th>
+                <th style="max-width: 100px;  min-width: 100px;">FELIX Q. GURREA</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr>
+                <td></td>
+                <td style="max-width: 100px;  min-width: 100px;">IT Manager</td>
+                <td></td>
+                <td style="max-width: 100px;  min-width: 100px;">AVP-Finance / IT</td>
+                <td></td>
+                <td style="max-width: 100px; min-width: 100px;">President</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+    @* <div class="footer">
+        <div class="pageFooter">Page </div>
+    </div> *@
+</div>
+
+
+@code {
+    FilterParameter filterParameter = new FilterParameter();
+    List<TicketModel> ticketModels = new List<TicketModel>();
+
+    private bool isVisible;
+    private bool dataFetched;
+    private string searchTerm = "";
+    private bool printBtn = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        GlobalContentTitle.contentTitle = "Accomplishment Report";
+        isVisible = true;
+        Task t = Task.WhenAll(LoadTicket());
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion)
+        {
+            CompletedFetch();
+        }
+    }
+
+    async Task LoadTicket()
+    {
+        while (GlobalClass.CurrentUserAccount == null)
+        {
+            //Delay UI if GlobalClass is not loaded yet
+            await Task.Delay(250);
+        }
+        filterParameter.TicketAccessLevel = GlobalClass.CurrentUserAccount.AccessLevel;
+        filterParameter.TicketUserAccountId = GlobalClass.CurrentUserAccount.EmployeeId;
+        ticketModels = await ticketListService.LoadTicket(filterParameter, await localStorage.GetItemAsync<string>("token"));
+
+        if (ticketModels.Count() != 0)
+        {
+            printBtn = false;
+        }
+        else
+        {
+            printBtn = true;
+        }
+    }
+    void CompletedFetch()
+    {
+        dataFetched = true;
+        StateHasChanged();
+    }
+    #region FilterDialog
+
+    private async Task SearchFilterParameterDialog()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", "Search Filter");
+        parameters.Add("ButtonText", "Search");
+        parameters.Add("Color", Color.Success);
+
+        var options = new DialogOptions() 
+        { 
+            CloseButton = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
+            NoHeader = true,
+            DisableBackdropClick = true
+        };
+
+        var resultDialog = await DialogService.Show<Shared.Dialogs.TicketListFilterDialog>("Search Filter", parameters,
+        options).Result;
+        if (!resultDialog.Cancelled)
+        {
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                filterParameter.IsRequestor = true;
+                //filterParameter.RequestorId = searchT
+                filterParameter = (FilterParameter)resultDialog.Data;
+                Task t = Task.WhenAll(LoadTicket());
+                await t;
+                if (t.Status == TaskStatus.RanToCompletion)
+                {
+                    StateHasChanged();
+                }
+            }
+            else
+            {
+                filterParameter = (FilterParameter)resultDialog.Data;
+                Task t = Task.WhenAll(LoadTicket());
+                await t;
+                if (t.Status == TaskStatus.RanToCompletion)
+                {
+                    StateHasChanged();
+                }
+            }
+        }
+    }
+    #endregion
+
+
+    private async Task Print()
+    {
+        await IJSrun.InvokeVoidAsync("PrintInvoke");
+    }
+}

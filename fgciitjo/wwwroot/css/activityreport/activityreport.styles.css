@@ -1,0 +1,99 @@
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .activityPrintDiv,
+  .activityPrintDiv * {
+    visibility: visible;
+  }
+  .activityPrintDiv {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  @page {
+    margin: 0.4cm;
+    margin-top: 0.2cm !important;
+  }
+  body {
+    margin: 0.4cm;
+  }
+}
+
+.activityPrintDiv {
+  width: 100%;
+  overflow-x: auto;
+  text-align: center;
+}
+
+.activityPrintDiv #Table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9px;
+  page-break-after: always;
+  text-align: center;
+}
+
+.activityPrintDiv #Table #tableText td {
+  padding-left: 2px !important;
+  padding-right: 2px !important;
+  border: 1px solid;
+  border-color: #ebebeb;
+}
+
+#HeaderActivity {
+  width: 100%;
+  text-align: center;
+  overflow: auto;
+}
+
+#HeaderActivity #headerTitle {
+  color: black;
+  font-size: 11px;
+}
+
+#tableHeaderActivity {
+  color: black;
+  font-weight: bold;
+  font-size: 10px;
+  background-color: #c7e3f9;
+}
+
+.signatories {
+  margin-top: 3%;
+  width: 100%;
+  font-size: 10px;
+}
+
+#signatories th,
+td {
+  min-width: 40px;
+  max-width: 40px;
+}
+
+.DailyAccomplishmentContainer {
+  height: 100%;
+  background-color: #e0e0e0;
+  padding: 10px !important;
+  padding-top: 2px !important;
+}
+
+.DailyAccomplishmentContainer .filterBtn {
+  margin-right: 20px !important;
+}
+
+.DailyAccomplishmentContainer .paper {
+  width: 100% !important;
+  height: 98% !important;
+  margin-top: 10px !important;
+}
+
+.DailyAccomplishmentContainer .paper .frameReport {
+  height: 93%;
+  width: 100%;
+  margin: 5px;
+  padding-right: 10px !important;
+  margin-top: 5px;
+  padding-bottom: 5px !important;
+}
+/*# sourceMappingURL=activityreport.styles.css.map */

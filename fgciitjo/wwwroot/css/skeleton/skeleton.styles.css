@@ -1,0 +1,44 @@
+.skeletonCardUserDetails {
+  height: 500px;
+  width: 40vw;
+  margin: auto;
+}
+
+.skeletoncontainer {
+  margin: 0px !important;
+}
+
+.skeletoncontainer__flex, .skeletoncontainer__grid {
+  padding: 0px 0px !important;
+}
+
+.skeletoncontainer__flex {
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
+  margin: 0px !important;
+}
+
+.skeletoncontainer__grid {
+  display: -ms-grid !important;
+  display: grid !important;
+}
+
+.skeletoncontainer__headerbox {
+  height: 50px !important;
+}
+
+.skeletoncontainer__textbox {
+  height: 25px !important;
+}
+
+.skeletoncontainer__contentbox {
+  height: 25vh !important;
+}
+
+.skeletoncontainer__skelbtn {
+  margin: 0px 10px;
+  width: 75px;
+  height: 50px !important;
+}
+/*# sourceMappingURL=skeleton.styles.css.map */

@@ -1,0 +1,28 @@
+// UserDetails scss class
+
+.userDetailsContainer {
+    padding: 0px !important;
+    .mud-toolbar {
+        padding: 0px !important;
+        background-color: white;
+    }
+
+    .mud-paper {
+        width: 40vw;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .subToolBar {
+        .mud-typography {
+            color: rgba(0, 0, 0, 0.6);
+            font-family: 'Theramin', sans-serif;
+            font-size: 1.5rem;
+            margin-left: 20px;
+        }
+    }
+
+    .mud-button-root {
+        width: 75px;
+    }
+}

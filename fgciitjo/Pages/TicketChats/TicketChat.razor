@@ -1,0 +1,96 @@
+﻿@page "/chat"
+@using Microsoft.AspNetCore.SignalR.Client
+@using domain.clsTicketComment
+@using fgciitjo.domain.clsChatHub
+@inject NavigationManager NavigationManager
+@inject IConfiguration config
+@inject ITicketCommentService ticketCommentService
+@implements IAsyncDisposable
+
+<div class="container overflow-auto shadow-sm p-3 mb-5 bg-white rounded" style="height: 500px;">
+  <table>
+    <tr>
+    @foreach (var item in userMessages)
+    {
+      <th>@item.Comment</th>
+    }
+    </tr>
+    <tr>
+   @foreach (var item in userMessages)
+   {
+     <td>@item.Comment</td>
+     <td>@item.DateTimeLog</td>
+   }
+   </tr>
+  </table>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-3">
+            <input @bind="usernameInput" type="text" class="form-control" placeholder="Username:" readonly="@isUserReadonly" />
+        </div>
+        <div class="col-6">
+            <textarea @bind="messageInput" class="form-control" placeholder="Start typing..."></textarea>
+        </div>
+        <div class="col-3">
+            <button type="button" @onclick="Send"  class="btn btn-primary">Send</button>
+        </div>
+    </div>
+</div>
+
+@code{ private HubConnection hubConnection;
+    private List<TicketModel> ticketmodel = new();
+    private string usernameInput = GlobalClass.CurrentUserAccount.EmployeeName;
+    private string messageInput;
+    private bool isUserReadonly = true;
+    List<TicketComment> userMessages = new List<TicketComment>();
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(config["SignalRConnection"] + "ticketcommenthub")
+            .WithAutomaticReconnect()
+            .Build();
+
+        var _filterParameter = new FilterParameter();
+
+        hubConnection.On<TicketComment>("ReceiveTicketComment", (_list) =>
+        {
+              userMessages.Add(new TicketComment {Comment = _list.Comment});
+            Console.WriteLine("Connected");
+            StateHasChanged();
+        });
+
+        await hubConnection.StartAsync();
+        TicketComment ticketComment = new TicketComment();
+        ticketComment.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNhIiwiRW1wbG95ZWVJZCI6IjExNSIsIm5iZiI6MTY0ODE2NzIyMywiZXhwIjoxNjQ4MjAzMjIzLCJpYXQiOjE2NDgxNjcyMjN9.f0FxDReklezqKIpFz6qK5aVC98KiPqTFlmmjYSroSSw";
+        ticketComment.TicketId = 214;
+        userMessages = await ticketCommentService.LoadTicketComments(ticketComment);
+    }
+
+    private async Task Send()
+    {
+        TicketComment ticketComment = new TicketComment();
+        ticketComment.Token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InNhIiwiRW1wbG95ZWVJZCI6IjExNSIsIm5iZiI6MTY0ODE2NzIyMywiZXhwIjoxNjQ4MjAzMjIzLCJpYXQiOjE2NDgxNjcyMjN9.f0FxDReklezqKIpFz6qK5aVC98KiPqTFlmmjYSroSSw";
+        ticketComment.TicketId = 214;
+        ticketComment.DateTimeLog = DateTime.Now;
+        ticketComment.UserId = GlobalClass.CurrentUserAccount.EmployeeId;
+        ticketComment.Comment = "Heloo";
+       
+        if (!string.IsNullOrEmpty(usernameInput) && !string.IsNullOrEmpty(messageInput))
+        {
+            await hubConnection.InvokeAsync("ReceiveTicketComment", ticketComment);
+
+            isUserReadonly = true;
+            messageInput = string.Empty;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

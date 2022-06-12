@@ -1,0 +1,104 @@
+.comment-cont {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 0.1fr;
+  margin-left: 1rem;
+  padding: 5px;
+  &__conversation-cont {
+    // background-color: #fff;
+    // border: 1px solid #e5e5ea;
+    // border-radius: 0.25rem;
+    // border-bottom-left-radius: 0.25rem;
+    // border-bottom-right-radius: 0.25rem;
+    // display: flex;
+    // flex-direction: column;
+    // font-size: 1.25rem;
+    height: calc(60vh - 160px);
+    // margin: 0 auto 1rem;
+    max-width: 600px;
+    // padding: 0.5rem 1.5rem;
+    padding: 0.5rem 0.5rem;
+    overflow: auto;
+    .mud-table-container {
+      overflow: hidden;
+    }
+  }
+  &__chat-submit {
+    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 0.3fr;
+    grid-template-rows: auto;
+    gap: 1rem;
+  }
+
+
+  ////
+  &__count{
+    display: flex;
+    margin-top: 10px;
+    justify-content: center;
+  }
+
+
+  &__tablecont {
+    // max-height: 210px;
+    overflow-y: auto;
+  }
+
+  &__table-sender {
+    background-color: linen;
+    display: block;
+    justify-content: flex-end;
+    margin: 5px 10px 10px 10px;
+    padding: 10px;
+    border-radius: 22px;
+    float: right;
+    p{
+      margin: 13px 10px 10px 5px !important;
+    }
+    h4{
+      margin: auto;
+      margin-right: 13px;
+      font-family: sans-serif;
+      font-size: 13px;
+    }
+  }
+  &__table-receivers {
+    background-color: linen !important;
+    display: block;
+    justify-content: flex-start;
+    margin: 5px 10px 10px 10px;
+    padding: 10px;
+    border-radius: 22px;
+    float: left;
+    p{
+      margin: 13px 5px 10px 10px !important;
+    }
+    h4{
+      margin: auto;
+      margin-left: 13px;
+      font-family: sans-serif;
+      font-size: 13px;
+    }
+  }
+
+  &__sender-image {
+    display: flex !important;
+    justify-content: flex-end;
+  }
+  &__receiver-image{
+    display: flex !important;
+    justify-content: flex-start;
+  }
+  &__time-right{
+    font-size: 9px;
+    float: right !important;
+  }
+  &__time-left{
+    font-size: 9px;
+  }
+  
+  &__chat-submit-btn {
+    align-self: center;
+  }
+}

@@ -1,0 +1,64 @@
+@page "/error"
+@page "/error/{httpstatus:int}"
+@page "/logout/{httpstatus:int}"
+
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+<MudContainer class='errorpagecontainer' MaxWidth='MaxWidth.Small' Fixed='true'>
+    @if (!isCompletedFetch) 
+    {
+        <MudSkeleton Width="30%" Height="42px;" />
+        <MudSkeleton Width="80%" />
+        <MudSkeleton Width="100%" />
+        <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+        <MudSkeleton Width="105px" Height="40px" Class="ml-3" />
+    }
+    else
+    {
+        @if (httpstatus == 403) 
+        {
+            <img class='errorpagecontainer__img' src="images/pageforbidden403.png" asp-append-version="true" />
+            <MudButton class='errorpagecontainer__btn' OnClick='GoToHub' Variant='Variant.Filled'>Go To Hub</MudButton>
+        }
+        @if (httpstatus == 404) 
+        {
+            <img class='errorpagecontainer__img' src="images/pagenotfound404.png" asp-append-version="true" />
+            <MudButton class='errorpagecontainer__btn' OnClick='BackToDashboard' Variant='Variant.Filled'>Back to Dashboard</MudButton>
+        }
+        @if (httpstatus == 200 && currentUrl.Contains("logout")) {
+            <img class='errorpagecontainer__img' src="images/pageloggedout.png" asp-append-version="true" />
+            <MudButton class='errorpagecontainer__btn' OnClick='GoToHub' Variant='Variant.Filled'>Go To Hub</MudButton>
+        }
+    }
+    
+</MudContainer>
+
+
+@code {
+    [Parameter] public int httpstatus { get; set; }
+    private string currentUrl;
+    private bool isCompletedFetch;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CheckUrl();
+    }
+
+    private void BackToDashboard()
+    { 
+        NavigationManager.NavigateTo($"/dashboard");
+    }
+    private void GoToHub()
+    {
+        NavigationManager.NavigateTo($"http://10.0.0.7:8000");
+    }
+    private async Task CheckUrl()
+    {
+        await Task.Run(() => {
+            currentUrl = NavigationManager.Uri;
+            Console.WriteLine(httpstatus);
+            isCompletedFetch = true;
+        });
+    }
+}

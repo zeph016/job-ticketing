@@ -1,0 +1,148 @@
+.auditTrailContainer {
+    width: 100% !important;
+    display: flex !important;
+    
+    .auditToolBarContainer {
+        padding: 0px;
+    }
+
+    .auditTrailToolBar {
+        background-color: white ;
+
+        .auditTrailHeader {
+            font-family: 'Theramin', sans-serif;
+            font-size: 20px;
+            margin-left: 5px ;
+            color: rgba(0,0,0,.6);
+        }
+
+        .mud-button {
+            font-size: 10px;
+        }
+
+        .mud-icon-root {
+            color: rgba(0,0,0,.6);
+        }
+    }
+
+    .auditTimelineContainer {
+        overflow: auto;
+        height: 70vh;
+    }
+
+    .auditSelect {
+        .mud-input-slot {
+            height: 32px;
+        }
+    }
+
+    .mud-timeline {
+        overflow: auto;
+
+        .auditUpdateColor{
+            .mud-alert {
+                color: #1565C0;
+            }
+
+            .mud-icon-root {
+                color:#1565C0;
+            }
+
+            .mud-timeline-item-dot-inner {
+                background-color: #1565C0;
+            }
+        }
+
+        .auditDoneColor {
+            .mud-alert {
+                color: #1B5E20;
+            }
+
+            .mud-icon-root {
+                color:#1B5E20;
+            }
+
+            .mud-timeline-item-dot-inner {
+                background-color: #1B5E20;
+            }
+        }
+
+        .auditApprovedColor {
+            .mud-alert {
+                color: #00C853;
+            }
+
+            .mud-icon-root {
+                color:#00C853;
+            }
+
+            .mud-timeline-item-dot-inner {
+                background-color: #00C853;
+            }
+    }
+
+        .auditInProgressColor {
+            .mud-alert {
+                color:#00E676;
+            }
+            .mud-icon-root {
+                color:#00E676;
+            }
+            .mud-timeline-item-dot-inner {
+                background-color: #00E676;
+            }
+        }
+
+        .auditAddSubClass {
+            .mud-alert {
+                color:#388E3C;
+            }
+            .mud-icon-root {
+                color:#388E3C;
+            }
+            .mud-timeline-item-dot-inner {
+                background-color: #388E3C;
+            }
+        }
+    }
+
+    .mud-timeline-vertical {
+        padding-top: 4px !important;
+    }
+    .mud-timeline-item {
+        padding-bottom: 4px !important;
+        .mud-alert-message>p:nth-child(1) {
+            font-size: 11px !important;
+            font-weight: bold !important;
+        }
+        .mud-alert-message>p:nth-child(2) {
+            font-size: 12px !important;
+            font-weight: bold !important;
+        }
+        .mud-alert-message>p:nth-child(3) {
+            font-size: 10px !important;
+        }
+    }
+}
+
+.paperClassTrail {
+        width: 80% !important;
+}
+
+.paperClassTrailInfo {
+    background-color: gainsboro;
+    // width: 30% !important;
+    max-width: 380px;
+    min-width: 320px;
+    overflow: auto;
+
+    .chipIconText {
+        display: grid;
+        font-size: 12px !important;
+        .mud-chip-content {
+            color: white;
+        }
+    }
+}
+
+

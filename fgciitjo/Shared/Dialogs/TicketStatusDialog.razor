@@ -1,0 +1,113 @@
+@inject ITicketStatusService ticketService
+@inject NavigationManager NavigationManager
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject ISnackbar Snackbar
+
+<MudDialog class='ticketStatusDialog'>
+    <TitleContent>
+        <MudText Typo='Typo.h6'>
+            <p class='pTicketStatus'>
+                <MudIcon Icon="@Icons.Material.Filled.EditAttributes" Size='Size.Large' />
+                @ContentText
+            </p>
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+      <MudForm >
+        <MudGrid Spacing='1'>
+            <MudItem xs='8'>
+                <MudTextField Error='notValid' Required='true' RequiredError='Status name is required!' @bind-Value='@currTicketStatus.StatusName' Label='Status Name'/>
+            </MudItem>
+            <MudItem xs='4'>
+                <div class='smallColorBox' style='@($"background-color:{_selectedColor};")'>
+                   
+                </div>
+                <MudColorPicker Label='Color' ColorPickerView='ColorPickerView.Grid' ColorPickerMode='ColorPickerMode.HEX' Value='_selectedColor' ValueChanged='UpdateSelectedColor' />
+            </MudItem>
+             <MudItem xs='8'>
+               <MudSelect @bind-Value="@currTicketStatus.StatusTypeId" Label="Status Type">
+                    @foreach (Enums.TicketStatusType item in Enum.GetValues(typeof(Enums.TicketStatusType)))
+                    {
+                        <MudSelectItem Value="@item" >
+                            <MudText>@Extensions.GetEnumDescription((Enums.TicketStatusType)@item)</MudText>
+                        </MudSelectItem>  
+                    }
+               </MudSelect>
+            </MudItem>
+            <MudItem xs='4'>
+                <MudCheckBox @bind-Checked='@currTicketStatus.IsActive' Label='Active' />
+            </MudItem>
+           
+        </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant='Variant.Text' Color='Color.Error'>Cancel</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string ContentText { get; set; }
+    [Parameter] public string ButtonText { get; set; }
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public TicketStatusModel currTicketStatus { get; set; } = new TicketStatusModel();
+    [Parameter] public Enums.CrudeMode _action { get; set; }
+    Enums.TicketStatusType TicketStatus {get; set;}
+    bool notValid;
+    private MudColor _selectedColor;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (currTicketStatus.StatusColor == null) 
+            _selectedColor = new MudColor ("FFFFFF");
+        else 
+            _selectedColor = currTicketStatus.StatusColor;
+    }
+
+    async void Submit()
+    {
+     
+        if (!string.IsNullOrWhiteSpace(currTicketStatus.StatusName))
+        {
+          if (currTicketStatus.Id == 0) {
+            await ticketService.AddTicketStatus(currTicketStatus, await localStorage.GetItemAsync<string>("token"));
+            ShowAlert("Ticket Status Added", Variant.Filled, Severity.Success); }
+          else {
+            await ticketService.UpdateTickeStatus(currTicketStatus, await localStorage.GetItemAsync<string>("token")); 
+            ShowAlert("Ticket Status Updated", Variant.Filled, Severity.Success); }
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+          notValid = true;
+        }
+      
+    }
+    void Cancel()
+    {
+        MudDialog.Cancel();
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"Cancelled action", Severity.Error);
+    }
+
+    void ShowAlert(string message, Variant variant, Severity severity)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = variant;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"{message}", severity);
+    }
+
+    private void UpdateSelectedColor(MudColor colorValue)
+    {
+        _selectedColor = colorValue;
+        currTicketStatus.StatusColor = _selectedColor.ToString();
+        Console.WriteLine(currTicketStatus.StatusColor);
+    }  
+}

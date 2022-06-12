@@ -1,0 +1,245 @@
+@page "/settings/user/{HubUserAccountId:long}"
+@page "/settings/user/add"
+
+@inject ITicketUserAccountService ticketUserAccountService
+@inject NavigationManager NavigationManager
+@inject ITicketUserAccountService ticketUserAccountService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject IDialogService DialogService
+
+
+<MudContainer class='userDetailsContainer' Fixed='true'>
+@if (!dataFetched)
+{
+    <MudPaper Class='ma-4 ma-2'>
+        <MudSkeleton SkeletonType='SkeletonType.Rectangle' Height='55px'/>
+        <MudCardContent>
+            <MudSkeleton class='skeletonCardUserDetails' SkeletonType='SkeletonType.Rectangle' Height='65vh' />
+        </MudCardContent>
+        <MudOverlay Visible="isVisible" DarkBackground="true" Absolute="true">
+                <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true"/>
+        </MudOverlay>
+    </MudPaper>
+}
+else
+{
+    <MudToolBar>
+        <MudSpacer/>
+        <MudButton OnClick='Back' StartIcon="@Icons.Material.Outlined.ChevronLeft" Color="Color.Inherit" Class="mr-5">
+            Back
+        </MudButton>
+    </MudToolBar>
+    <MudContainer>
+    <MudPaper Class="pa-16 ma-2" Elevation="3">
+    <MudGrid class='sUserDetail-Grid'>
+    @if (_action == Enums.CrudeMode.Add)
+    {
+        <MudToolBar class='subToolBar'>
+            <MudIcon Icon='@Icons.Material.Filled.PersonAddAlt' Size='Size.Large'/>
+            <h1>
+                Add Ticket User Account
+            </h1>
+        </MudToolBar>
+        <MudItem xs='12'>
+            <MudTextField @bind-Value='ticketUser.EmployeeName' Label='Employee Name'></MudTextField>
+        </MudItem>
+        <MudItem xs='8'>
+            <MudTextField @bind-Value='ticketUser.Department' Label='Department'/>
+        </MudItem>
+        <!--<MudItem xs='4'>-->
+            @* EMPTY GRID  *@
+        <!--</MudItem>-->
+        @* <MudItem xs='5'>
+            <MudSelect Label='User Type' @bind-Value='userTypeValue'>
+                @foreach (Enums.UserType item in Enum.GetValues(typeof(Enums.UserType)))
+                {
+                    <MudSelectItem Value="@item">@item</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem> *@
+        <!--<MudItem xs='1'>-->
+            @* EMPTY GRID *@
+        <!--</MudItem>-->
+        <MudItem xs='6'>
+            <MudTextField @bind-Value='ticketUser.Section' Label='Section'/>
+        </MudItem>
+        <MudItem xs='6'>
+            <MudTextField @bind-Value='ticketUser.Designation' Label='Designation'/>
+        </MudItem>
+        <MudItem xs='6'>
+            <MudTextField @bind-Value='ticketUser.EmployeeStatus' Label='EmployeeStatus'/>
+        </MudItem>
+        <MudItem xs='6'>
+            <MudTextField @bind-Value='ticketUser.EmailAddress' Label='EmailAddress'/>
+        </MudItem>
+        <MudItem xs='6'>
+            <MudTextField @bind-Value='ticketUser.ContactInfo' Label='ContactInfo'/>
+        </MudItem>
+        <MudItem xs='8'>
+            @* EMPTY GRID *@
+        </MudItem>
+        <MudItem xs='2'>
+            <MudButton OnClick='Back' Variant='Variant.Text' Color='Color.Error'>Cancel</MudButton>
+        </MudItem>
+        <MudItem xs='2'>
+            <MudButton Variant='Variant.Filled' Color='Color.Success' @onclick="btnSubmit">@btnSubmitLabel</MudButton>
+        </MudItem>
+    }
+    else if(_action == Enums.CrudeMode.Edit)
+    {
+        <MudToolBar class='subToolBar'>
+            <MudIcon Icon='@Icons.Material.Filled.PersonAddAlt' Size='Size.Large'/>
+            <MudText Typo='Typo.h4'>   
+                Modify Ticket User Account
+            </MudText>
+        </MudToolBar>
+        <MudItem xs='12'>
+            <MudTextField @bind-Value='ticketUser.EmployeeName' Label='Employee Name' ReadOnly='true'/>
+        </MudItem>
+        <MudItem xs='8'>
+            <MudTextField @bind-Value='ticketUser.Department' Label='Department' ReadOnly='true'/>
+        </MudItem>
+        <!--<MudItem xs='4'>-->
+            @* EMPTY GRID  *@
+        <!--</MudItem>-->
+        @* <MudItem xs='5'>
+            <MudSelect Label='User Type' @bind-Value='userTypeValue'>
+                @foreach (Enums.UserType item in Enum.GetValues(typeof(Enums.UserType)))
+                {
+                    <MudSelectItem Value="@item">@item</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem> *@
+        <!--<MudItem xs='1'>-->
+            @* EMPTY GRID  *@
+        <!--</MudItem>-->
+        <MudItem xs='6'>
+            <MudTextField @bind-Value='ticketUser.Section' Label='Section' ReadOnly='true'/>
+        </MudItem>
+        <MudItem xs='6'>
+            <MudTextField @bind-Value='ticketUser.Designation' Label='Designation' ReadOnly='true'/>
+        </MudItem>
+        <MudItem xs='6'>
+            <MudTextField @bind-Value='ticketUser.EmployeeStatus' Label='Employee Status' ReadOnly='true'/>
+        </MudItem>
+        <MudItem xs='6'>
+            <MudTextField @bind-Value='ticketUser.EmailAddress' Label='Email Address'/>
+        </MudItem>
+        <MudItem xs='6'>
+            <MudTextField @bind-Value='ticketUser.ContactInfo' Label='Phone Number' InputType='InputType.Number'/>
+            @* <MudNumericField @bind-Value="nullableInt" Label='Phone Number' /> *@
+        </MudItem>
+        <MudItem xs='8'>
+            @* EMPTY GRID *@
+        </MudItem>
+        <MudItem xs='2'>
+            <MudButton OnClick='Back' Variant='Variant.Text' Color='Color.Error'>Cancel</MudButton>
+        </MudItem>
+        <MudItem xs='2'>
+            <MudButton Variant='Variant.Filled' Color='Color.Success' @onclick='btnSubmit'>@btnSubmitLabel</MudButton>
+        </MudItem>
+    }
+    </MudGrid>
+    </MudPaper>
+    </MudContainer>
+}
+</MudContainer>
+
+
+@code {
+    [Parameter] public TicketUserAccount ticketUser { get; set; } = new TicketUserAccount();
+    [Parameter] public long HubUserAccountId { get; set; }
+    private string currentUrl { get; set; }
+    @* private bool _hidePosition; *@
+    @* private bool _loading; *@
+    private bool isVisible;
+    private bool dataFetched;
+    private string btnSubmitLabel;
+    public Enums.CrudeMode _action { get; set; }
+    private Enums.UserType userTypeValue { get; set; }
+    @* int? nullableInt; *@
+    
+    void Back()
+    {
+        NavigationManager.NavigateTo($"/settings/useraccounts");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUrl = NavigationManager.Uri;
+        isVisible = true;
+        CheckUrl();
+        Task t = Task.WhenAll(GetTicketUserAccount());
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion)
+        {
+            CompletedFetch();
+        }
+    }
+
+    async Task GetTicketUserAccount()
+    {
+        if (_action == Enums.CrudeMode.Edit)
+        {
+            ticketUser = await ticketUserAccountService.GetOneTicketUserAccount(HubUserAccountId, await localStorage.GetItemAsync<string>("token"));
+            userTypeValue = (Enums.UserType)Enum.Parse(typeof(Enums.UserType), ticketUser.UserTypeId.ToString());
+        }
+    }
+
+    void CheckUrl()
+    {
+        string toCheck = "add";
+        if (currentUrl.Contains(toCheck))
+        {
+            _action = Enums.CrudeMode.Add;
+            btnSubmitLabel = "Add";
+        }
+        else
+        {
+            _action = Enums.CrudeMode.Edit;
+            btnSubmitLabel = "Update";
+        }
+    }
+    void CompletedFetch()
+    {
+        dataFetched = true;
+        StateHasChanged();
+    }
+
+    async Task btnSubmit()
+    {
+        if (_action == Enums.CrudeMode.Add)
+        {
+            await AddPrompt();
+        }
+        else if (_action == Enums.CrudeMode.Edit)
+        {
+            @* ticketUser.ContactInfo = Convert.ToString(nullableInt); *@
+            UpdatePrompt(ticketUser);
+        }
+    }
+
+    private async Task AddPrompt()
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", "Add Account?");
+        parameters.Add("ButtonText", "Yes");
+        parameters.Add("Color", Color.Success);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
+
+        var resultDialog = await DialogService.Show<Shared.Dialogs.UserAccountsDialog>("Add", parameters, options).Result;
+    }
+
+    private async void UpdatePrompt(TicketUserAccount currTicketUser)
+    {
+        var parameters = new DialogParameters{["currTicketUser"]=currTicketUser};
+        parameters.Add("ContentText", "Update Account?");
+        parameters.Add("ButtonText", "Yes");
+        parameters.Add("Color", Color.Success);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
+
+        var resultDialog = await DialogService.Show<Shared.Dialogs.UserAccountsDialog>("Update", parameters, options).Result;
+    }
+}

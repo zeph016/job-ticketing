@@ -1,0 +1,157 @@
+.tinfodialog {
+    .mud-dialog-content {
+        padding: 0px !important;
+    }
+    &__dialogcont {
+      display: grid !important;
+      grid-template-columns: 1fr;
+      grid-template-rows: 0.2fr 1fr 0.1fr;
+      grid-template-areas: 
+      "top-l side-r"
+      "center-l side-r"
+      "bott-l side-r";
+      // justify-content: space-between;
+      padding: 0px 16px!important;
+    }
+    &__subcont {
+      padding: 0px !important;
+    }
+    &__subcont:nth-child(1) {
+      grid-area: top-l;
+    }
+    &__subcont:nth-child(2) {
+      grid-area: center-l;
+    }
+    &__subcont:nth-child(3) {
+      grid-area: bott-l;
+      text-align: right;
+    }
+    &__subcont:nth-child(4) {
+        grid-area: side-r;
+        // width: 100%;
+    }
+    &__tncontainer {
+        align-items: center;
+        background-color: #012340;
+        border-top-right-radius: 3px;
+        border-top-left-radius: 3px;
+        color: white;
+        display: flex !important;
+        padding: 8px 16px;
+        .mud-typography {
+            font-family: 'Theramin';
+            font-weight: bold;
+        }
+    }
+    &__issuetags {
+      align-items: center;
+      display: flex;
+      overflow: auto;
+      .mud-chip {
+          border-radius: 2px !important;
+      }
+    }
+    &__requestorcont {
+        display: flex !important;
+        align-items: center;
+    }
+    &__bodycont {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr calc(30vh - 30px) 1fr;
+        gap: 0.2rem;
+        height: 100%;
+    }
+    &__desccont {
+        background-color: whitesmoke;
+        border-radius: 5px;
+        padding: 5px;
+        // width: calc(110vw - 285px);
+        .mud-input-label { 
+          color: black; 
+          font-weight: bold !important;
+        }
+        .mud-input-slot { 
+          font-size: .875rem !important;
+          padding: 10px !important; 
+        }
+    }
+  
+    &__maincontainer {
+      padding: 0px !important;
+    }
+    &__issuecontainer {
+      display: flex !important;
+      flex-direction: column;
+      gap: 5px;
+      padding: 0px !important;
+    }
+    &__avatarcontainer,
+    &__assigneecontainer {
+      align-items: center;
+      display: flex !important;
+      overflow: auto;
+      .mud-chip {
+          border-radius: 2px !important;
+          .mud-typography {
+              margin-left: 5px;
+              font-size: 12px;
+              font-weight: bold;
+          }
+      }
+    }
+    &__txtissue-container {
+      align-items: center;
+      display: flex;
+      gap: 2px;
+    }
+    &__txtissue-l {
+      font-size: 18px !important;
+      font-weight: bold !important;
+    }
+    &__txtissue-r {
+      font-size: 14px !important;
+      font-weight: bold !important;
+    }
+    &__txtdesc {
+      .mud-input {
+        font-weight: 500;
+      }
+    }
+    &__txtavatar,
+    &__txtstatus {
+      display: flex;
+      align-items: center;
+      font-weight: bold !important;
+        .mud-typography {
+          font-size: 12px !important;
+          font-weight: bold !important;
+          margin-left: 5px;
+      }
+    }
+    &__txtavatar {
+      .reqavatar {
+        margin:  0px 10px 0px 0px;
+      }
+      .assignavatar {
+        margin: 0px 0px 0px 10px;
+      }
+    }
+    &__txtdate {
+      font-size: 12px !important;
+      font-weight: bold !important;
+    }
+    &__actionscontainer {
+      padding: 5px 16px;
+      text-align: right;
+    }
+    &__attachmentmenu {
+      .mud-icon-button {
+        padding: 0px;
+      }
+    }
+    &__cont-btn-return {
+      padding-top: 5px;
+    }
+}
+  

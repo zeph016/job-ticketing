@@ -1,0 +1,310 @@
+@page "/audittrail/{ticketId:long}"
+
+@inject ITicketListService ticketListService
+@inject ITicketService ticketService
+@inject ITicketStatusService ticketStatusService
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject NavigationManager NavigationManager
+
+<MudContainer class='auditTrailContainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
+
+<MudPaper Class='pa-4 ma-4 paperClassTrail' Elevation='3'>
+@if (!dataFetched)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="55px" />
+        <MudCardContent>
+            <MudSkeleton Width="30%" Height="42px;" />
+            <MudSkeleton Width="80%" />
+            <MudSkeleton Width="100%" />
+        </MudCardContent>
+        <MudCardActions>
+            <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+            <MudSkeleton Width="105px" Height="40px" Class="ml-3" />
+        </MudCardActions>
+        <MudOverlay Visible="isVisible" DarkBackground="true" Absolute="true">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </MudOverlay>
+}
+else
+{
+    <MudPaper Elevation='2'>
+    <MudContainer class='auditToolBarContainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
+        <MudToolBar class='auditTrailToolBar'>
+            <MudIcon Icon="@Icons.Material.Filled.Timeline" Size='Size.Medium' />
+            <MudText class='auditTrailHeader'>
+               Timeline
+            </MudText>
+            <MudSpacer />
+            <MudButton OnClick='Back' Variant="Variant.Text" StartIcon="@Icons.Material.Filled.ChevronLeft" Size='Size.Small'>RETURN</MudButton>
+        </MudToolBar>
+    </MudContainer>
+    </MudPaper>
+    <MudContainer class='auditTimelineContainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
+        <MudTimeline TimelinePosition="TimelinePosition.Left">
+            @foreach (var item in ticketAuditTrails)
+            {
+                @if(item.Activity.Contains("Created ticket") || item.Activity.Contains("Create ticket"))
+                {
+                    <MudTimelineItem Color='Color.Success' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Success' Icon='@Icons.Material.Filled.NoteAdd'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+                @if(item.Activity.Contains("Add Sub Task"))
+                {
+                    <MudTimelineItem class='auditAddSubClass' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Success' Icon='@Icons.Material.Filled.NoteAdd'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+                @if (item.Activity.Contains("Assigned") )
+                {
+                    <MudTimelineItem Color='Color.Info' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Info' Icon='@Icons.Material.Filled.AssignmentInd'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+                @if (item.Activity.Contains("Update ticket") || item.Activity.Contains("Update Ticket Activity"))
+                {
+                    <MudTimelineItem class='auditUpdateColor' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Info' Icon='@Icons.Material.Filled.Update'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+                @if (item.Activity.Contains("Done"))
+                {
+                    <MudTimelineItem class='auditDoneColor' Color='Color.Info' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Success' Icon='@Icons.Material.Filled.DoneAll'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+                @if (item.Activity.Contains("Approval"))
+                {
+                    <MudTimelineItem class='auditApprovedColor' Color='Color.Info' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Success' Icon='@Icons.Material.Filled.Recommend'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+                @if (item.Activity.Contains("Cancelled"))
+                {
+                    <MudTimelineItem Color='Color.Error' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Error' Icon='@Icons.Material.Filled.Cancel'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+                @if (item.Activity.Contains("Pending - waiting for parts", StringComparison.OrdinalIgnoreCase))
+                {
+                    <MudTimelineItem Color='Color.Warning' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Warning' Icon='@Icons.Material.Filled.PendingActions'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+                @if (item.Activity.Contains("Changed Status") && item.Activity.Contains("To Do"))
+                {
+                    <MudTimelineItem Color='Color.Info' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Info' Icon='@Icons.Material.Filled.PublishedWithChanges'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+                @if (item.Activity.Contains("In Progress"))
+                {
+                    <MudTimelineItem class='auditInProgressColor' Color='Color.Info' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Success' Icon='@Icons.Material.Filled.Moving'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+                @if (item.Activity.Contains("Add Ticket Activity"))
+                {
+                    <MudTimelineItem class='auditApprovedColor' Color='Color.Info' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Success' Icon='@Icons.Material.Filled.AddTask'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+                @if (item.Activity.Contains("Remove Ticket Activity"))
+                {
+                    <MudTimelineItem Color='Color.Warning' Variant='Variant.Filled'>
+                        <MudAlert Severity='Severity.Warning' Icon='@Icons.Material.Filled.RemoveCircle'>
+                            <MudText>@item.TicketNumber: @item.LogDatetime</MudText>
+                            <MudText>@item.Activity</MudText>
+                            <MudText>by: @item.UserAccountName</MudText>
+                        </MudAlert>
+                    </MudTimelineItem>
+                }
+            }
+        </MudTimeline>
+    </MudContainer>
+}
+</MudPaper>
+
+<MudPaper Class='pa-4 ma-4 paperClassTrailInfo' Elevation='3'>
+@if (!dataFetched)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="55px" />
+        <MudCardContent>
+            <MudSkeleton Width="30%" Height="42px;" />
+            <MudSkeleton Width="80%" />
+            <MudSkeleton Width="100%" />
+        </MudCardContent>
+        <MudCardActions>
+            <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+            <MudSkeleton Width="105px" Height="40px" Class="ml-3" />
+        </MudCardActions>
+        <MudOverlay Visible="isVisible" DarkBackground="true" Absolute="true">
+        <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    </MudOverlay>
+}
+else
+{
+    <MudPaper>
+    <MudContainer>
+    <MudToolBar class='auditTrailToolBar'>
+        <MudIcon Icon="@Icons.Material.Filled.Info" Size='Size.Medium' />
+        <MudSpacer/>
+        <MudText class='auditTrailHeader'>
+            Ticket Details
+        </MudText>
+        <MudSpacer />
+    </MudToolBar>
+    </MudContainer>
+    </MudPaper>
+    <MudContainer>
+        <MudGrid>
+            <MudItem xs='12'>
+                <MudTextField T='string' Label='Ticket No.' ReadOnly='true' @bind-Value='currTicket.TicketNumber' style='color: red;' />
+            </MudItem>
+            <MudItem xs='12'>
+                <MudTextField T='string' Label='Requestor' ReadOnly='true' @bind-Value='currTicket.RequestorName'/>
+            </MudItem>
+            <MudItem xs='12'>
+                <MudTextField T='string' Label='Task Title' ReadOnly='true' @bind-Value='currTicket.IssueSummary' />
+            </MudItem>
+            <MudItem xs='12'>
+            <MudTextField T='string' Label='Description of issue' ReadOnly='true' @bind-Value='currTicket.TaskDescription'
+                Variant='Variant.Filled' Lines='6'/>
+            </MudItem>
+            <MudItem xs='6'>
+                <MudText class='chipIconText'>Priority
+                    @if (currTicket.PriorityLevelId == Enums.PriorityLevel.Low)
+                    {
+                        <MudChip Color='Color.Info' Size='Size.Small'>@currTicket.PriorityLevelId</MudChip>
+                    }
+                    @if (currTicket.PriorityLevelId == Enums.PriorityLevel.Medium)
+                    {
+                        <MudChip Color='Color.Warning' Size='Size.Small'>@currTicket.PriorityLevelId</MudChip>
+                    }
+                    @if (currTicket.PriorityLevelId == Enums.PriorityLevel.High)
+                    {
+                        <MudChip Color='Color.Error' Size='Size.Small'>@currTicket.PriorityLevelId</MudChip>
+                    }
+                </MudText>
+            </MudItem>
+
+            <MudItem xs='6'>
+               @* EMPTY GRID *@
+            </MudItem>
+            <MudItem xs='6'>
+                <MudText class='chipIconText'>Status
+                    <MudChip Size='Size.Small' style='@($"background-color:{currTicketStatus.StatusColor};")'>@currTicket.TicketStatusName</MudChip>
+                </MudText>
+            </MudItem>
+            <MudItem xs='6'>
+               @* EMPTY GRID *@
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+}
+ </MudPaper>
+
+</MudContainer>
+
+@code {
+    private string Token;
+    private bool isVisible = true, dataFetched;
+    private MudColor _color;
+    [Parameter] public long ticketId { get; set; }
+    List<TicketAuditTrail> ticketAuditTrails = new List<TicketAuditTrail>();
+    private TicketModel currTicket  = new TicketModel();
+    private TicketStatusModel currTicketStatus = new TicketStatusModel();
+    private List<TicketStatusModel>  ticketStatusList = new List<TicketStatusModel>();
+    protected override async Task OnInitializedAsync()
+    {
+        GlobalContentTitle.contentTitle = "Audit Trail";
+        Token = await localStorage.GetItemAsync<string>("token");
+        @* isVisible = true; *@
+        dataFetched = false;
+        Task t = Task.WhenAll(GetAuditTrails(), GetTicket(), GetTicketStatusList());
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion) {
+            Task u = Task.WhenAll(GetTicketStatus());
+            await u;
+            if (u.Status == TaskStatus.RanToCompletion) {
+                 CompletedFetch();
+            }
+        }
+    }
+
+    private async Task GetAuditTrails()
+    {
+        ticketAuditTrails = await ticketListService.LoadTicketAuditTrail(ticketId, Token);
+    }
+
+    private async Task GetTicket()
+    {
+        currTicket = await ticketService.GetTicketById(ticketId, Token);
+    }
+
+    private async Task GetTicketStatus()
+    {
+        currTicketStatus = await ticketStatusService.GetTicketStatusById(currTicket.TicketStatusId, Token);
+    }
+
+    private async Task GetTicketStatusList()
+    {
+        var filterParameter = new FilterParameter();
+        ticketStatusList = await ticketStatusService.GetTicketStatus(filterParameter ,Token);
+    }
+    void CompletedFetch()
+    {
+        isVisible = false;
+        dataFetched = true;
+        StateHasChanged();
+    }
+
+    void Back()
+    {
+        NavigationManager.NavigateTo($"/ticketlist");
+    }
+}

@@ -1,0 +1,141 @@
+.dashbcdialog {
+    &__header {
+      align-items: center;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      background-color: #012340;
+      color: white;
+      display: flex !important;
+      height: 5vh;
+      text-align: center;
+      .d-flex {
+        align-items: center;
+      }
+    }
+    .mud-dialog-title {
+      background-color: #012340;
+      color: white;
+      .mud-icon-button-label {
+        color: white;
+      }
+    }
+    .mud-dialog-content {
+      padding: 0px !important;
+    }
+  
+    &__subcont {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+      width: calc(55vw - 20px) !important;
+    }
+    &__bchart {
+      align-items: center;
+      flex-direction: row-reverse !important;
+      gap: 5px;
+      .mud-chart-legend {
+        display: grid !important;
+        justify-content: flex-start !important;
+        margin: 0px 0px auto 0px !important;
+        width: 20% !important;
+        .mud-chart-legend-marker {
+            width: 10px !important;
+            height: 10px !important;
+        }
+        .mud-typography {
+            font-size: .7rem;
+        }
+      }
+    }
+  
+    &__rdatacontainer {
+      display: grid;
+      grid-template-columns: 0.2fr 1fr;
+      grid-template-rows: 0.1fr 1fr;
+      gap: 5px;
+      grid-template-areas: 
+      "toplcont toprcont"
+      "bottomlcont bottomrcont";
+    }
+    &__rwcontainer {
+      padding-left: 0px 8px 0px 8px;
+      .mud-typography {
+        font-size: 12px;
+        width: 100%;
+        font-weight: bold;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
+      }
+    }
+    &__rwcontainer:nth-child(1) {
+      grid-area:  toplcont;
+    }
+    &__rwcontainer:nth-child(2) {
+      display: flex;
+      grid-area:  toprcont;
+      justify-content: center;
+    }
+    &__rwcontainer:nth-child(3) {
+      display: grid;
+      grid-area:  bottomlcont;
+      text-align: left !important;
+      .mud-typography {
+        padding-bottom: calc(5vh - 30px);
+      }
+    }
+    &__rwcontainer:nth-child(4) {
+      background-color: whitesmoke;
+      grid-area:  bottomrcont;
+    }
+    &__rwcontainer-monthlistcount {
+      display: flex;
+      justify-content: center;
+      .mud-typography {
+        padding-bottom: calc(5vh - 30px);
+      }
+    }
+  }
+  
+  .dashpcdialog {
+    &__header {
+      align-items: center;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      background-color: #012340;
+      color: white;
+      display: flex !important;
+      height: 5vh;
+      text-align: center;
+      .d-flex {
+        align-items: center;
+      }
+    }
+    .mud-dialog-title {
+      background-color: #012340;
+      color: white;
+      .mud-icon-button-label {
+        color: white;
+      }
+    }
+    .mud-dialog-content {
+      padding: 0px !important;
+    }
+    &__subcont {
+      padding-left: 16px !important;
+      padding-right: 16px !important;
+      // width: calc(55vw - 20px) !important;
+    }
+    &__piecontainer {
+      width: calc(50vh - 100px) !important;
+    }
+    &__pie-r-datacontainer {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 0.3fr 1fr;
+      grid-row: auto;
+    }
+    &__pie-r-content2 {
+      background-color: whitesmoke;
+    }
+  }

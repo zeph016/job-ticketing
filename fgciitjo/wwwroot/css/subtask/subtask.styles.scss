@@ -1,0 +1,75 @@
+.subTaskContainer{
+  width: 100% !important;
+  display: flex !important;
+  .subTaskToolBar {
+      background-color: white ;
+      padding: 0px !important;
+
+      .subTaskHeader {
+          font-size: 20px !important;
+          margin-left: 15px ;
+          font-weight: bold !important;
+      }
+  }
+
+  .subTaskContainer {
+      overflow: auto;
+      height: 50vh;
+  }
+
+  .subTaskSelect {
+      .mud-input-slot {
+          height: 32px;
+      }
+  }
+
+.paperClassTrail {
+      width: 70% !important;
+}
+
+.paperClassSubTaskInfo {
+ 
+  width: 30% !important;
+  min-width: 300px;
+  overflow: auto;
+}
+.subTaskTable{
+  display: flex;
+  align-content: center;
+  width: 100% !important;
+  overflow: auto;
+  margin-top: 30px;
+}
+#new-sub-task{
+ margin-left: 10px;
+}
+}
+.subTaskToolBar{
+  .subTaskHeader{
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px !important;
+    margin-left: 5px ;
+    font-weight: bold !important;
+    
+  }
+}
+.subTaskContainer{
+  .mud-container{
+    padding-left: 1px !important;
+    padding-right: 1px !important;
+    .mud-table-cell{
+      text-align: center;
+    }
+  }
+  .tableIconSubTicket{
+    font-size: .875rem !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+}
+
+
+
+
+
+

@@ -1,0 +1,496 @@
+@inject ITicketStatusService ticketStatusService;
+@inject ITicketService ticketService;
+@inject IGlobalService globalService;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject ISnackbar Snackbar;
+@inject IDialogService DialogService;
+  <MudDialog >
+    <TitleContent>
+      <MudText Typo='Typo.h6'>
+        <p class='pUpdateTicketStatus'>
+          <MudIcon Icon="@Icons.Material.Filled.SupportAgent" Size='Size.Large' />
+          @ContentText
+        </p>
+      </MudText>
+    </TitleContent>
+    <DialogContent >
+      <MudContainer  Style="max-height: 445px; overflow-y: scroll">
+      @if (currentTicket.ReleasedById != 0)
+      {
+        <img class='releaseImage'src="images/released.png">
+      }
+       <div class="diaglog-container">
+        
+        <div class="dfields">
+          <span>@currentTicket.TicketNumber</span>
+          <small>Ticket Number</small>
+        </div>
+        <div class="dpriority-field">
+          @if (currentTicket.PriorityLevelId == Enums.PriorityLevel.Low)
+          {
+              <MudChip style="height: 18px;" Color='Color.Info' Size='Size.Small'>
+              @currentTicket.PriorityLevelId
+              </MudChip>
+            <small>Priority Level</small>
+          }
+          @if(currentTicket.PriorityLevelId == Enums.PriorityLevel.Medium)
+          {
+            <MudChip style="height: 18px;"  Color='Color.Warning' Size='Size.Small'>
+              @currentTicket.PriorityLevelId
+              </MudChip>
+            <small>Priority Level</small>
+          }
+          @if(currentTicket.PriorityLevelId == Enums.PriorityLevel.High)
+          {
+              <MudChip style="height: 18px;" Color='Color.Error' Size='Size.Small'>
+              @currentTicket.PriorityLevelId
+              </MudChip>
+            <small>Priority Level</small>
+          }
+        </div>
+         <div class="desc-name" title="@currentTicket.TaskDescription">
+          <span>@currentTicket.TaskDescription</span>
+          <small>Description</small>
+        </div>
+        <div class="dfields">
+          <span>@converteDate</span>
+          <small>Date</small>
+        </div>
+         <div class="dfields">
+          <span>@currentTicket.TicketStatusName</span>
+          <small>Status</small>
+        </div>
+        <div class="dissue-summary">
+          <span>@currentTicket.TicketCategoryTypeId</span>
+          <small>Category Type</small>
+        </div>
+          <div class="dreq-name">
+          <span>@currentTicket.TicketCategoryName</span>
+          <small>Category</small>
+        </div>
+         <div class="dfields">
+          <span>@currentTicket.TicketBranchName</span>
+          <small>Branch</small>
+        </div>
+         <div class="dissue-summary" title="@currentTicket.IssueSummary">
+          <span>@currentTicket.IssueSummary</span>
+          <small>Issue Summary</small>
+        </div>
+         <div class="dreq-name">
+          <span>@currentTicket.RequestorName</span>
+          <small>Requestor</small>
+        </div>
+
+      </div>
+      @if (!dataFetched)
+      {
+          <MudSkeleton SkeletonType='SkeletonType.Text' Height='120px' Animation='Animation.Wave' />
+         <MudSkeleton SkeletonType='SkeletonType.Rectangle' Height='120px' Animation='Animation.Wave' />
+          <MudOverlay  DarkBackground="true" Absolute="true">
+         <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+        </MudOverlay>
+      }
+      else
+      {
+      <MudGrid id="dgrid-container">
+        <MudItem xs='6'>
+          <MudSelect Disabled='disable'  Label="Assignee" @bind-Value="@employee" ReadOnly="@readOnly">
+            @foreach (Employee item in listOfIT)
+            {<MudSelectItem Value="@item">@item.EmployeeName</MudSelectItem>}
+            </MudSelect>
+          </MudItem>
+           <MudItem xs='6'>
+            <MudDatePicker PickerVariant="PickerVariant.Dialog" Disabled='disable' MinDate='currentTicket.AssignDate' MaxDate='currentTicket.AssignDate' ReadOnly='true' Label="Assign Date"  @bind-Date="@currentTicket.AssignDate" />
+          </MudItem>
+         <MudItem xs='6'>
+            <MudDatePicker PickerVariant="PickerVariant.Dialog" Error='@notValid' ErrorText='Start date is Required!' 
+            Disabled='disable' MinDate='@Convert.ToDateTime(currentTicket.TicketDate).Date' 
+            Label="Start Date" @bind-Date="@currentTicket.StartDate" />
+          </MudItem>
+          <MudItem xs='6'>
+            <MudDatePicker  PickerVariant="PickerVariant.Dialog" Error='@notValid' ErrorText='Completed date is Required!'
+            Disabled='disableCompleteDate' MinDate='@Convert.ToDateTime(currentTicket.StartDate).Date' 
+            Label="Complete Date" @bind-Date="@currentTicket.CompletionDate" />
+          </MudItem>
+          <MudItem xs='6'>
+            @if(currentTicket.ReleasedById != 0)
+            {
+               <MudSelect Error='@reqRelease' ErrorText='This field is required!' Disabled='@(forReleasal == true ? false : true)'  Label="Released by" @bind-Value="@release.EmployeeId" >
+                  @foreach (Employee item in listOfIT)
+                  {<MudSelectItem Value="@item.EmployeeId">@item.EmployeeName</MudSelectItem>}
+            </MudSelect>
+             <MudSwitch Disabled='disableRelease' @bind-Checked="@forReleasal" Color="Color.Tertiary">For Release</MudSwitch>
+            }
+            else{
+               <MudSelect Error='@reqRelease' ErrorText='This field is required!' Disabled='@(forReleasal == true ? false : true)' Label="Released by" @bind-Value="@release" >
+                  @foreach (Employee item in listOfIT)
+                   {<MudSelectItem Value="@item">@item.EmployeeName</MudSelectItem>}
+            </MudSelect>
+            <MudSwitch Disabled='disableRelease' @bind-Checked="@forReleasal" Color="Color.Tertiary">Release</MudSwitch>
+            }
+          </MudItem>
+           <MudItem xs='6'>
+              <MudDatePicker Error='@reqRelease' ErrorText='Release date is required!' PickerVariant="PickerVariant.Dialog" Disabled='@(forReleasal == true ? false : true)' Label="Release Date" MinDate="@DateTime.Today" @bind-Date="@currentTicket.ReleasedDate" />
+          </MudItem>
+          <MudItem xs='6'>
+            <MudTextField Disabled='disable' @bind-Value="@currentTicket.Remarks" Label="Remarks"></MudTextField>
+          </MudItem>
+           <MudItem xs='6'>
+            <MudTextField  Disabled='@(forReleasal == true ? false : true)' @bind-Value="@currentTicket.DocumentReference" Label="IT Asset(s)/PAS No."></MudTextField>
+          </MudItem>
+           <MudItem xs='6'>
+          <MudSelect Disabled='disable' Label="Status" @bind-Value="@ticketStatus">
+             @foreach (TicketStatusModel item in listicketStatus)
+            {<MudSelectItem Value="@item">@item.StatusName</MudSelectItem>}
+          </MudSelect>
+          </MudItem>
+          </MudGrid>
+      }
+      </MudContainer>
+              </DialogContent>
+              <DialogActions>
+                <MudButton OnClick='Cancel' Variant='Variant.Text' Color='Color.Error'>Cancel</MudButton>
+                <MudButton Disabled='@(forReleasal == true ? false : disableBtn)' Color="@Color.Primary" Variant="Variant.Filled" OnClick="Update">@ButtonText</MudButton>
+              </DialogActions>
+            </MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public TicketModel currentTicket { get; set; } = new TicketModel();
+    [Parameter] public string ContentText { get; set; }
+    [Parameter] public string ButtonText { get; set; }
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public Enums.CrudeMode _action {get; set;}
+    List<TicketStatusModel> listicketStatus = new List<TicketStatusModel>();
+    List<Employee> listOfIT = new List<Employee>();
+    TicketModel ticket = new TicketModel();
+    Employee employee { get; set; }
+    Employee release {get; set;}
+    TicketStatusModel ticketStatus { get; set; }
+    DateTime ticketDate = new DateTime();
+    DateTime? releaseDate = new DateTime();
+    TimeSpan? time = new TimeSpan();
+    bool readOnly, dataFetched, isVisible, disableCompleteDate , disableReleaseDate, 
+    disable, disableBtn , notValid , forReleasal, reqRelease, disableRelease;
+    string converteDate, curRemark;
+    Enums.TicketStatusType currStatusType;
+    protected override async Task OnInitializedAsync()
+    {
+       
+        isVisible = true;
+        ConvertDate();
+        DisableDate();
+       
+        Task t = Task.WhenAll(GetAllEmployees(), LoadTicketStatus());
+        await t;
+        @* GetReleaseBy(); *@
+        if (t.Status == TaskStatus.RanToCompletion)
+        { 
+          if(currentTicket.ReleasedById > 0)
+            { 
+              release = listOfIT.FirstOrDefault(x=> x.EmployeeId == (Int64)currentTicket.ReleasedById);
+              forReleasal = false;
+              if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Administrator)
+                  disableRelease = false;
+                  else
+                   disableRelease = true;
+            }
+            if (currentTicket.AssigneeId > 0)
+            {
+                DisableComplete();
+                curRemark = currentTicket.Remarks;
+                employee = listOfIT.FirstOrDefault(x => x.EmployeeId == (Int64)currentTicket.AssigneeId);
+                ticketStatus = listicketStatus.FirstOrDefault(x=>x.Id == currentTicket.TicketStatusId);
+                DisplayStatus();
+                CompletedFetch();
+            };
+        }
+    }
+    void completedDate()
+    {
+      if(currentTicket.StartDate == null)
+      {
+        readOnly = true;
+        StateHasChanged();
+      }
+      else
+      {
+        readOnly = false;
+        StateHasChanged();
+      }
+    }
+    void DisableComplete()
+    {
+      if (currentTicket.TicketStatusTypeId == Enums.TicketStatusType.Complete 
+      && GlobalClass.CurrentUserAccount.AccessLevel != Enums.AccessLevel.Administrator)
+      {
+        disable = true;
+        disableBtn = true;
+        disableCompleteDate = true;
+        if (currentTicket.ReleasedById != 0)
+        {
+          
+          disableReleaseDate = true;
+          disableCompleteDate = true;
+        }
+        else
+        {
+          disableReleaseDate = false;
+          
+        }
+      }
+      else
+      {
+        disable = false;
+        disableBtn = false;
+        disableCompleteDate = false;
+      }
+    }
+    void DisableDate()
+    {
+      @* if (currentTicket.StartDate.HasValue)
+        disableCompleteDate = false;
+        else
+          disableCompleteDate = true; *@
+
+      if(currentTicket.CompletionDate.HasValue)
+        disableReleaseDate = false;
+        else
+          disableReleaseDate = true;
+      
+
+    }
+    void GetReleaseBy()
+    {
+      if (currentTicket.CompletionDate != null)
+      {
+        release = listOfIT.FirstOrDefault(x=>x.EmployeeId == GlobalClass.CurrentUserAccount.EmployeeId);
+        if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.IT)
+          disableCompleteDate = true;
+          else
+          disableCompleteDate = false;
+      }
+    }
+   
+    TicketModel MapProperties()
+    {
+        ticket.Id = currentTicket.Id;
+        ticket.IsActive = currentTicket.IsActive;
+        ticket.ControlCount = currentTicket.ControlCount;
+        ticket.TicketNumber = currentTicket.TicketNumber;
+        ticket.IssueSummary = currentTicket.IssueSummary;
+        ticket.TaskDescription = currentTicket.TaskDescription;
+        ticket.PriorityLevelId = currentTicket.PriorityLevelId;
+        ticket.DocumentReference = currentTicket.DocumentReference;
+        ticket.TicketCategoryId = currentTicket.TicketCategoryId;
+        ticket.TicketCategoryName = currentTicket.TicketCategoryName;
+        ticket.TicketBranchId = currentTicket.TicketBranchId;
+        ticket.TicketBranchName = currentTicket.TicketBranchName;
+        ticket.TicketStatusId = ticketStatus.Id;
+        ticket.TicketStatusTypeId = ticketStatus.StatusTypeId;
+        ticket.TicketStatusName = ticketStatus.StatusName;
+        ticket.TicketCategoryTypeId = ticket.TicketCategoryTypeId;
+        ticket.DocumentReference = currentTicket.DocumentReference;
+       
+
+        MapEmployee();
+        MapDates();
+        
+        ticket.Remarks = currentTicket.Remarks;
+        listicketStatus.ForEach(x=> {
+          if (x.Id == ticketStatus.Id)
+          {
+            ticketStatus.StatusName = x.StatusName;
+          }});
+          var remark = "";
+          if (curRemark != currentTicket.Remarks)
+            remark = "; Remarks: " + currentTicket.Remarks;
+             
+        ticket.Activity = currentTicket.AssigneeId == employee.EmployeeId ? "Status: " + ticketStatus.StatusName + remark : 
+         "Re-Assigned to " + employee.EmployeeName + "; Status: " + ticketStatus.StatusName + remark ;
+
+        ticket.TicketId = currentTicket.Id;
+        ticket.UserId = GlobalClass.CurrentUserAccount.EmployeeId;
+        ticket.PCName = "";
+        return ticket;
+    }
+    void ShowAlert(string message, Severity severity)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"{message}", severity);
+    }
+    async Task LoadTicketStatus()
+    {
+        listicketStatus = await ticketStatusService.GetTicketStatus(new FilterParameter(), await
+        localStorage.GetItemAsync<string>("token"));
+    }
+
+    void Cancel()
+    {
+        MudDialog.Cancel();
+        @* ShowAlert("Update cancelled", Severity.Error); *@
+    }
+    async Task Update()
+    {
+      try
+      {
+        @* if(currentTicket.TicketStatusTypeId != Enums.TicketStatusType.AllowUpdate 
+         && currentTicket.TicketStatusTypeId != Enums.TicketStatusType.Assign)
+        {
+
+            await ticketService.UpdateTicketStatus(MapProperties(), await localStorage.GetItemAsync<string>("token"));
+            MudDialog.Close(DialogResult.Ok(true));
+            ShowAlert("Ticket updated", Severity.Success);
+          
+        } *@
+        if(forReleasal && ticketStatus.StatusName.Contains("Done"))
+        {
+          if (currentTicket.ReleasedDate != null && release != null )
+          {
+            await ticketService.UpdateTicketStatus(MapProperties(), await localStorage.GetItemAsync<string>("token"));
+            MudDialog.Close(DialogResult.Ok(true));
+            ShowAlert("Ticket updated", Severity.Success);
+          ;
+          }
+          else
+          {
+              reqRelease = true;
+          }
+          @* ShowAlert("Ticket status: '" + ticketStatus.StatusName + "' is not ready for releasal", Severity.Normal); *@
+        }
+        else if(GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.IT 
+        && ticketStatus.StatusTypeId == Enums.TicketStatusType.Complete)
+        {
+          var parameters = new DialogParameters();
+            parameters.Add("ContentText", "Confirmation");
+            parameters.Add("ButtonText", "Confirm");
+            parameters.Add("Color", Color.Success);
+            parameters.Add("DialogContentText", "Are you sure you want to update status to '" + ticketStatus.StatusName + "'?");
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+
+            var resultDialog = await DialogService.Show<Shared.Dialogs.RemoveSubTicketDialog>("Remove sub ticket", parameters,
+            options).Result;
+            if(!resultDialog.Cancelled){
+              if (currentTicket.CompletionDate != null )
+              {
+                await ticketService.UpdateTicketStatus(MapProperties(), await localStorage.GetItemAsync<string>("token"));
+                MudDialog.Close(DialogResult.Ok(true));
+                ShowAlert("Ticket updated", Severity.Success);
+              }
+              else if(ticketStatus.StatusName.Contains("Cancel"))
+              {
+                await ticketService.UpdateTicketStatus(MapProperties(), await localStorage.GetItemAsync<string>("token"));
+                MudDialog.Close(DialogResult.Ok(true));
+                ShowAlert("Ticket Cancelled", Severity.Warning);
+              }
+              else
+              {
+                dataFetched = true;
+                notValid = true;
+              }
+              
+            }
+        }
+        else if(GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.IT 
+        && ticketStatus.StatusTypeId == Enums.TicketStatusType.None)
+        {
+          ShowAlert("Action is denied, Ticket is already assigned to '" + employee.EmployeeName +"' ", Severity.Error);
+        }
+        else
+        {
+          await ticketService.UpdateTicketStatus(MapProperties(), await localStorage.GetItemAsync<string>("token"));
+          MudDialog.Close(DialogResult.Ok(true));
+          ShowAlert("Ticket updated", Severity.Success);
+        }
+        
+      }
+      catch (System.Exception ex)
+      {  
+         ShowAlert(ex.Message, Severity.Error);
+      }
+       
+    }
+    async Task<IEnumerable<Employee>> GetAllEmployees()
+    {
+      var filterParameter = new FilterParameter()
+      {
+        IsName = false,
+        Name = "",
+        DepartmentId = "8"
+      };
+      listOfIT = await globalService.GetDepartmentEmployees(filterParameter, await localStorage.GetItemAsync<string>("token"));
+      return listOfIT;
+    }
+    void DisplayStatus()
+    {
+        listicketStatus.ForEach(x =>
+        {
+          currStatusType = x.StatusTypeId;
+            if (currentTicket.TicketStatusId == x.Id)
+            {
+                 
+                if (currentTicket.TicketStatusTypeId != Enums.TicketStatusType.AllowUpdate
+                 && currentTicket.TicketStatusTypeId != Enums.TicketStatusType.Assign)
+                    readOnly = true;
+                else
+                    readOnly = false;
+            }
+        });
+    }
+    void MapEmployee()
+    {
+       listOfIT.ForEach(i=>{
+          if (i.EmployeeId == employee.EmployeeId)
+          {
+            ticket.AssigneeId = i.EmployeeId;
+            employee.FirstName = i.FirstName;
+            employee.MiddleName = i.MiddleName;
+            employee.LastName = i.LastName;
+          }
+          if(currentTicket.ReleasedById > 0)
+          {
+            if (i.EmployeeId == release.EmployeeId)
+            {
+              ticket.ReleasedById = i.EmployeeId;
+            }
+          }
+          else{
+            ticket.ReleasedById = release != null ? release.EmployeeId : 0;
+          }
+      });
+    }
+    void MapDates(){
+      if (currentTicket.AssignDate != null)
+      {
+         ticket.AssignDate = Convert.ToDateTime(currentTicket.AssignDate);
+      }
+      if (currentTicket.StartDate != null)
+      {
+        ticket.StartDate = Convert.ToDateTime(currentTicket.StartDate);
+      }
+      if (currentTicket.CompletionDate != null)
+      { 
+        ticket.CompletionDate = Convert.ToDateTime(currentTicket.CompletionDate);
+      }
+      if (currentTicket.ReleasedDate != null)
+      {
+        ticket.ReleasedDate = Convert.ToDateTime(currentTicket.ReleasedDate);
+      }
+
+    }
+    void ConvertDate()
+    {
+      ticketDate = (DateTime)currentTicket.TicketDate;
+      converteDate = ticketDate.ToString("MMM dd, yyyy");
+    }
+    void CompletedFetch()
+    {
+        dataFetched = true;
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,80 @@
+.othertablecontainer{
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    margin-top: 1%;
+
+    .otheractivitytable{
+        width: 100%;
+        min-height: 500px;
+        max-height: 500px;
+        overflow: auto;
+    }
+
+    .mud-table-container{
+        min-height: 470px !important;
+    }
+    .mud-toolbar{
+        height: 30px !important;
+    }
+}
+.otheractivityTopToolBar{
+    background-color: white !important;
+}
+.otheractivityContainer {
+    width: 100% !important;
+    display: flex !important;
+    .otheractivityToolBar {
+        background-color: white ;
+        padding: 0px !important;
+
+        .otheractivityHeader {
+            font-size: 20px !important;
+            margin-left: 15px ;
+            font-weight: bold !important;
+        }
+    }
+    .otheractivityToolBar {
+        background-color: white ;
+
+        .activityHeader {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px !important;
+            margin-left: 5px ;
+            font-weight: bold !important;
+        }
+    }
+}
+.paperClassOtherActivity {
+    width: 70% !important;
+    min-width: 500px !important;
+}
+.paperClassotherActivityInfo {
+    background-color: gainsboro;
+    width: 30% !important;
+    min-width: 400px;
+    overflow: auto;
+    height: fit-content;
+    min-height: 600px !important;
+    
+    .chipIconText {
+        display: grid;
+        font-size: 12px !important;
+        .mud-chip-content {
+            color: white;
+        }
+    }
+}
+.datefilter{
+    margin-top: 7%;
+    // border: 1px black solid;
+    width: 103%;
+    margin-left: -10px;
+
+    .mud-grid-item-xs-4{
+        margin-top: 20px !important;
+    }
+}
+#textAcitivityDialog{
+    margin: 5px !important;
+    margin-top:5px !important;
+}

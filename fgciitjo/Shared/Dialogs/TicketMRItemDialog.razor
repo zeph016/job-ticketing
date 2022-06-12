@@ -1,0 +1,203 @@
+@page "/activity/MRitem/{ticketId:long}";
+
+@inject ITicketMRItemService ticketMRitemService;
+@inject Blazored.LocalStorage.ILocalStorageService localStorage;
+@inject ISnackbar Snackbar
+
+<MudDialog class='MRItemDialog'>
+    <TitleContent>
+        <MudText Typo='Typo.h6'>
+            <p class='pTicketStatus'>
+                <MudIcon Icon="@Icons.Material.Filled.Inventory2" Size='Size.Large' />
+                @ContentText
+            </p>
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudTable Items="@mrList" Height="280px" FixedHeader="true" FixedFooter="true" Dense="true" >
+            <ToolBarContent>
+                <MudSpacer />
+                <MudTextField @onkeyup="LoadMRITem" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh>MR Asset Tag</MudTh>
+                <MudTh>MR Item</MudTh>
+                <MudTh>MR project</MudTh>
+                <MudTh>MR Employee</MudTh>
+                <MudTh>Remarks</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd>
+                    <MudCheckBox @bind-Checked="@context.IsSelected">
+                    </MudCheckBox>
+                </MudTd>
+                <MudTd DataLabel="MRAssetTag">@context.MRAssetTag</MudTd>
+                <MudTd DataLabel="MRItem" 
+                  style="text-overflow: ellipsis;white-space: nowrap; overflow: hidden;" 
+                 title="@context.MRItemName">@context.MRItemName</MudTd>
+                <MudTd DataLabel="MRProject" 
+                  style="text-overflow: ellipsis;white-space: nowrap; overflow: hidden;"
+                 title="@context.MRProject">@context.MRProject</MudTd>
+                 <MudTd DataLabel="MREmployee">@context.MREmployeeName</MudTd>
+                <MudTd DataLabel="MRRemarks" 
+                  style="text-overflow: ellipsis;white-space: nowrap; overflow: hidden;" 
+                title="@context.Remarks">@context.Remarks</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[]{5, 100}" />
+            </PagerContent>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant='Variant.Text' Color='Color.Error'>Cancel</MudButton>
+        <MudButton OnClick="SaveAssets" Color="@Color" Variant="Variant.Filled">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string ContentText { get; set; }
+    [Parameter] public string ButtonText { get; set; }
+    [Parameter] public Color Color { get; set; }
+    [Parameter] public long ticketActivityId { get; set; }
+    List<TicketMRItemModel> mrList = new List<TicketMRItemModel>();
+    TicketMRItemModel ticketMRItemModel = new TicketMRItemModel();
+    List<TicketMRItemModel> selectedMR = new List<TicketMRItemModel>();
+    string searchString;
+    public Enums.CrudeMode crudeMode = new Enums.CrudeMode();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCurrentMR();
+    }
+
+    #region Load MR Item
+    async Task LoadMRITem(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            var filterParameter = new FilterParameter()
+            {
+                isActive = true,
+                IsName = true,
+                Name = searchString
+            };
+            List<TicketMRItemModel> ticketMRItems = new List<TicketMRItemModel>();
+            ticketMRItems = await ticketMRitemService.LoadMRItem(filterParameter, await localStorage.GetItemAsync<string>("token"));
+            selectedMR = mrList.Where(x => x.IsSelected == true).ToList();
+            mrList = ticketMRItems.Union(selectedMR).OrderByDescending(x => x.IsSelected == true).ToList();
+
+        }
+    }
+
+    #endregion
+
+    #region Map Properties
+    async Task MapProperties()
+    {
+        try
+        {
+            var listOfMr = mrList.ToList();
+            var crudText = "";
+            bool isSaved = false;
+            foreach (var x in listOfMr)
+            {
+                ticketMRItemModel.Id = x.Id;
+                ticketMRItemModel.MRItemdDetailId = x.MRItemdDetailId;
+                ticketMRItemModel.TicketActivityId = ticketActivityId;
+                ticketMRItemModel.MREmployeeId = x.MREmployeeId;
+                ticketMRItemModel.MRProjectId = x.MRProjectId;
+                ticketMRItemModel.Remarks = x.Remarks;
+                ticketMRItemModel.MRProjectCategoryId = x.MRProjectCategoryId;
+                ticketMRItemModel.IsActive = x.IsSelected == true ? true : false;
+
+                if (crudeMode == Enums.CrudeMode.Add)
+                {
+                    if (x.IsSelected == true)
+                    {
+                        await Task.Run(async () => { await ticketMRitemService.SaveMRItem(ticketMRItemModel,
+                        await localStorage.GetItemAsync<string>("token")); });
+
+                        crudText = "Added";
+                        isSaved = true;
+                    }
+                }
+                if (crudeMode == Enums.CrudeMode.Edit)
+                {
+                    if (x.Id != 0)
+                    {
+                        await Task.Run(async () => { await ticketMRitemService.UpdateMRItem(ticketMRItemModel,
+                        await localStorage.GetItemAsync<string>("token")); });
+
+                        crudText = "Updated";
+                        isSaved = true;
+                    }
+                    else
+                    {
+                        if (x.IsSelected == true)
+                        {
+                            await Task.Run(async () => { await ticketMRitemService.SaveMRItem(ticketMRItemModel,
+                            await localStorage.GetItemAsync<string>("token")); });
+
+                            crudText = "Added";
+                            isSaved = true;
+                        }
+                    }
+                }
+            };
+            if (isSaved == true)
+            {
+                ShowAlert("Successfully " + crudText, Variant.Filled, Severity.Normal);
+                await InvokeAsync(() => LoadCurrentMR());
+                await InvokeAsync(() => StateHasChanged());
+            }
+
+        }
+        catch (System.Exception ex)
+        {
+            ShowAlert(ex.Message, Variant.Filled, Severity.Error);
+        }
+    }
+
+    #endregion
+
+    #region Save MR Assets
+    async Task SaveAssets()
+    {
+        await MapProperties();
+    }
+    #endregion
+
+    #region  Load Current MR
+    async Task LoadCurrentMR()
+    {
+        var currentMR = await ticketMRitemService.GetCurrentMRItem(ticketActivityId, await localStorage.GetItemAsync<string>("token"));
+        currentMR.ForEach(x => { x.IsSelected = true; });
+        mrList = currentMR.Where(x => x.IsActive == true).ToList();
+        if (mrList.Count > 0)
+            crudeMode = Enums.CrudeMode.Edit;
+        else
+            crudeMode = Enums.CrudeMode.Add;
+    }
+    #endregion
+
+    #region Show Alert
+    void ShowAlert(string message, Variant variant, Severity severity)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = variant;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($" {message}", severity);
+    }
+    #endregion
+
+    #region Cancel
+    void Cancel()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    #endregion
+}

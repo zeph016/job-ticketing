@@ -1,0 +1,171 @@
+@page "/settings/ticketbranch"
+
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject ITicketBranchService ticketBranchService
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar;
+
+<MudContainer class='ticketBranchContainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
+    @if (!dataFetched)
+    {
+        <MudPaper Class='ma-4 pa-2'>
+             <MudSkeleton SkeletonType='SkeletonType.Text' Height='100px' Animation='Animation.Wave'/>
+            <MudSkeleton SkeletonType='SkeletonType.Rectangle' Height='75vh' Animation='Animation.Wave'/>
+            <MudOverlay Visible="isVisible" DarkBackground="true" Absolute="true">
+                <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+            </MudOverlay>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTable Class='ma-4 pa-2' Items="@ticketBranchList" Hover="true" Filter='new Func<TicketBranchModel,bool>(FilterItems)'
+                FixedHeader='true' FixedFooter='true' RowsPerPage='20' Striped='true'
+                Breakpoint="Breakpoint.Sm" Bordered='false' Dense='true' LoadingProgressColor="Color.Info">
+            <ToolBarContent>
+                <MudContainer>
+                    <MudTextField @bind-Value='searchTerm' Placeholder='Search' Adornment='Adornment.Start'
+                        AdornmentIcon='@Icons.Material.Filled.Search' IconSize='Size.Medium' Class='mt-0' Clearable='true'>
+                    </MudTextField>
+                </MudContainer>
+                <MudSpacer />
+                <MudMenu Label='More' StartIcon="@Icons.Material.Filled.MoreVert" Direction='Direction.End' Dense='true' OffsetY='true'>
+                    <MudMenuItem @onclick="@(()=> AddTicketBranch())">
+                        <p style='display: flex;'>
+                            <MudIcon Icon='@Icons.Material.Filled.Add' />
+                            <MudText style='padding: 2px 0px 0px 4px; font-size: 14px; text-align: center;'>Add Branch</MudText>
+                        </p>
+                    </MudMenuItem>
+                </MudMenu>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel InitialDirection='SortDirection.Ascending' SortBy='new Func<TicketBranchModel, object>(x=>x.BranchName)'>
+                        Branch Name
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh class='tableActive'>Active</MudTh>
+                <MudTh class='tableActions'>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel='BranchName'>
+                    <MudText class='tableRowWithIcon'>
+                        <MudIcon Icon='@Icons.Material.Filled.LocationOn' Title='Location' />
+                        @context.BranchName
+                    </MudText>
+                </MudTd>
+                <MudTd DataLabel='IsActive'>
+                    <MudCheckBox @bind-Checked='@context.IsActive' Dense='true' ReadOnly='true' />
+                </MudTd>
+                <MudTd DataLabel='Actions'>
+                    <MudMenu Icon="@Icons.Material.Filled.MoreVert" Direction='Direction.End' Dense='true' Size='Size.Small'>
+                        <MudMenuItem @onclick="@(() => EditTicketBranch(context))">
+                            <p style='display: flex;'>
+                                <MudIcon Icon='@Icons.Material.Filled.Edit' />
+                                <MudText style='padding: 2px 0px 0px 4px; font-size: 14px; text-align: center;'>Modify Branch</MudText>
+                            </p>
+                        </MudMenuItem>
+                    </MudMenu>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions='new int[]{20,40}' />
+            </PagerContent>
+        </MudTable>
+    }
+</MudContainer>
+
+@code {
+    @* private bool _hidePosition; *@
+    @* private bool _loading; *@
+    private bool isVisible;
+    private bool dataFetched;
+    public string searchTerm = "";
+    
+    List<TicketBranchModel> ticketBranchList = new List<TicketBranchModel>();
+
+    async Task LoadBranch()
+    {
+        var filterParameter = new FilterParameter();
+        ticketBranchList = await ticketBranchService.GetBranch(filterParameter, await localStorage.GetItemAsync<string>("token"));
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        GlobalContentTitle.contentTitle = "Ticket Branch";
+        while (GlobalClass.CurrentUserAccount == null) {
+            await Task.Delay(1);
+        }
+        isVisible = true;
+        Task t = Task.WhenAll(LoadBranch());
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion)
+            CompleteFetched();
+    }
+
+    void CompleteFetched()
+    {
+        dataFetched = true;
+        StateHasChanged();
+    }
+    private async Task AddTicketBranch()
+    {
+       if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Administrator)
+      {
+        var parameters = new DialogParameters();
+        parameters.Add("ContentText", "Add Branch");
+        parameters.Add("ButtonText", "Add");
+        parameters.Add("Color", Color.Success);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
+
+        var resultDialog = await DialogService.Show<Shared.Dialogs.TicketBranchDialog>("Add Ticket Branch", parameters, options).Result;
+        if (!resultDialog.Cancelled)
+        {
+            string thisPage = "ticketBranch";
+            NavigationManager.NavigateTo($"/refresh/{thisPage}");
+            @* NavigationManager.NavigateTo("/settings/ticketbranch", true); *@
+        }
+      }
+      else{
+        ShowAlert("Access is denied, Please ask Administrator for assistance! ", Variant.Filled, Severity.Error);
+      }
+    }
+
+    private async Task EditTicketBranch(TicketBranchModel currentBranch)
+    {
+       if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Administrator)
+      {
+        var parameters = new DialogParameters { ["currentBranch"] = currentBranch };
+        parameters.Add("ContentText", "Modify Branch");
+        parameters.Add("ButtonText", "Update");
+        parameters.Add("Color", Color.Success);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
+
+        var resultDialog = await DialogService.Show<Shared.Dialogs.TicketBranchDialog>("Update Ticket Branch", parameters, options).Result;
+
+        if (!resultDialog.Cancelled)
+        {
+            @* string thisPage = "ticketStatus";
+                NavigationManager.NavigateTo($"/refresh/{thisPage}"); *@
+        }
+        }
+      else{
+        ShowAlert("Access is denied, Please ask Administrator for assistance! ", Variant.Filled, Severity.Error);
+      }
+    }
+    private bool FilterItems(TicketBranchModel items)
+    {
+        if (items.BranchName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+     void ShowAlert(string message, Variant variant, Severity severity)
+    {
+        Snackbar.Clear();
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+        Snackbar.Configuration.SnackbarVariant = variant;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
+        Snackbar.Add($"{message}", severity);
+    }
+}
