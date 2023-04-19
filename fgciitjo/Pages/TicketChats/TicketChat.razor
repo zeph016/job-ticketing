@@ -39,10 +39,11 @@
     </div>
 </div>
 
-@code{ private HubConnection hubConnection;
+@code { 
+    private HubConnection hubConnection = default!;
     private List<TicketModel> ticketmodel = new();
     private string usernameInput = GlobalClass.CurrentUserAccount.EmployeeName;
-    private string messageInput;
+    private string messageInput = string.Empty;
     private bool isUserReadonly = true;
     List<TicketComment> userMessages = new List<TicketComment>();
     protected override async Task OnInitializedAsync()

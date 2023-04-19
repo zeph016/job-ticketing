@@ -1,336 +1,327 @@
-.dashboardCont {
-    // overflow: hidden;
-    // background-color: #e0e0e0;
-    background-color: #607d8b21;
-    display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-rows: 0.25fr 1fr 0.3fr;
-    gap: 16px;
-    grid-template-areas: 
+@use '../components/flexgridmods/flexgridmods.styles.css';
+@use '../components/font-calls/font-calls.style.css';
+
+.dashboard-container {
+  // overflow: hidden;
+  // background-color: #e0e0e0;
+  // background-color: #607d8b21;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 0.25fr 1fr 0.3fr;
+  gap: 8px;
+  grid-template-areas:
     "topLCont topLCCont topRCCont topRCont"
     "centCont centCont centCont bottomRCont"
     "bottomCont bottomCont bottomCont bottomRCont";
-    height: calc(100vh - 85px);
-    overflow: hidden;
-    padding-top: 24px;
-    padding-bottom: 24px;
+  height: calc(100vh - 85px);
+  overflow: hidden;
 
-    .mud-paper {
-        border-style: solid;
-        border-top: none;
-        border-right: none;
-        border-left: none;
+  .mud-paper {
+    border-style: solid;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+  }
+
+  .mud-paper:nth-child(1) {
+    // border-color: #008000bd;
+    grid-area: topLCont;
+
+    .mud-container:nth-child(1) {
+      background-color: #008000bd;
+    }
+  }
+
+  .mud-paper:nth-child(2) {
+    // border-color: orange;
+    grid-area: topLCCont;
+  }
+
+  .mud-paper:nth-child(3) {
+    border-color: red;
+    grid-area: topRCCont;
+  }
+
+  .mud-paper:nth-child(4) {
+    border-color: #f8778d;
+    grid-area: topRCont;
+    .mud-container:nth-child(1) {
+      background-color: #f8778d;
+    }
+  }
+
+  .mud-paper:nth-child(5) {
+    border-color: #012340;
+    grid-area: centCont;
+  }
+
+  .mud-paper:nth-child(6) {
+    border-color: #012340;
+    grid-area: bottomRCont;
+  }
+
+  .mud-paper:nth-child(7) {
+    border-color: #012340;
+    grid-area: bottomCont;
+  }
+
+  .cardcont {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 24px;
+    &__subcont {
+      align-items: center;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      display: flex;
+      padding-left: 16px;
+      padding-right: 16px;
     }
 
-    .mud-paper:nth-child(1) {
-        // border-color: #008000bd;
-        grid-area: topLCont;
-
-        .mud-container:nth-child(1) {
-            background-color: #008000bd;
-        }
+    &__hlabel {
+      color: white;
+      max-width: 12vw;
+      text-align: right !important;
+      .mud-typography:nth-child(1) {
+        font-size: 2rem !important;
+        font-weight: bold !important;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mud-typography:nth-child(2) {
+        font-size: 0.9rem !important;
+        font-weight: bold !important;
+      }
     }
 
-    .mud-paper:nth-child(2) {
-        // border-color: orange;
-        grid-area: topLCCont;
+    &__hcardicon {
+      color: white;
+      height: 50px;
+      width: 50px;
+    }
+    &__fcardicon {
+      display: flex;
+      color: gray;
+      .mud-icon-button,
+      .mud-icon-root {
+        height: 20px !important;
+        width: 20px !important;
+      }
     }
 
-    .mud-paper:nth-child(3) {
-        border-color: red;
-        grid-area: topRCCont;
+    &__lblonfooter {
+      font-size: 12px;
+      font-weight: bold;
     }
 
-    .mud-paper:nth-child(4) {
-        border-color: #f8778d;
-        grid-area: topRCont;
-        .mud-container:nth-child(1) {
-            background-color: #f8778d;
-        }
-    }
+    &__datepickercard4 {
+      height: 20px !important;
+      padding-top: 0.25rem;
 
-    .mud-paper:nth-child(5) {
-        border-color: #012340;
-        grid-area: centCont;
+      .mud-input-slot {
+        display: none;
+      }
+      .mud-input-control
+        > .mud-input-control-input-container
+        > div.mud-input.mud-input-text {
+        margin-top: unset;
+      }
+      .mud-input.mud-input-underline:before,
+      .mud-input.mud-input-underline:after {
+        border-bottom: none !important;
+      }
+      .mud-icon-root {
+        height: 20px !important;
+        width: 20px !important;
+      }
+      .mud-toolbar {
+        background-color: #f8778d !important;
+      }
     }
-
-    .mud-paper:nth-child(6) {
-        border-color: #012340;
-        grid-area: bottomRCont;
+  }
+  .cardcont2 {
+    // border-top: solid;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 24px 1fr;
+    grid-template-areas:
+      "topCont2 topCont2"
+      "bottomCont2 bottomCont2";
+    padding-top: 5px;
+    padding-bottom: 10px;
+    &__subcont {
+      display: flex;
+      padding: 0px 16px 0px 16px;
     }
-
-    .mud-paper:nth-child(7) {
-        border-color: #012340;
-        grid-area: bottomCont;
+    &__subcont:nth-child(1) {
+      align-items: center;
+      grid-area: topCont2;
     }
-
-    .cardcont {
+    &__subcont:nth-child(2) {
+      grid-area: bottomCont2;
+    }
+    &__centerchart {
+      align-items: center;
+      flex-direction: row-reverse !important;
+      gap: 5px;
+      .mud-chart-legend {
         display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 1fr 24px;
-
-        &__subcont {
-            align-items: center;
-            border-top-left-radius: 5px;
-            border-top-right-radius: 5px;
-            display: flex;
-            padding-left: 16px;
-            padding-right: 16px;
+        justify-content: flex-start !important;
+        margin-top: 0px !important;
+        width: 25% !important;
+        .mud-chart-legend-marker {
+          width: 10px !important;
+          height: 10px !important;
         }
-
-        &__hlabel {
-            color: white;
-            max-width: 12vw;
-            text-align: right !important;
-            .mud-typography:nth-child(1) {
-                font-size: 2rem !important;
-                font-weight: bold !important;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            .mud-typography:nth-child(2) {
-                font-size: 0.9rem !important;
-                font-weight: bold !important;
-            }
+        .mud-typography {
+          font-size: 0.7rem;
         }
-
-        &__hcardicon {
-            color: white;
-            height: 50px;
-            width: 50px;
-        }
-        &__fcardicon {
-            display: flex;
-            color:gray;
-            .mud-icon-button,
-            .mud-icon-root {
-                height: 20px !important;
-                width: 20px !important;
-            }
-        }
-
-        &__lblonfooter {
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        &__datepickercard4 {
-            height: 20px !important;
-            padding-top: .25rem;
-
-            .mud-input-slot {
-                display: none;
-            }
-            .mud-input-control>.mud-input-control-input-container>div.mud-input.mud-input-text {
-                margin-top: unset;
-            }
-            .mud-input.mud-input-underline:before,
-            .mud-input.mud-input-underline:after {
-                border-bottom: none !important;
-            }
-            .mud-icon-root {
-                height: 20px !important;
-                width: 20px !important;
-            }
-            .mud-toolbar {
-                background-color: #f8778d !important;
-            }
-        }
+      }
+      .mud-chart-line {
+        height: calc(50vh - 30px);
+        width: calc(50vw - 10px);
+      }
     }
-
-    .cardcont2 {
-        // border-top: solid;
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: 24px 1fr;
-        grid-template-areas: 
-        "topCont2 topCont2"
-        "bottomCont2 bottomCont2";
-        padding-top: 5px;
-        padding-bottom: 10px;
-        &__subcont {
-            display: flex;
-            padding: 0px 16px 0px 16px;
-        }
-        &__subcont:nth-child(1) {
-            align-items: center;
-            grid-area: topCont2;
-        }
-        &__subcont:nth-child(2) {
-            grid-area: bottomCont2;
-        }
-        &__centerchart {
-            align-items: center;
-            flex-direction: row-reverse !important;
-            gap: 5px;
-            .mud-chart-legend {
-                display: grid;
-                justify-content: flex-start !important;
-                margin-top: 0px !important;
-                width: 25% !important;
-                .mud-chart-legend-marker {
-                    width: 10px !important;
-                    height: 10px !important;
-                }
-                .mud-typography {
-                    font-size: .7rem;
-                }
-            }
-            .mud-chart-line {
-                height: calc(50vh - 30px);
-                width: calc(50vw - 10px);
-            }
-        }
-        &__lblonfooter {
-            .mud-button-root {
-                height: 20px;
-                width: 20px;
-            }
-        }
-        &__fcardicon {
-            display: flex;
-            color:gray;
-            .mud-icon-button,
-            .mud-icon-root {
-                height: 20px !important;
-                width: 20px !important;
-            }
-        }
-        &__cardtitle {
-            // align-self: center;
-            font-size: 12px;
-            font-weight: bold;
-            padding-left: 5px;
-        }
-        &__menucheckboxlist {
-            background-color: black;
-            gap: 5 !important;
-            padding: 5px !important;
-        }
+    &__lblonfooter {
+      .mud-button-root {
+        height: 20px;
+        width: 20px;
+      }
     }
-
-    .cardcont3 {
-        display: grid;
-        grid-template-columns: 1r;
-        grid-template-rows: 20px 0.5fr 1fr;
-        height: 100%;
-        padding: 5px 0px 0px 0px;
-        &__subcont {
-            display: flex;
-        }
-        &__subcont:nth-child(1),
-        &__subcont:nth-child(2)
-        {
-            justify-content: center;
-            padding-left: 16px;
-            padding-right: 16px;
-        }
-        &__subcont:nth-child(3) {
-            padding: 0px;
-        }
-        &__lblonfooter {
-            .mud-button-root {
-                height: 20px;
-                width: 20px;
-            }
-        }
-        &__fcardicon {
-            display: flex;
-            color:gray;
-            .mud-icon-button,
-            .mud-icon-root {
-                height: 20px !important;
-                width: 20px !important;
-            }
-        }
-        &__expansionpanels {
-            height: 100%;
-            width: 100%;
-            .mud-expand-panel {
-                height: calc(50vh - 150px);
-                overflow: auto;
-            }
-            .mud-expand-panel-content {
-                padding-left: 16px !important;
-                padding-right: 16px !important;
-            }
-        }
-        &__expansionpaneldata {
-            align-items: center;
-            display: grid;
-            gap: 5px;
-            grid-template-columns: 50px 1fr 20px;
-            grid-template-rows: auto;
-            .mud-avatar {
-                height: 30px;
-                width: 30px;
-            }
-            .mud-typography {
-                font-size: 12px;
-            }
-        }
-        &__cardtitle {
-            align-self: center;
-            font-size: 12px;
-            font-weight: bold;
-            padding-left: 5px;
-        }
-       &__piechart {
-           height: calc(30vh - 30px);
-       }
+    &__fcardicon {
+      display: flex;
+      color: gray;
+      .mud-icon-button,
+      .mud-icon-root {
+        height: 20px !important;
+        width: 20px !important;
+      }
     }
-
-    .cardcont4 {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        height: 100%;
-        &__subcont {
-            border: solid;
-            border-width: thin;
-            border-color: #012340;
-            padding: 0px;
-        }
-        &__subcont:nth-child(1) {
-            border-top: none;
-            border-right: none;
-            border-bottom: none;
-        }
-        &__subcont:nth-child(2) {
-            border-top: none;
-            border-bottom: none;
-        }
-        &__subcont:nth-child(3) {
-            border-top: none;
-            border-left: none;
-            border-bottom: none;
-        }
-        &__cattypecount {
-            background-color: #012340;
-            color: white;
-            display: flex;
-            padding: 0px 10px;
-            .mud-typography {
-                font-size: 14px;
-                font-weight: bold;
-            }
-        }
-        &__cattypelistcount {
-            display: grid;
-            grid-template-columns: 1fr 20px;
-            max-height: calc(20vh - 70px);
-            overflow: auto;
-            padding: 0px 0px 0px 8px;
-            .mud-typography {
-                display: flex;
-                font-size: 12px;
-                font-weight: bold;
-                height: 20px;
-                overflow: hidden;
-                // padding: 0px 5px 0px 5px;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
-        }
+    &__cardtitle {
+      // align-self: center;
+      font-size: 12px;
+      font-weight: bold;
+      padding-left: 5px;
     }
+    &__menucheckboxlist {
+      background-color: black;
+      gap: 5 !important;
+      padding: 5px !important;
+    }
+  }
+
+  .cardcont3 {
+    display: grid;
+    grid-template-columns: 1r;
+    grid-template-rows: 20px 0.5fr 1fr;
+    height: 100%;
+    padding: 5px 0px 0px 0px;
+    &__subcont {
+      display: flex;
+    }
+    &__subcont:nth-child(1),
+    &__subcont:nth-child(2) {
+      justify-content: center;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+    &__subcont:nth-child(3) {
+      padding: 0px;
+    }
+    &__lblonfooter {
+      .mud-button-root {
+        height: 20px;
+        width: 20px;
+      }
+    }
+    &__fcardicon {
+      display: flex;
+      color: gray;
+      .mud-icon-button,
+      .mud-icon-root {
+        height: 20px !important;
+        width: 20px !important;
+      }
+    }
+    &__expansionpanels {
+      height: 100%;
+      width: 100%;
+      .mud-expand-panel {
+        height: calc(50vh - 150px);
+        overflow: auto;
+      }
+      .mud-expand-panel-content {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+      }
+    }
+    &__expansionpaneldata {
+      align-items: center;
+      display: grid;
+      gap: 5px;
+      grid-template-columns: 50px 1fr 20px;
+      grid-template-rows: auto;
+      .mud-avatar {
+        height: 30px;
+        width: 30px;
+      }
+      .mud-typography {
+        font-size: 12px;
+      }
+    }
+    &__cardtitle {
+      align-self: center;
+      font-size: 12px;
+      font-weight: bold;
+      padding-left: 5px;
+    }
+    &__piechart {
+      height: calc(30vh - 30px);
+    }
+  }
+
+  .cardcont4 {
+    &__grid {
+      border: solid thin #012340;
+      background-color: #012340;
+      display: grid; 
+      grid-template-columns: 1fr 1fr 1fr; 
+      grid-template-rows: 1fr; 
+      gap: 0px 0px; 
+      grid-gap: 1px;
+      grid-template-areas: 
+        "cardcont4-left cardcont4-center cardcont4-right"; 
+      .cardcont4-left { grid-area: cardcont4-left; }
+      .cardcont4-center { grid-area: cardcont4-center; }
+      .cardcont4-right { grid-area: cardcont4-right; }
+      height: 100%;
+    }
+    &__header {
+      background-color: #012340;
+      color: white;
+      display: flex;
+      padding: 0px 10px;
+      .header-section, .header-count { 
+        @extend .font-sf-pro-display-regular; 
+        font-size: 14px;
+        font-weight: bold;
+      }
+    }
+    &__content {
+      display: grid;
+      grid-template-columns: 1fr 20px;
+      max-height: calc(20vh - 55px);
+      overflow: auto;
+      padding: 0px 8px;
+      .content-category, .content-count { 
+        @extend .font-sf-pro-display-regular; 
+        font-size: 12px;
+      }
+      .content-count { 
+        @extend .dflex-row;
+        justify-content: center;
+      }
+    }
+  }
 }

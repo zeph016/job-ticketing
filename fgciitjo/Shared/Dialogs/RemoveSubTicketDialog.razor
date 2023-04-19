@@ -1,12 +1,12 @@
 @inject ISnackbar Snackbar
 
-<MudDialog>
+<MudDialog Class='custom-dialog1'>
     <TitleContent>
         <MudText Typo='Typo.h6'>
-            <p class='pSubTicket'>
-                <MudIcon Icon="@Icons.Material.Filled.ConfirmationNumber" Size='Size.Large' />
-                @ContentText
-            </p>
+            <div class='d-flex align-center gap-2 custom-dialog1__title'>
+                <MudIcon Class='mr-3' Icon="@Icons.Material.Filled.Update" />
+                <MudText Typo='Typo.h6'>@ContentText</MudText>
+            </div>
         </MudText>
     </TitleContent>
     <DialogContent>
@@ -15,17 +15,21 @@
         </MudText>
     </DialogContent>
     <DialogActions>
-        <MudButton  Variant='Variant.Text' Color='Color.Error' OnClick='Cancel'>Cancel</MudButton>
-        <MudButton Color="@Color" Variant="Variant.Filled" OnClick='Submit'>@ButtonText</MudButton>
+        <MudButton Class='btn-ios-d font12' OnClick='Cancel' Variant='Variant.Text' Size='Size.Small' DisableElevation>
+            Cancel
+        </MudButton>
+        <MudButton Class='btn-ios-d font12' OnClick='Submit' Color="@Color" Variant="Variant.Filled" Size='Size.Small' DisableElevation>
+            @ButtonText
+        </MudButton>
     </DialogActions>
 </MudDialog>
 @code
 {
-  [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public string ContentText { get; set; }
-    [Parameter] public string ButtonText { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = new MudDialogInstance();
+    [Parameter] public string ContentText { get; set; } = string.Empty;
+    [Parameter] public string ButtonText { get; set; } = string.Empty;
     [Parameter] public Color Color { get; set; }
-    [Parameter] public string DialogContentText { get; set; }
+    [Parameter] public string DialogContentText { get; set; } = string.Empty;
     void Submit()
     {
         MudDialog.Close(DialogResult.Ok(true));

@@ -1,76 +1,32 @@
-.subTaskContainer {
-  width: 100% !important;
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
-  display: flex !important;
+.subtask-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 300px;
+  grid-template-rows: 35px 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas: "subtask-content subtask-content subtask-content subtask-sidebar" "subtask-content subtask-content subtask-content subtask-sidebar" "subtask-content subtask-content subtask-content subtask-sidebar" "subtask-content subtask-content subtask-content subtask-sidebar";
+  height: calc(100vh - 125px);
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 2560px;
 }
-
-.subTaskContainer .subTaskToolBar {
+.subtask-container .subtask-content {
+  grid-area: subtask-content;
+}
+.subtask-container .subtask-sidebar {
+  grid-area: subtask-sidebar;
+}
+.subtask-container .subtask-table {
+  margin: 8px;
+}
+.subtask-container .subtask-table .mud-toolbar {
   background-color: white;
-  padding: 0px !important;
+  border-radius: 5px;
+  height: 40px !important;
 }
-
-.subTaskContainer .subTaskToolBar .subTaskHeader {
-  font-size: 20px !important;
-  margin-left: 15px;
-  font-weight: bold !important;
+.subtask-container .subtask-table .mud-toolbar .mud-button-label {
+  font-size: 12px;
 }
-
-.subTaskContainer .subTaskContainer {
-  overflow: auto;
-  height: 50vh;
-}
-
-.subTaskContainer .subTaskSelect .mud-input-slot {
-  height: 32px;
-}
-
-.subTaskContainer .paperClassTrail {
-  width: 70% !important;
-}
-
-.subTaskContainer .paperClassSubTaskInfo {
-  width: 30% !important;
-  min-width: 300px;
-  overflow: auto;
-}
-
-.subTaskContainer .subTaskTable {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-line-pack: center;
-      align-content: center;
-  width: 100% !important;
-  overflow: auto;
-  margin-top: 30px;
-}
-
-.subTaskContainer #new-sub-task {
-  margin-left: 10px;
-}
-
-.subTaskToolBar .subTaskHeader {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 20px !important;
-  margin-left: 5px;
-  font-weight: bold !important;
-}
-
-.subTaskContainer .mud-container {
-  padding-left: 1px !important;
-  padding-right: 1px !important;
-}
-
-.subTaskContainer .mud-container .mud-table-cell {
-  text-align: center;
-}
-
-.subTaskContainer .tableIconSubTicket {
-  font-size: .875rem !important;
-  -webkit-box-align: center !important;
-      -ms-flex-align: center !important;
-          align-items: center !important;
-  gap: 10px !important;
-}
-/*# sourceMappingURL=subtask.styles.css.map */
+.subtask-container .subtask-table .mud-toolbar .mud-input-root-text {
+  font-size: 12px;
+}/*# sourceMappingURL=subtask.styles.css.map */

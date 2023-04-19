@@ -1,3 +1,41 @@
+global using Microsoft.AspNetCore.Components;
+global using Microsoft.AspNetCore.Components.Forms;
+global using Microsoft.AspNetCore.Components.Authorization;
+global using Microsoft.AspNetCore.SignalR.Client;
+global using System.ComponentModel.DataAnnotations;
+global using System.Security.Cryptography;
+global using System.Text;
+global using Microsoft.JSInterop;
+global using fgciitjo.Store;
+global using fgciitjo.domain.clsEnums;
+global using fgciitjo.domain.clsUserAccount;
+global using fgciitjo.domain.clsEmployee;
+global using fgciitjo.domain.clsTicket;
+global using fgciitjo.domain.clsTicketCategory;
+global using fgciitjo.domain.clsTicketFileAttachment;
+global using fgciitjo.domain.clsFilterParameter;
+global using fgciitjo.domain.clsTicketComment;
+global using fgciitjo.domain.clsTicketActivity;
+global using fgciitjo.domain.clsTicketStatus;
+global using fgciitjo.domain.clsTicketBranch;
+global using fgciitjo.domain.clsAppstate;
+global using fgciitjo.domain.clsTicketAuditTrail;
+global using fgciitjo.domain.clsNotificationTrail;
+global using fgciitjo.Common;
+global using fgciitjo.service.GlobalServices;
+global using fgciitjo.service.EmployeeAccountServices;
+global using fgciitjo.service.TicketServices;
+global using fgciitjo.service.TicketListServices;
+global using fgciitjo.service.TicketCommentServices;
+global using fgciitjo.service.TicketActivityServices;
+global using fgciitjo.service.TicketStatusServices;
+global using fgciitjo.service.TicketCategoryServices;
+global using fgciitjo.service.SubTaskServices;
+global using fgciitjo.service.TicketBranchServices;
+global using fgciitjo.service.ReportService;
+global using fgciitjo.Shared.Components.NotificationComponents;
+global using MudBlazor;
+global using Blazored.LocalStorage;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -5,52 +43,43 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
-using Blazored.LocalStorage;
+using fgciitjo;
 using fgciitjo.service.UserAccountServices;
-using fgciitjo.service.EmployeeAccountServices;
 using fgciitjo.service.TicketUserAccountServices;
-using fgciitjo.service.TicketStatusServices;
-using fgciitjo.service.TicketCategoryServices;
-using fgciitjo.service.TicketBranchServices;
-using fgciitjo.service.TicketServices;
-using fgciitjo.service.TicketListServices;
-using fgciitjo.service.GlobalServices;
-using fgciitjo.service.TicketActivityServices;
-using fgciitjo.service.SubTaskServices;
+
 using fgciitjo.service.AuditTrailServices;
 using fgciitjo.service.TicketMRItemServices;
-using fgciitjo.service.TicketCommentServices;
 
-namespace fgciitjo
-{
-  public class Program
-    {
-        public static async Task Main(string[] args)
-        {
-            var builder = WebAssemblyHostBuilder.CreateDefault(args);
-            builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration.GetValue<string>("BaseAPIUrl")) });
-            // builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration.GetValue<string>(apiUrl)) });
-            builder.Services.AddMudServices();
-            builder.Services.AddBlazoredLocalStorage();
+var builder = WebAssemblyHostBuilder.CreateDefault(args);
+builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddScoped<IUserAccountService, UserAccountService>();
-            builder.Services.AddScoped<ITicketUserAccountService, TicketUserAccountService>();
-            builder.Services.AddScoped<ITicketStatusService, TicketStatusService>();
-            builder.Services.AddScoped<ITicketCategoryService, TicketCategoryService>();
-            builder.Services.AddScoped<ITicketBranchService, TicketBranchService>();
-            builder.Services.AddScoped<ITicketBranchService, TicketBranchService>();
-            builder.Services.AddScoped<ITicketService, TicketService>();
-            builder.Services.AddScoped<ITicketListService, TicketListService>();
-            builder.Services.AddScoped<IGlobalService, GlobalService>();
-            builder.Services.AddScoped<ITicketActivityService, TicketActivityService>();
-            builder.Services.AddScoped<ISubTaskService, SubTaskService>();
-            builder.Services.AddScoped<IAuditTrailService, AuditTrailService>();
-            builder.Services.AddScoped<IEmployeeAccountService, EmployeeAccountService>();
-            builder.Services.AddScoped<ITicketMRItemService, TicketMRItemService>();
-            builder.Services.AddScoped<ITicketCommentService, TicketCommentService>();
-            await builder.Build().RunAsync();
-        }
-    }
-}
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration.GetValue<string>("BaseAPIUrl")) });
+// builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration.GetValue<string>(apiUrl)) });
+builder.Services.AddMudServices();
+builder.Services.AddBlazoredLocalStorage();
+
+builder.Services.AddScoped<ApplicationState>();
+builder.Services.AddScoped<IUserAccountService, UserAccountService>();
+builder.Services.AddScoped<ITicketUserAccountService, TicketUserAccountService>();
+builder.Services.AddScoped<ITicketStatusService, TicketStatusService>();
+builder.Services.AddScoped<ITicketCategoryService, TicketCategoryService>();
+builder.Services.AddScoped<ITicketBranchService, TicketBranchService>();
+builder.Services.AddScoped<ITicketBranchService, TicketBranchService>();
+builder.Services.AddScoped<ITicketService, TicketService>();
+builder.Services.AddScoped<ITicketListService, TicketListService>();
+builder.Services.AddScoped<IGlobalService, GlobalService>();
+builder.Services.AddScoped<ITicketActivityService, TicketActivityService>();
+builder.Services.AddScoped<ISubTaskService, SubTaskService>();
+builder.Services.AddScoped<IAuditTrailService, AuditTrailService>();
+builder.Services.AddScoped<IEmployeeAccountService, EmployeeAccountService>();
+builder.Services.AddScoped<ITicketMRItemService, TicketMRItemService>();
+builder.Services.AddScoped<ITicketCommentService, TicketCommentService>();
+builder.Services.AddScoped<IReportService, ReportService>();
+
+//Microsoft.AspNetCore.Components.Authorization;
+builder.Services.AddOptions();
+builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
+//
+await builder.Build().RunAsync();

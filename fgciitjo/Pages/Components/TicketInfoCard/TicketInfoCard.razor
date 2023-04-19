@@ -1,0 +1,62 @@
+@inherits TicketInfoCardBase
+
+ <div class="ticket-info-card">
+    <div class='ticket-info-card__grid'>
+        <div class="tinfo-header">
+            <p>Job Description</p>
+        </div>
+        <div class="tinfo-req">
+            <MudField Label='Requestor:' Margin='Margin.Dense' DisableUnderline >
+                <EmployeeCardComponent isITEmployee='false' employeeId='@Ticket.RequestorId' />
+            </MudField>
+        </div>
+        <div class="tinfo-assigned">
+            <MudField Label='Assigned to:' Margin='Margin.Dense' DisableUnderline >
+                <EmployeeCardComponent isITEmployee='true' employeeITId='@(Ticket.AssigneeId != null ?  (long)Ticket.AssigneeId : 0)' />
+            </MudField>
+        </div>
+        <div class="tinfo-ticketnum">
+            <MudField Label='Ticket Number:' Margin='Margin.Dense' DisableUnderline>
+                <MudChip OnClick='(() => CopyTextToClipboard(Ticket.TicketNumber))' 
+                    Color='Color.Error' Size='Size.Small' Variant='Variant.Outlined' Label>
+                    <p>@Ticket.TicketNumber</p>
+                </MudChip>
+            </MudField>
+        </div>
+        <div class="tinfo-ticketdate">
+            <MudField Label='Date' Margin='Margin.Dense' DisableUnderline >
+                <MudChip Icon='@Icons.Material.Filled.CalendarMonth' Size='Size.Small' Variant='Variant.Outlined' Label>
+                    <p>@Convert.ToDateTime(Ticket.TicketDate).ToString("MM/dd/yyyy")</p>
+                </MudChip>
+            </MudField>
+        </div>
+        <div class="tinfo-task-title">
+            <MudField Label='Task title:' Margin='Margin.Dense' >
+                <p class='ticket-info-card__txt-issue'>@Ticket.IssueSummary</p>
+            </MudField>
+        </div>
+        <div class="tinfo-task-desc">
+            <MudField Label='Task Description:' Margin='Margin.Dense' Variant='Variant.Outlined' >
+                <p class='ticket-info-card__txt-description'>@Ticket.TaskDescription</p>
+            </MudField>
+        </div>
+        <div class="tinfo-priority">
+            <MudField Label='Priority:' Margin='Margin.Dense' DisableUnderLine >
+                <MudChip Class='min-width85 color-white' Size='Size.Small' Label
+                    Color='@(Ticket.PriorityLevelId == Enums.PriorityLevel.Low ? Color.Info : 
+                    (Ticket.PriorityLevelId == Enums.PriorityLevel.Medium ? Color.Warning : 
+                    (Ticket.PriorityLevelId == Enums.PriorityLevel.High ? Color.Warning :Color.Primary)))' >
+                    @Ticket.PriorityLevelId
+                </MudChip>
+            </MudField>
+        </div>
+        <div class="tinfo-status">
+            <MudField Label='Status:' Margin='Margin.Dense' DisableUnderLine >
+                <MudChip Class='min-width85 color-white' Size='Size.Small' Label
+                    Style='@(Extensions.GetColor(Ticket.TicketStatusId))'>
+                    @Ticket.TicketStatusName
+                </MudChip>
+            </MudField>
+        </div>
+    </div>
+</div>

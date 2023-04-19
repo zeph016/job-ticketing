@@ -14,9 +14,9 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public string ContentText { get; set; }
-    [Parameter] public string ButtonText { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = new MudDialogInstance();
+    [Parameter] public string ContentText { get; set; } = string.Empty;
+    [Parameter] public string ButtonText { get; set; } = string.Empty;
     [Parameter] public Color Color { get; set; }
     [Parameter] public TicketUserAccount currTicketUser { get; set; } = new TicketUserAccount();
 

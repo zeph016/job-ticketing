@@ -1,0 +1,52 @@
+@inject IJSRuntime _jsRuntime
+@inject ISnackbar SnackbarService
+@inject NavigationManager URIHelper;
+
+@if (_newVersionAvailable)
+{
+    @* <button type="button" class="btn btn-warning shadow floating-update-button" onclick="window.location.reload()">
+        A new version of the application is available. Click here to reload.
+    </button> *@
+}
+
+@code {
+    private bool _newVersionAvailable = false;
+
+    protected override async Task OnInitializedAsync() => await RegisterForUpdateAvailableNotification();
+
+    private async Task RegisterForUpdateAvailableNotification()
+    {
+        await _jsRuntime.InvokeAsync<object>(
+            identifier: "registerForUpdateAvailableNotification",
+            DotNetObjectReference.Create(this),
+            nameof(OnUpdateAvailable));
+    }
+
+    [JSInvokable(nameof(OnUpdateAvailable))]
+    public Task OnUpdateAvailable()
+    {
+        _newVersionAvailable = true;
+        if(_newVersionAvailable)
+        {
+            SnackbarService.Configuration.PositionClass =  Defaults.Classes.Position.TopRight;
+            SnackbarService.Add("A new version of the application is available. Click here to reload.", Severity.Normal, config =>
+            {
+               
+                config.Icon = Icons.Material.Filled.SystemUpdate;
+                config.VisibleStateDuration = int.MaxValue;
+                config.Action = "Update";
+                config.ActionColor = Color.Info;
+                config.SnackbarVariant = Variant.Filled;
+                config.Onclick = snackbar =>
+                {
+                    SayHello();
+                    return Task.CompletedTask;
+                };
+            });
+        }
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private void SayHello() => URIHelper.NavigateTo(URIHelper.Uri, forceLoad: true);
+}

@@ -1,0 +1,10 @@
+@inherits TListSubTaskCheckCompBase
+
+@if (!dataFetched)
+{
+    <MudSkeleton Height='25px' Width='50px' Animation="Animation.Wave" />
+}
+else if (dataFetched && !string.IsNullOrWhiteSpace(taskType))
+{
+    <MudChip Class='font10 font-bold rounded' Size='Size.Small' Color='Color.Dark'>Main Ticket - #@parentTicket.TicketNumber</MudChip>
+}

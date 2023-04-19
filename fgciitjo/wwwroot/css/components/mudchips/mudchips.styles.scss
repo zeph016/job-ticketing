@@ -1,0 +1,33 @@
+@use "../flexgridmods/flexgridmods.styles.css";
+
+.mchip-small-10px {
+  font-size: 10px !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+}
+
+.mchip-fullwidth {
+  border-radius: 4px !important;
+  font-weight: bold;
+  width: 100%;
+}
+
+.mchip-fullwidthheight {
+  font-weight: bold !important;
+  height: 100% !important;
+  text-align: center;
+  width: 100%;
+  white-space: normal !important;
+}
+
+.mchip-useraccount {
+  span { 
+    @extend .dflex-row; 
+    gap: 8px;
+  } 
+  p {
+    font-size: 12px;
+    font-weight: bold;
+  }
+}
+

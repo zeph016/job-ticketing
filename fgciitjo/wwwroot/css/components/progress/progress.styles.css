@@ -1,0 +1,68 @@
+.dflex-row {
+  align-items: center;
+  display: flex !important;
+}
+
+.dflex-col, .circular-progress-cont {
+  flex-direction: column;
+  display: flex;
+}
+
+.dflex-ac {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+}
+
+.flex-full {
+  flex: 1 1 0%;
+}
+
+.flex-grow {
+  flex-grow: 1 !important;
+}
+
+.dflex {
+  display: flex;
+}
+
+.dblock {
+  display: block;
+}
+
+.dblock-inline {
+  display: inline-block;
+}
+
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
+}
+
+.line-clamp-8 {
+  -webkit-line-clamp: 8;
+}
+
+.line-clamp-10 {
+  -webkit-line-clamp: 10;
+}
+
+.line-clamp-16 {
+  -webkit-line-clamp: 16;
+}
+
+.line-clamp-props, .line-clamp-2, .line-clamp-3, .line-clamp-8, .line-clamp-10, .line-clamp-16 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+} 
+.circular-progress-cont {
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  min-width: 500px;
+}/*# sourceMappingURL=progress.styles.css.map */

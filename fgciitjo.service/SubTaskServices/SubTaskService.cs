@@ -46,7 +46,9 @@ namespace fgciitjo.service.SubTaskServices
                 HttpResponseMessage responseMessage = await client.GetAsync("ticket-subtask/list/" + ticketId);
                 if (responseMessage.IsSuccessStatusCode)
                 {
-                    listSubTask = JsonConvert.DeserializeObject<List<TicketModel>>(await responseMessage.Content.ReadAsStringAsync());
+                    var response = JsonConvert.DeserializeObject<List<TicketModel>>(await responseMessage.Content.ReadAsStringAsync());
+                    if (response != null)
+                        listSubTask = response;
                 }
                 return listSubTask;
             }

@@ -1,693 +1,307 @@
 @page "/dashboard"
 
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject ITicketListService ticketListService
-@inject ITicketStatusService ticketStatusService
-@inject ITicketCategoryService ticketCategoryService
-@inject IGlobalService globalService
-@inject ISnackbar snackbarService
+@inherits DashboardBase
+@attribute [Authorize]
 
-@inject IDialogService dialogService
+<div class='page-cont'>
+    <MudPaper Class='page-cont__background' Square Elevation='0' Height='100%'>
+        <MudContainer Class='dashboard-container pa-2' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+            @if (!dataFetched)
+            {
+                @* <MudOverlay Visible="isVisible" DarkBackground="true" Absolute="true">
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+                    </MudOverlay> *@
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: topLCont;' />
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: topLCCont;' />
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: topRCCont;' />
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: topRCont;' />
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: centCont;' />
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: bottomRCont;' />
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: bottomCont;' />
+            }
+            else
+            {
+                <MudPaper Class='cardcont' Elevation='0' style='border-color: #008000bd;'>
+                    <MudContainer Class='cardcont__subcont' Fixed='true'>
+                        <MudIcon Class='cardcont__hcardicon' Icon="@Icons.Material.Filled.StickyNote2" Title='Total Tickets'
+                        Size='Size.Large' />
+                        <MudSpacer />
+                        <div class='cardcont__hlabel'>
+                            <MudText>
+                                @totalTickets
+                            </MudText>
+                            <MudText>
+                                TOTAL TICKETS
+                            </MudText>
+                        </div>
+                    </MudContainer>
+                    <MudContainer Class='cardcont__subcont' Fixed='true'>
+                        <MudText Class='cardcont__lblonfooter'>
+                            @* Sample *@
+                        </MudText>
+                        <MudSpacer />
+                        <MudText>
+                            @* Sample *@
+                        </MudText>
+                    </MudContainer>
+                </MudPaper>
+                <MudPaper Class='cardcont' Elevation='0' style='@($"border-color:{selectedTicketStatus.StatusColor};")'>
+                    <MudContainer Class='cardcont__subcont' Fixed='true'
+                    style='@($"background-color:{selectedTicketStatus.StatusColor};")'>
+                        <MudIcon Class='cardcont__hcardicon' Icon="@Icons.Material.Filled.Rule" Title='Ticket Status'
+                        Size='Size.Large' />
+                        <MudSpacer />
+                        <div class='cardcont__hlabel'>
+                            <MudText>
+                                @ticketStatusCount
+                            </MudText>
+                            <MudText>
+                                BY STATUS
+                            </MudText>
+                        </div>
+                    </MudContainer>
+                    <MudContainer Class='cardcont__subcont' Fixed='true'>
+                        <MudText Class='cardcont__lblonfooter'>
+                            @selectedTicketStatus.StatusName
+                        </MudText>
+                        <MudSpacer />
+                        <div>
+                            <MudMenu Class='cardcont__fcardicon' Icon="@Icons.Material.Filled.Settings" Dense='true'
+                            Direction='Direction.End'>
+                                @foreach (var item in ticketStatusList)
+                                {
+                                    <MudMenuItem OnClick='@(() => CountTicketStatus(item))'>@item.StatusName</MudMenuItem>
+                                }
+                            </MudMenu>
+                        </div>
+                    </MudContainer>
+                </MudPaper>
+                <MudPaper Class='cardcont' Elevation='0' style='@styleStringBorderPriority'>
+                    <MudContainer Class='cardcont__subcont' Fixed='true' style='@styleStringBackGPriority'>
+                        <MudIcon Class='cardcont__hcardicon' Icon="@Icons.Material.Filled.LowPriority" Title='Ticket Priority'
+                        Size='Size.Large' />
+                        <MudSpacer />
+                        <MudText Class='cardcont__hlabel'>
+                            <MudText>
+                                @ticketPriorityCount
+                            </MudText>
+                            <MudText>
+                                BY PRIORITY
+                            </MudText>
+                        </MudText>
+                    </MudContainer>
+                    <MudContainer Class='cardcont__subcont' Fixed='true'>
+                        <MudText Class='cardcont__lblonfooter'>
+                            @selectedPriorityLevel
+                        </MudText>
+                        <MudSpacer />
+                        <MudText>
+                            <MudText>
+                                <MudMenu Class='cardcont__fcardicon' Icon='@Icons.Material.Filled.Settings' Dense='true'
+                                Direction='Direction.End'>
+                                    @foreach (Enums.PriorityLevel item in Enum.GetValues(typeof(Enums.PriorityLevel)))
+                                    {
+                                        <MudMenuItem OnClick='@(() => CountTicketPriority(item))'>@item</MudMenuItem>
+                                    }
+                                </MudMenu>
+                            </MudText>
+                        </MudText>
+                    </MudContainer>
+                </MudPaper>
+                <MudPaper Class='cardcont' Elevation='0'>
+                    <MudContainer Class='cardcont__subcont' Fixed='true'>
+                        <MudIcon Class='cardcont__hcardicon' Icon="@Icons.Material.Filled.NoteAdd" Title='Ticket Priority'
+                        Size='Size.Large' />
+                        <MudSpacer />
+                        <div class='cardcont__hlabel'>
+                            <MudText>
+                                @ticketsForTheDayCount
+                            </MudText>
+                            <MudText>
+                                BY DAY
+                            </MudText>
+                        </div>
+                    </MudContainer>
+                    <MudContainer Class='cardcont__subcont' Fixed='true'>
+                        <MudText Class='cardcont__lblonfooter'>
+                            @ticketDateString
+                        </MudText>
+                        <MudSpacer />
+                        <div>
+                            <MudDatePicker Class='cardcont__datepickercard4' @bind-Date='selectedDate' DateFormat='MM/dd/yyyy' DisableToolbar
+                            PickerClosed='@(() => CountTicketsForTheDay(Convert.ToDateTime(selectedDate)))'  IconSize='Size.Small' />
+                        </div>
+                    </MudContainer>
+                </MudPaper>
 
-<MudContainer Class='dashboardCont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
-    @if (!dataFetched)
-    {
-        @* <MudOverlay Visible="isVisible" DarkBackground="true" Absolute="true">
-            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
-            </MudOverlay> *@
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: topLCont;' />
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: topLCCont;' />
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: topRCCont;' />
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: topRCont;' />
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: centCont;' />
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: bottomRCont;' />
-        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" style='grid-area: bottomCont;' />
-    }
-    else
-    {
-        <MudPaper Class='cardcont' Elevation='0' style='border-color: #008000bd;'>
-            <MudContainer Class='cardcont__subcont' Fixed='true'>
-                <MudIcon Class='cardcont__hcardicon' Icon="@Icons.Material.Filled.StickyNote2" Title='Total Tickets'
-                Size='Size.Large' />
-                <MudSpacer />
-                <div class='cardcont__hlabel'>
-                    <MudText>
-                        @totalTickets
-                    </MudText>
-                    <MudText>
-                        TOTAL TICKETS
-                    </MudText>
-                </div>
-            </MudContainer>
-            <MudContainer Class='cardcont__subcont' Fixed='true'>
-                <MudText Class='cardcont__lblonfooter'>
-                    @* Sample *@
-                </MudText>
-                <MudSpacer />
-                <MudText>
-                    @* Sample *@
-                </MudText>
-            </MudContainer>
-        </MudPaper>
-        <MudPaper Class='cardcont' Elevation='0' style='@($"border-color:{selectedTicketStatus.StatusColor};")'>
-            <MudContainer Class='cardcont__subcont' Fixed='true'
-            style='@($"background-color:{selectedTicketStatus.StatusColor};")'>
-                <MudIcon Class='cardcont__hcardicon' Icon="@Icons.Material.Filled.Rule" Title='Ticket Status'
-                Size='Size.Large' />
-                <MudSpacer />
-                <div class='cardcont__hlabel'>
-                    <MudText>
-                        @ticketStatusCount
-                    </MudText>
-                    <MudText>
-                        BY STATUS
-                    </MudText>
-                </div>
-            </MudContainer>
-            <MudContainer Class='cardcont__subcont' Fixed='true'>
-                <MudText Class='cardcont__lblonfooter'>
-                    @selectedTicketStatus.StatusName
-                </MudText>
-                <MudSpacer />
-                <div>
-                    <MudMenu Class='cardcont__fcardicon' Icon="@Icons.Material.Filled.Settings" Dense='true'
-                    Direction='Direction.End'>
-                        @foreach (var item in ticketStatusList)
-                        {
-                            <MudMenuItem OnClick='@(() => CountTicketStatus(item))'>@item.StatusName</MudMenuItem>
-                        }
-                    </MudMenu>
-                </div>
-            </MudContainer>
-        </MudPaper>
-        <MudPaper Class='cardcont' Elevation='0' style='@styleStringBorderPriority'>
-            <MudContainer Class='cardcont__subcont' Fixed='true' style='@styleStringBackGPriority'>
-                <MudIcon Class='cardcont__hcardicon' Icon="@Icons.Material.Filled.LowPriority" Title='Ticket Priority'
-                Size='Size.Large' />
-                <MudSpacer />
-                <MudText Class='cardcont__hlabel'>
-                    <MudText>
-                        @ticketPriorityCount
-                    </MudText>
-                    <MudText>
-                        BY PRIORITY
-                    </MudText>
-                </MudText>
-            </MudContainer>
-            <MudContainer Class='cardcont__subcont' Fixed='true'>
-                <MudText Class='cardcont__lblonfooter'>
-                    @selectedPriorityLevel
-                </MudText>
-                <MudSpacer />
-                <MudText>
-                    <MudText>
-                        <MudMenu Class='cardcont__fcardicon' Icon='@Icons.Material.Filled.Settings' Dense='true'
-                        Direction='Direction.End'>
-                            @foreach (Enums.PriorityLevel item in Enum.GetValues(typeof(Enums.PriorityLevel)))
+                <MudPaper Class='cardcont2' Elevation='0'>
+                    <MudContainer Class='cardcont2__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+                        <MudMenu Class='cardcont2__fcardicon' Icon="@Icons.Material.Filled.Settings" Dense='true'
+                        Direction='Direction.Bottom' DisableRipple='true'>
+                            @foreach (var item in ticketStatusListCBList)
                             {
-                                <MudMenuItem OnClick='@(() => CountTicketPriority(item))'>@item</MudMenuItem>
+                                <div class='cardcont2__menucheckboxlist'>
+                                    <MudCheckBox @bind-Checked='@item.IsChecked' Dense='true' Size='Size.Small' DisableRipple='false'>
+                                        @item.selectedTicketStatus.StatusName
+                                    </MudCheckBox>
+                                </div>
                             }
                         </MudMenu>
-                    </MudText>
-                </MudText>
-            </MudContainer>
-        </MudPaper>
-        <MudPaper Class='cardcont' Elevation='0'>
-            <MudContainer Class='cardcont__subcont' Fixed='true'>
-                <MudIcon Class='cardcont__hcardicon' Icon="@Icons.Material.Filled.NoteAdd" Title='Ticket Priority'
-                Size='Size.Large' />
-                <MudSpacer />
-                <div class='cardcont__hlabel'>
-                    <MudText>
-                        @ticketsForTheDayCount
-                    </MudText>
-                    <MudText>
-                        BY DAY
-                    </MudText>
-                </div>
-            </MudContainer>
-            <MudContainer Class='cardcont__subcont' Fixed='true'>
-                <MudText Class='cardcont__lblonfooter'>
-                    @ticketDateString
-                </MudText>
-                <MudSpacer />
-                <div>
-                    <MudDatePicker Class='cardcont__datepickercard4' @bind-Date='selectedDate' DateFormat='MM/dd/yyyy'
-                    PickerClosed='@(() => CountTicketsForTheDay(Convert.ToDateTime(selectedDate)))' />
-                </div>
-            </MudContainer>
-        </MudPaper>
-
-        <MudPaper Class='cardcont2' Elevation='0'>
-            <MudContainer Class='cardcont2__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
-                <MudMenu Class='cardcont2__fcardicon' Icon="@Icons.Material.Filled.Settings" Dense='true'
-                Direction='Direction.Bottom' DisableRipple='true'>
-                    @foreach (var item in ticketStatusListCBList)
-                    {
-                        <div class='cardcont2__menucheckboxlist'>
-                            <MudCheckBox @bind-Checked='@item.IsChecked' Dense='true' Size='Size.Small' DisableRipple='false'>
-                                @item.selectedTicketStatus.StatusName
-                            </MudCheckBox>
+                        <div class='cardcont2__lblonfooter'>
+                            <MudIconButton OnClick='RefreshBarChart' Icon="@Icons.Material.Filled.Refresh" aria-label="Analytics"
+                            Size='Size.Small' />
                         </div>
-                    }
-                </MudMenu>
-                <div class='cardcont2__lblonfooter'>
-                    <MudIconButton OnClick='RefreshBarChart' Icon="@Icons.Material.Filled.Refresh" aria-label="Analytics"
-                    Size='Size.Small' />
-                </div>
-                <MudText Class='cardcont2__cardtitle'>
-                    Ticket Status
-                </MudText>
-                <MudSpacer />
-                <div class='cardcont2__lblonfooter'>
-                    <MudIconButton OnClick='ViewBarChart' Icon="@Icons.Material.Filled.Analytics" aria-label="Analytics"
-                    Size='Size.Small' />
-                </div>
-            </MudContainer>
-            <MudContainer Class='cardcont2__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
-                <MudChart Class='cardcont2__centerchart' ChartType="ChartType.Bar" ChartSeries="@barChartSeries"
-                @bind-SelectedIndex="index" XAxisLabels="@xAxisLabels" Width='100%' Height='100%'></MudChart>
-            </MudContainer>
-        </MudPaper>
+                        <MudText Class='cardcont2__cardtitle'>
+                            Ticket Status
+                        </MudText>
+                        <MudSpacer />
+                        <div class='cardcont2__lblonfooter'>
+                            <MudIconButton OnClick='ViewBarChart' Icon="@Icons.Material.Filled.Analytics" aria-label="Analytics"
+                            Size='Size.Small' />
+                        </div>
+                    </MudContainer>
+                    <MudContainer Class='cardcont2__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+                        <MudChart Class='cardcont2__centerchart' ChartType="ChartType.Bar" ChartSeries="@barChartSeries"
+                        @bind-SelectedIndex="index" XAxisLabels="@xAxisLabels" Width='100%' Height='100%'></MudChart>
+                    </MudContainer>
+                </MudPaper>
 
-        <MudPaper Class='cardcont3' Elevation='0'>
-            <MudContainer Class='cardcont3__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'
-            style="align-items: center;">
-                <MudText Class='cardcont3__cardtitle'>
-                    Ticket Priority
-                </MudText>
-                <MudSpacer />
-                <div class='cardcont3__lblonfooter'>
-                    <MudIconButton OnClick='ViewPieChart' Icon="@Icons.Material.Filled.PieChart" aria-label="Analytics"
-                    Size='Size.Small' />
-                </div>
-            </MudContainer>
-            <MudContainer Class='cardcont3__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
-                <MudChart Class='cardcont3__piechart' ChartType='ChartType.Pie' InputData='pieDataX'
-                InputLabels='xAxisPieLabels' Width='80%' Height='80%'>
-                </MudChart>
-            </MudContainer>
-            <MudContainer Class='cardcont3__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
-                <div class='cardcont3__expansionpanels'>
-                    <MudExpansionPanels Elevation='0'>
-                        <MudExpansionPanel Text='@totalTicketsTitle' IsInitiallyExpanded='true'>
-                            <div class='cardcont3__expansionpaneldata'>
-                                @if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Administrator)
+                <MudPaper Class='cardcont3' Elevation='0'>
+                    <MudContainer Class='cardcont3__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'
+                    style="align-items: center;">
+                        <MudText Class='cardcont3__cardtitle'>
+                            Ticket Priority
+                        </MudText>
+                        <MudSpacer />
+                        <div class='cardcont3__lblonfooter'>
+                            <MudIconButton OnClick='ViewPieChart' Icon="@Icons.Material.Filled.PieChart" aria-label="Analytics"
+                            Size='Size.Small' />
+                        </div>
+                    </MudContainer>
+                    <MudContainer Class='cardcont3__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+                        <MudChart Class='cardcont3__piechart' ChartType='ChartType.Pie' InputData='pieDataX'
+                        InputLabels='xAxisPieLabels' Width='80%' Height='80%'>
+                        </MudChart>
+                    </MudContainer>
+                    <MudContainer Class='cardcont3__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+                        <div class='cardcont3__expansionpanels'>
+                            <MudExpansionPanels Elevation='0'>
+                                <MudExpansionPanel Text='@totalTicketsTitle' IsInitiallyExpanded='true'>
+                                    <div class='cardcont3__expansionpaneldata'>
+                                        @if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Administrator)
+                                        {
+                                            @foreach (var item in itDeptEmpListCB)
+                                            {
+                                                <MudAvatar
+                                        Image='@($"data:image/png;base64, {Convert.ToBase64String(@item.EmployeeDetails.Picture)}")'>
+                                                </MudAvatar>
+                                                <MudText>
+                                                    @item.EmployeeDetails.EmployeeName
+                                                </MudText>
+                                                <MudText>
+                                                    @item.TicketCount
+                                                </MudText>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <MudAvatar
+                                        Image='@($"data:image/png;base64, {Convert.ToBase64String(@GlobalClass.CurrentUserAccount.Picture)}")'>
+                                            </MudAvatar>
+                                            <MudText>
+                                                @GlobalClass.CurrentUserAccount.EmployeeName
+                                            </MudText>
+                                            <MudText>
+                                                @ticketList.Count()
+                                            </MudText>
+                                        }
+                                    </div>
+                                </MudExpansionPanel>
+                            </MudExpansionPanels>
+                        </div>
+                    </MudContainer>
+                </MudPaper>
+
+                <MudPaper Class='cardcont4' Elevation='0'>
+                    <div class="cardcont4__grid">
+                        <MudPaper Class="cardcont4-left" Square Elevation='0'>
+                            <div class='cardcont4__header'>
+                                <p class='header-section'>
+                                    @Enums.TicketCategoryType.Hardware
+                                </p>
+                                <MudSpacer />
+                                <p class='header-count'>
+                                    @totalHardwareCount
+                                </p>
+                            </div>
+                            <div class='cardcont4__content'>
+                                @foreach (var item in ticketCategoryModelCBList)
                                 {
-                                    @foreach (var item in itDeptEmpListCB)
+                                    if (item.TicketCategory.CategoryTypeId == Enums.TicketCategoryType.Hardware)
                                     {
-                                        <MudAvatar
-                                Image='@($"data:image/png;base64, {Convert.ToBase64String(@item.EmployeeDetails.Picture)}")'>
-                                        </MudAvatar>
-                                        <MudText>
-                                            @item.EmployeeDetails.EmployeeName
-                                        </MudText>
-                                        <MudText>
-                                            @item.TicketCount
-                                        </MudText>
+                                        <p class='content-category'>
+                                            @item.CategoryName
+                                        </p>
+                                        <p class='content-count'>
+                                            @item.Count
+                                        </p>
                                     }
                                 }
-                                else
+                            </div>
+                        </MudPaper>
+                        <MudPaper Class="cardcont4-center" Square Elevation='0'>
+                            <div class='cardcont4__header'>
+                                <p class='header-section'>
+                                    @Enums.TicketCategoryType.Software
+                                </p>
+                                <MudSpacer />
+                                <p class='header-count'>
+                                    @totalSoftwareCount
+                                </p>
+                            </div>
+                            <div class='cardcont4__content'>
+                                @foreach (var item in ticketCategoryModelCBList)
                                 {
-                                    <MudAvatar
-                                Image='@($"data:image/png;base64, {Convert.ToBase64String(@GlobalClass.CurrentUserAccount.Picture)}")'>
-                                    </MudAvatar>
-                                    <MudText>
-                                        @GlobalClass.CurrentUserAccount.EmployeeName
-                                    </MudText>
-                                    <MudText>
-                                        @ticketList.Count()
-                                    </MudText>
+                                    if (item.TicketCategory.CategoryTypeId == Enums.TicketCategoryType.Software)
+                                    {
+                                        <p class='content-category'>
+                                            @item.CategoryName
+                                        </p>
+                                        <p class='content-count'>
+                                            @item.Count
+                                        </p>
+                                    }
                                 }
                             </div>
-                        </MudExpansionPanel>
-                    </MudExpansionPanels>
-                </div>
-            </MudContainer>
-        </MudPaper>
-
-        <MudPaper Class='cardcont4' Elevation='0'>
-            <MudContainer Class='cardcont4__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
-                <div class='cardcont4__cattypecount'>
-                    <MudText>
-                        @Enums.TicketCategoryType.Hardware
-                    </MudText>
-                    <MudSpacer />
-                    <MudText>
-                        @totalHardwareCount
-                    </MudText>
-                </div>
-                <div class='cardcont4__cattypelistcount'>
-                    @foreach (var item in ticketCategoryModelCBList)
-                    {
-                        if (item.TicketCategory.CategoryTypeId == Enums.TicketCategoryType.Hardware)
-                        {
-                            <MudText>
-                                @item.CategoryName
-                            </MudText>
-                            <MudText>
-                                @item.Count
-                            </MudText>
-                        }
-                    }
-                </div>
-            </MudContainer>
-            <MudContainer Class='cardcont4__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
-                <div>
-
-                </div>
-                <div class='cardcont4__cattypecount'>
-                    <MudText>
-                        @Enums.TicketCategoryType.Software
-                    </MudText>
-                    <MudSpacer />
-                    <MudText>
-                        @totalSoftwareCount
-                    </MudText>
-                </div>
-                <div class='cardcont4__cattypelistcount'>
-                    @foreach (var item in ticketCategoryModelCBList)
-                    {
-                        if (item.TicketCategory.CategoryTypeId == Enums.TicketCategoryType.Software)
-                        {
-                            <MudText>
-                                @item.CategoryName
-                            </MudText>
-                            <MudText>
-                                @item.Count
-                            </MudText>
-                        }
-                    }
-                </div>
-            </MudContainer>
-            <MudContainer Class='cardcont4__subcont' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
-                <div class='cardcont4__cattypecount'>
-                    <MudText>
-                        @Enums.TicketCategoryType.Admin
-                    </MudText>
-                    <MudSpacer />
-                    <MudText>
-                        @totalAdminCount
-                    </MudText>
-                </div>
-                <div class='cardcont4__cattypelistcount'>
-                    @foreach (var item in ticketCategoryModelCBList)
-                    {
-                        if (item.TicketCategory.CategoryTypeId == Enums.TicketCategoryType.Admin)
-                        {
-                            <MudText>
-                                @item.CategoryName
-                            </MudText>
-                            <MudText>
-                                @item.Count
-                            </MudText>
-                        }
-                    }
-                </div>
-            </MudContainer>
-        </MudPaper>
-    }
-
-</MudContainer>
-
-@code {
-
-    #region Properties
-    private string Token, totalTicketsTitle;
-    private List<TicketModel> ticketList { get; set; } = new List<TicketModel>();
-    private List<TicketStatusModel> ticketStatusList = new List<TicketStatusModel>();
-    private List<TicketCategoryModel> ticketCategoryList = new List<TicketCategoryModel>();
-    private TicketStatusModel selectedTicketStatus = new TicketStatusModel();
-    private Enums.PriorityLevel selectedPriorityLevel = Enums.PriorityLevel.Low;
-    private List<Employee> itDeptEmpList = new List<Employee>();
-    private bool isVisible = true, dataFetched, _checkTest, isMainLayoutDone, fromFilter;
-    private int index = -1;
-    private long totalTickets, ticketStatusCount, ticketPriorityCount, ticketsForTheDayCount, totalHardwareCount,
-    totalSoftwareCount, totalAdminCount;
-    private string styleStringTStatus, styleStringBorderPriority, styleStringBackGPriority, ticketDateString;
-    DateTime? selectedDate = DateTime.Today;
-    public string[] xAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" },
-    xAxisPieLabels;
-    public double[] pieDataX;
-    List<string> pieLabels = new List<string>();
-    List<double> pieData = new List<double>();
-    public List<ChartSeries> barChartSeries = new List<ChartSeries>();
-    public List<TicketStatusCBModel> ticketStatusListCBList = new List<TicketStatusCBModel>();
-    public List<TicketStatusCBModel> ticketStatusListForFilter = new List<TicketStatusCBModel>();
-    public List<TicketCategoryModelCB> ticketCategoryModelCBList = new List<TicketCategoryModelCB>();
-    public List<EmployeeCB> itDeptEmpListCB = new List<EmployeeCB>();
-
-    #endregion
-    protected override async Task OnInitializedAsync()
-    {
-        while (!isMainLayoutDone)
-        {
-            if (GlobalClass.CurrentUserAccount != null)
-            {
-                isMainLayoutDone = true;
-                break;
+                        </MudPaper>
+                        <MudPaper Class="cardcont4-right" Square Elevation='0'>
+                            <div class='cardcont4__header'>
+                                <p clas='header-section'>
+                                    @Enums.TicketCategoryType.Admin
+                                </p>
+                                <MudSpacer />
+                                <p class='header-count'>
+                                    @totalAdminCount
+                                </p>
+                            </div>
+                            <div class='cardcont4__content'>
+                                @foreach (var item in ticketCategoryModelCBList)
+                                {
+                                    if (item.TicketCategory.CategoryTypeId == Enums.TicketCategoryType.Admin)
+                                    {
+                                        <p class='content-category'>
+                                            @item.CategoryName
+                                        </p>
+                                        <p class='content-count'>
+                                            @item.Count
+                                        </p>
+                                    }
+                                }
+                            </div>
+                        </MudPaper>
+                    </div>
+                </MudPaper>
             }
-            await Task.Delay(1);
-        }
-        GlobalContentTitle.contentTitle = "DASHBOARD";
-        if (GlobalClass.CurrentUserAccount.AccessLevel != Enums.AccessLevel.Administrator)
-            totalTicketsTitle = "Your Stats";
-        else
-            totalTicketsTitle = "Employee Stats";
-        Token = await localStorage.GetItemAsync<string>("token");
-        isVisible = true;
-        Task t = Task.WhenAll(LoadAllTickets(), LoadTicketStatus(), LoadTicketCategories(), AddPriorityLevelsToList(),
-        GetITDept());
-        await t;
-        if (t.Status == TaskStatus.RanToCompletion)
-        {
-            CountTickets();
-            CountTicketStatus(selectedTicketStatus);
-            CountTicketPriority(selectedPriorityLevel);
-            CountTicketsForTheDay(Convert.ToDateTime(selectedDate));
-            CountTicketsByMonths();
-            CountTotalCategoryType();
-            CountTicketsByPriority();
-            await CountTicketsPerITEmployee();
-            CompletedFetch();
-        }
-    }
-    private async Task LoadAllTickets()
-    {
-        FilterParameter filterParameter = new FilterParameter();
-        filterParameter.TicketAccessLevel = GlobalClass.CurrentUserAccount.AccessLevel;
-        filterParameter.TicketUserAccountId = GlobalClass.CurrentUserAccount.EmployeeId;
-        filterParameter.isActive = true;
-        ticketList = await ticketListService.LoadTicketv2(filterParameter, Token);
-        @* ticketList = await ticketListService.LoadTicket(filterParameter, Token); *@
-        if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.IT)
-            ticketList = ticketList.Where(x => x.AssigneeId == GlobalClass.CurrentUserAccount.EmployeeId).ToList();
-        if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Client)
-            ticketList = ticketList.Where(x => x.RequestorId == GlobalClass.CurrentUserAccount.EmployeeId).ToList();
-
-    }
-
-    private async Task LoadTicketStatus()
-    {
-        while (GlobalList.ticketStatusList == null)
-            await Task.Delay(1);
-        ticketStatusList = GlobalList.ticketStatusList;
-        foreach (var items in ticketStatusList)
-        {
-            if (items.StatusName == "Done")
-            {
-                selectedTicketStatus = items;
-                break;
-            }
-        }
-        PopulateTicketStatusCB();
-    }
-
-    private async Task LoadTicketCategories()
-    {
-        while (GlobalList.ticketCategoryList == null)
-            await Task.Delay(1);
-        ticketCategoryList = GlobalList.ticketCategoryList;
-    }
-
-    private async Task AddPriorityLevelsToList()
-    {
-        await Task.Run(() =>
-        {
-            foreach (Enums.PriorityLevel items in Enum.GetValues(typeof(Enums.PriorityLevel)))
-            {
-                pieLabels.Add(items.ToString());
-            }
-        });
-        xAxisPieLabels = pieLabels.ToArray();
-    }
-
-    private async Task GetITDept()
-    {
-        while (GlobalList.ITDept == null)
-            await Task.Delay(1);
-        itDeptEmpList = GlobalList.ITDept;
-    }
-
-    private async Task CountTicketsPerITEmployee()
-    {
-        await Task.Run(() =>
-        {
-            foreach (var item in itDeptEmpList)
-            {
-                EmployeeCB employee = new EmployeeCB();
-                employee.Id = item.EmployeeId;
-                employee.TicketCount = ticketList.Where(x => x.AssigneeId == item.EmployeeId).ToList().Count();
-                employee.EmployeeDetails = item;
-                itDeptEmpListCB.Add(employee);
-            }
-        });
-        itDeptEmpListCB = itDeptEmpListCB.OrderByDescending(x => x.TicketCount).ToList();
-    }
-
-    private void PopulateTicketStatusCB()
-    {
-        foreach (var item in ticketStatusList)
-        {
-            TicketStatusCBModel cbValue = new TicketStatusCBModel();
-            cbValue.Id = item.Id;
-            if (item.Id == 1 || item.Id == 2 || item.Id == 6 || item.Id == 8 || item.Id == 7)
-                cbValue.IsChecked = true;
-            else
-                cbValue.IsChecked = false;
-            cbValue.selectedTicketStatus = item;
-            ticketStatusListCBList.Add(cbValue);
-        }
-    }
-
-    private void CountTickets()
-    {
-        totalTickets = ticketList.Count();
-        Console.WriteLine("Total Tickets: " + totalTickets);
-    }
-    void CompletedFetch()
-    {
-        isVisible = false;
-        dataFetched = true;
-        StateHasChanged();
-    }
-
-    private void CountTicketStatus(TicketStatusModel ticketStatus)
-    {
-        selectedTicketStatus = ticketStatus;
-        ticketStatusCount = ticketList.Where(x => x.TicketStatusName == selectedTicketStatus.StatusName).ToList().Count();
-    }
-
-    private void CountTicketPriority(Enums.PriorityLevel ticketPriority)
-    {
-        selectedPriorityLevel = ticketPriority;
-        ticketPriorityCount = ticketList.Where(x => x.PriorityLevelId == selectedPriorityLevel).ToList().Count();
-        SelectTicketPriority(ticketPriority);
-    }
-
-    private void CountTicketsForTheDay(DateTime selectedDate)
-    {
-        DateTime startDay = selectedDate;
-        DateTime endDay = startDay.AddDays(1).AddTicks(-1);
-        ticketsForTheDayCount = ticketList.Where(x => x.TicketDate >= startDay && x.TicketDate <= endDay).ToList().Count();
-        ticketDateString = startDay.ToString("MM/dd/yyyy");
-    }
-
-    private void CountTicketsByMonths()
-    {
-        barChartSeries = new List<ChartSeries>();
-        foreach (var item in ticketStatusListCBList)
-        {
-            if (item.IsChecked)
-            {
-                ChartSeries addSeries = new ChartSeries();
-                addSeries.Name = item.selectedTicketStatus.StatusName;
-                addSeries.Data = new double[]
-                {
-                    countJan(item.Id), countFeb(item.Id), countMar(item.Id), countApr(item.Id),
-                    countMay(item.Id), countJun(item.Id), countJul(item.Id), countAug(item.Id),
-                    countSep(item.Id), countOct(item.Id), countNov(item.Id), countDec(item.Id)
-                };
-                barChartSeries.Add(addSeries);
-            }
-        }
-    }
-
-    private void CountTotalCategoryType()
-    {
-        foreach (var item in ticketCategoryList)
-        {
-            TicketCategoryModelCB tcatCB = new TicketCategoryModelCB();
-            tcatCB.Id = item.Id;
-            tcatCB.CategoryName = item.CategoryName;
-            tcatCB.Count = ticketList.Where(x => x.TicketCategoryId == item.Id).ToList().Count();
-            tcatCB.CategoryTypeId = item.CategoryTypeId;
-            tcatCB.TicketCategory = item;
-            ticketCategoryModelCBList.Add(tcatCB);
-
-            if (item.CategoryTypeId == Enums.TicketCategoryType.Hardware)
-                totalHardwareCount += tcatCB.Count;
-            if (item.CategoryTypeId == Enums.TicketCategoryType.Software)
-                totalSoftwareCount += tcatCB.Count;
-            if (item.CategoryTypeId == Enums.TicketCategoryType.Admin)
-                totalAdminCount += tcatCB.Count;
-        }
-        ticketCategoryModelCBList = ticketCategoryModelCBList.OrderByDescending(x => x.Count).ToList();
-    }
-    private void CountTicketsByPriority()
-    {
-        foreach (Enums.PriorityLevel items in Enum.GetValues(typeof(Enums.PriorityLevel)))
-        {
-            double count = ticketList.Where(x => x.PriorityLevelId == items).ToList().Count();
-            pieData.Add(count);
-        }
-        pieDataX = pieData.ToArray();
-    }
-    private double countJan(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 1 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-    private double countFeb(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 2 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-    private double countMar(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 3 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-    private double countApr(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 4 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-    private double countMay(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 5 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-    private double countJun(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 6 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-    private double countJul(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 7 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-
-    private double countAug(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 8 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-
-    private double countSep(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 9 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-    private double countOct(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 10 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-
-    private double countNov(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 11 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-    private double countDec(long statusId)
-    {
-        double count = ticketList.Where(x => x.TicketDate.Value.Month == 12 && x.TicketStatusId == statusId).ToList().Count();
-        return count;
-    }
-
-    private void SelectTicketPriority(Enums.PriorityLevel ticketPriority)
-    {
-        if (ticketPriority == Enums.PriorityLevel.High)
-        {
-            styleStringBorderPriority = "border-color: #F44336;";
-            styleStringBackGPriority = "background-color: #F44336;";
-        }
-        if (ticketPriority == Enums.PriorityLevel.Medium)
-        {
-            styleStringBorderPriority = "border-color: #FF9800;";
-            styleStringBackGPriority = "background-color: #FF9800;";
-        }
-
-        if (ticketPriority == Enums.PriorityLevel.Low)
-        {
-            styleStringBorderPriority = "border-color: #2196F3";
-            styleStringBackGPriority = "background-color: #2196F3;";
-        }
-    }
-
-    private async void ViewBarChart()
-    {
-        var parameters = new DialogParameters();
-        parameters.Add("buttonText", "Return");
-        parameters.Add("ticketStatusList", ticketStatusList);
-        parameters.Add("ticketList", ticketList);
-        parameters.Add("ticketStatusListCBList", ticketStatusListCBList);
-        parameters.Add("xAxisLabels", xAxisLabels);
-        parameters.Add("barChartSeries", barChartSeries);
-        parameters.Add("color", Color.Primary);
-
-        var options = new DialogOptions()
-        {
-            CloseButton = true,
-            MaxWidth = MaxWidth.ExtraExtraLarge,
-            FullWidth = false,
-            NoHeader = true
-        };
-
-        var resultDialog = await dialogService.Show<Shared.Dialogs.DashboardDialogs.BarChartDialog>("Ticket Summary Bar Chart",
-        parameters, options).Result;
-        if (!resultDialog.Cancelled)
-        {
-
-        }
-    }
-    private async void ViewPieChart()
-    {
-        var parameters = new DialogParameters();
-        parameters.Add("ButtonText", "Return");
-        parameters.Add("xAxisPieLabels", xAxisPieLabels);
-        parameters.Add("pieDataX", pieDataX);
-        parameters.Add("Color", Color.Primary);
-
-        var options = new DialogOptions()
-        {
-            CloseButton = true,
-            MaxWidth = MaxWidth.ExtraExtraLarge,
-            FullWidth = false,
-            NoHeader = true
-        };
-
-        var resultDialog = await dialogService.Show<Shared.Dialogs.DashboardDialogs.PieChartDialog>("Ticket Priority Pie Chart",
-        parameters, options).Result;
-    }
-    private void RefreshBarChart()
-    {
-        var count = ticketStatusListCBList.Where(x => x.IsChecked == true).ToList().Count();
-        if (count > 5)
-            ShowAlert("You can only select up to 5 Ticket Status", Severity.Warning);
-        else if (count == 0)
-            ShowAlert("You must select a Ticket Status", Severity.Warning);
-        else if (count <= 5 && count != 0)
-            CountTicketsByMonths();
-    }
-    void ShowAlert(string message, Severity severity)
-    {
-        snackbarService.Clear();
-        snackbarService.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-        snackbarService.Configuration.SnackbarVariant = Variant.Filled;
-        snackbarService.Configuration.MaxDisplayedSnackbars = 10;
-        snackbarService.Add($"{message}", severity);
-    }
-}
+        </MudContainer>
+    </MudPaper>
+</div>

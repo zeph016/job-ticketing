@@ -1,76 +1,47 @@
 .filterdialog .mud-dialog-content {
   padding: 0px !important;
 }
-
 .filterdialog__title-container {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
   background-color: #012340;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
   color: white;
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
   display: flex !important;
   padding: 8px 16px;
   gap: 0.5rem;
 }
-
 .filterdialog__title-container .mud-typography {
-  font-family: 'Theramin';
+  font-family: "Theramin";
 }
-
 .filterdialog__body-container {
-  display: -ms-grid !important;
   display: grid !important;
-  -ms-grid-columns: 0.8fr 1fr;
-      grid-template-columns: 0.8fr 1fr;
-  -ms-grid-rows: 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
+  grid-template-columns: 0.8fr 1fr;
+  grid-template-rows: 1fr 1fr;
   gap: 0px 1rem;
-      grid-template-areas: "lcont rcont" "lcont rcont";
+  grid-template-areas: "lcont rcont" "lcont rcont";
   padding: 1rem;
 }
-
 .filterdialog__body-lcont {
-  -ms-grid-row: 1;
-  -ms-grid-row-span: 2;
-  -ms-grid-column: 1;
   grid-area: lcont;
 }
-
 .filterdialog__body-rcont {
-  -ms-grid-row: 1;
-  -ms-grid-row-span: 2;
-  -ms-grid-column: 2;
   grid-area: rcont;
 }
-
 .filterdialog__grid-tbxdeptsearch .blazored-typeahead__input-mask-wrapper,
 .filterdialog__grid-tbxdeptsearch .blazored-typeahead__input-mask-wrapper--disabled {
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important;
 }
-
 .filterdialog__chkboxcont {
-  -ms-flex-item-align: center;
-      -ms-grid-row-align: center;
-      align-self: center;
+  align-self: center;
 }
-
 .filterdialog__tbxrequestor {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  display: -webkit-box;
-  display: -ms-flexbox;
+  align-items: center;
   display: flex;
   gap: 1rem;
 }
-
 .filterdialog__tbxctrlno .mud-input {
   margin-top: 0px !important;
-}
-/*# sourceMappingURL=filterdialog.styles.css.map */
+}/*# sourceMappingURL=filterdialog.styles.css.map */

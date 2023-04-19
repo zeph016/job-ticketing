@@ -1,4 +1,6 @@
-﻿@media print {
+﻿@use "../components/flexgridmods/flexgridmods.styles.css";
+
+@media print {
     body * {
         visibility: hidden;
     }
@@ -194,3 +196,59 @@ td {
 }
 
 // pageNumber Footer
+
+.accmp-report { 
+    &__container {
+        padding: 8px;
+    }
+    &__grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 30px 1fr 1fr 30px;
+        gap: 0px 0px;
+        grid-auto-flow: row;
+        grid-template-areas:
+            "accmp-header accmp-header accmp-header accmp-header"
+            "accmp-body accmp-body accmp-body accmp-body"
+            "accmp-body accmp-body accmp-body accmp-body"
+            "accmp-footer accmp-footer accmp-footer accmp-footer";
+        height: calc(100vh - 105px);
+        .accmp-header { grid-area: accmp-header; }
+        .accmp-body { grid-area: accmp-body; }
+        .accmp-footer { grid-area: accmp-footer; }
+
+        .accmp-header,.accmp-body { border-bottom: solid thin var(--mud-palette-table-lines); }
+
+        .accmp-header, .accmp-footer { 
+            @extend .dflex-row; 
+            padding: 4px 8px;
+        }
+        .accmp-header {
+            justify-content: space-between;
+            &__controls {
+                @extend .dflex-row;
+            }
+        }
+        .accmp-body {
+            @extend .dflex-col, .flex-full;
+            align-items: center;
+            justify-content: center;
+        }
+        .accmp-footer {
+            gap: 4px;
+        }
+    }
+    &__title, &__title-noreport {  font-family: "R-Flex Bold"; }
+    &__title {
+        font-size: 14px;
+        margin-right: 4px;
+    }
+    &__lbl {
+        font-family: "R-Flex Regular";
+        font-size: 12px;
+    }
+    &__title-noreport {
+        font-size: 16px;
+    }
+  }
+  

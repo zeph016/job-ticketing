@@ -1,48 +1,57 @@
 @inject ITicketCategoryService ticketCategoryService
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject ISnackbar Snackbar
+@inject ISnackbar SnackbarService
 
-<MudDialog class='ticketCategoryDialog'>
+<MudDialog Class='custom-dialog1'>
     <TitleContent>
         <MudText Type='Typo.h6'>
-            <p class='pAddTicketCategory'>
-                <MudIcon Icon="@Icons.Material.Filled.Article" Size='Size.Large' />
-                @ContentText
-            </p>
+            <div class='d-flex align-center gap-2 custom-dialog1__title'>
+                @if (_action == Enums.CrudeMode.Edit)
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" />
+                }
+                else if (_action == Enums.CrudeMode.Add)
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3" />
+                }
+                <MudText Typo='Typo.h6'>@ContentText</MudText>
+            </div>
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudGrid>
-            <MudItem xs='8'>
-                <MudSelect @bind-Value="categoryType" Label="Category Type">
+        <MudGrid Spacing='1'>
+            <MudItem xs='12'>
+                <MudSelect @bind-Value="categoryType" Label="Category Type" Dense Margin='Margin.Dense'>
                     @foreach (Enums.TicketCategoryType item in Enum.GetValues(typeof(Enums.TicketCategoryType)))
                     {
                         <MudSelectItem Value="@item">@item</MudSelectItem>
                     }
                 </MudSelect>
             </MudItem>
-            <MudItem xs='4'>
-                @* EMPTY GRID *@
-            </MudItem>
-            <MudItem xs='8'>
-                <MudTextField @bind-Value='@currTicketCategory.CategoryName' Label='Category Name' Error='@error'
+            <MudItem xs='12'>
+                <MudTextField @bind-Value='@currTicketCategory.CategoryName' Label='Category Name' Error='@error' Margin='Margin.Dense'
                     AutoFocus='@autofocus' />
-            </MudItem>
-            <MudItem xs='4'>
-                <MudCheckBox @bind-Checked='@currTicketCategory.IsActive' Label='Active' />
             </MudItem>
         </MudGrid>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick='Cancel' Variant='Variant.Text' Color='Color.Error'>Cancel</MudButton>
-        <MudButton OnClick='Submit' Variant='Variant.Filled' Color='@Color'>@ButtonText</MudButton>
+        @if (currTicketCategory.Id != 0)
+        {
+            <MudCheckBox @bind-Checked='@currTicketCategory.IsActive' Label='Active' Dense Color='Color.Dark' Size='Size.Small' />
+        }
+        <MudSpacer />
+        <MudButton Class='btn-ios-d font12' OnClick='Cancel' Variant='Variant.Text' Size='Size.Small' DisableElevation>Cancel</MudButton>
+        <MudButton Class='btn-ios-d font12' OnClick='Submit' Variant='Variant.Filled' Size='Size.Small' DisableElevation
+            Color='@(!currTicketCategory.IsActive ? Color.Error : @Color)'>
+            @(!currTicketCategory.IsActive ? "Deactivate" : @ButtonText)
+        </MudButton>
     </DialogActions>
 </MudDialog>
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public string ContentText { get; set; }
-    [Parameter] public string ButtonText { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = new MudDialogInstance();
+    [Parameter] public string ContentText { get; set; } = string.Empty;
+    [Parameter] public string ButtonText { get; set; } = string.Empty;
     [Parameter] public Color Color { get; set; }
     [Parameter] public TicketCategoryModel currTicketCategory { get; set; } = new TicketCategoryModel();
     [Parameter] public Enums.CrudeMode _action { get; set; }
@@ -51,37 +60,40 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (currTicketCategory.Id == 0)
-        {
+        await Task.Delay(1);
+        if (_action == Enums.CrudeMode.Add)
             currTicketCategory.IsActive = true;
-        }
         else
             categoryType = currTicketCategory.CategoryTypeId;
         autofocus = true;
     }
-    async void Submit()
+    private async void Submit()
     {
+         if (!currTicketCategory.IsActive)
+            _action = Enums.CrudeMode.Delete;
         if (!string.IsNullOrWhiteSpace(currTicketCategory.CategoryName))
         {
             if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Administrator)
             {
-                if (currTicketCategory.Id == 0)
+                if (_action == Enums.CrudeMode.Add)
                 {
                     currTicketCategory.CategoryTypeId = categoryType;
                     await ticketCategoryService.AddTicketCategory(currTicketCategory, await localStorage.GetItemAsync<string>("token"));
-                    ShowAlert("Ticket Category Added", Variant.Filled);
+                    Extensions.ShowAlert("Ticket category has been added", Variant.Filled, SnackbarService, Severity.Success, string.Empty);
                 }
-                else
+                else if (_action == Enums.CrudeMode.Edit)
                 {
                     currTicketCategory.CategoryTypeId = categoryType;
                     await ticketCategoryService.UpdateTicketCategory(currTicketCategory, await localStorage.GetItemAsync<string>("token"));
-                    ShowAlert("Ticket Category Updated", Variant.Filled);
+                    Extensions.ShowAlert("Ticket category has been updated", Variant.Filled, SnackbarService, Severity.Info, string.Empty);
+                }
+                else if (_action == Enums.CrudeMode.Delete)
+                {
+                    currTicketCategory.CategoryTypeId = categoryType;
+                    await ticketCategoryService.UpdateTicketCategory(currTicketCategory, await localStorage.GetItemAsync<string>("token"));
+                    Extensions.ShowAlert("Ticket category has been deactivated", Variant.Filled, SnackbarService, Severity.Warning, string.Empty);
                 }
                 MudDialog.Close(DialogResult.Ok(true));
-            }
-            else
-            {
-                ShowAlert1("Access is denied, Please ask Administrator for assistance! ", Variant.Filled, Severity.Error);
             }
         }
         else
@@ -93,28 +105,7 @@
 
     void Cancel()
     {
+        Extensions.ShowAlert("Action Cancelled", Variant.Filled, SnackbarService, Severity.Normal, string.Empty);
         MudDialog.Cancel();
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
-        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
-        Snackbar.Add($"Cancelled action", Severity.Error);
-    }
-
-    void ShowAlert(string message, Variant variant)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-        Snackbar.Configuration.SnackbarVariant = variant;
-        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
-        Snackbar.Add($"{message}", Severity.Success);
-    }
-    void ShowAlert1(string message, Variant variant, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-        Snackbar.Configuration.SnackbarVariant = variant;
-        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
-        Snackbar.Add($"{message}", severity);
     }
 }

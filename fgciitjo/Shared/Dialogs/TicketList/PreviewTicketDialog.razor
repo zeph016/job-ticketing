@@ -1,0 +1,172 @@
+@inherits PreviewTicketDialogBase
+
+<div class="native-dialog">
+    <div class='native-dialog__grid'>
+        <div class="dialog-header">
+            <MudIcon Icon='@IconString' Size='Size.Medium' />
+            <p class='dialog-header__title'>@DialogTitle</p>
+            <MudSpacer />
+            <MudChip OnClick='(() => CopyTextToClipboard(Ticket.TicketNumber))'
+                Variant='Variant.Filled' Size='Size.Medium' Label>
+                <p class='dialog-header__lblticket'># @Ticket.TicketNumber</p>
+            </MudChip>
+        </div>
+        <div class="dialog-content">
+            <div class="preview-ticket">
+                @if(!dataFetched)
+                {
+                    <div class='circular-progress-cont'>
+                        <MudProgressCircular Indeterminate Size='Size.Medium' Color='Color.Primary' />
+                    </div>
+                }
+                else
+                {
+                    <div class='preview-ticket__grid'>
+                        <div class="pview-issue">
+                            <MudField Class='pview-issue__title-field' Label='Issue:' DisableUnderLine Margin='Margin.Dense' >
+                                <div class='pview-issue__container'>
+                                    <p class='pview-issue__title'>@Ticket.IssueSummary</p>
+                                    <MudTooltip Text='Copy Issue' Arrow Placement='Placement.Top'>
+                                        <MudIconButton OnClick='(() => CopyTextToClipboard(Ticket.IssueSummary))' Icon='@Icons.Material.Filled.ContentCopy' Size='Size.Small' />
+                                    </MudTooltip>
+                                </div>
+                            </MudField>
+                        </div>
+                        <div class="pview-chat">
+                            <MudSpacer />
+                            <MudBadge Content='commentCount' Color="Color.Error" Overlap Visible='@(isMessagesOpen ? false : true)'>
+                                <MudButton OnClick='(() => isMessagesOpen = !isMessagesOpen)' EndIcon='@Icons.Material.Filled.Chat' Variant=" Variant.Filled"
+                                    DisableElevation>
+                                    Message
+                                </MudButton>
+                            </MudBadge>
+                        </div>
+                        <div class="pview-info-left">
+                            <MudChip Class='@Extensions.GetPriorityEnumColor(Ticket.PriorityLevelId)' Size='Size.Small' Label>
+                                Prority: @Ticket.PriorityLevelId
+                            </MudChip>
+                            <MudChip Icon='@Icons.Material.Filled.FolderOpen' Size='Size.Small' Label >
+                                @Ticket.TicketCategoryName
+                            </MudChip>
+                            <MudChip Icon='@Icons.Material.Filled.LocationOn' Size='Size.Small' Label >
+                                @Ticket.TicketBranchName
+                            </MudChip>
+                            <MudChip Icon='@Icons.Material.Filled.Apartment' Size='Size.Small' Label >
+                                @Ticket.RequestorDepartment
+                            </MudChip>
+                        </div>
+                        <div class="pview-info-right">
+                            <MudTooltip Text='Days worked' Arrow Placement='Placement.Top'>
+                                <MudChip Icon='@Icons.Material.Filled.DateRange' Size='Size.Small' Label>
+                                    @Ticket.DurationDay
+                                </MudChip>
+                            </MudTooltip>
+                            <MudTooltip Text='Timeframe' Arrow Placement='Placement.Top'>
+                                <MudChip Icon='@Icons.Material.Filled.Timer' Size='Size.Small' Label>
+                                    @Ticket.WorkingDay
+                                </MudChip>
+                            </MudTooltip>
+                            <MudBadge Content='@(Ticket.TicketFileAttachmentModels.Count())' Color="Color.Error" Overlap Visible>
+                                <MudChip OnClick='(() => isAttachmentsOpen = !isAttachmentsOpen)' Icon='@Icons.Material.Filled.AttachFile' Size='Size.Small' Label
+                                    Color='Color.Tertiary' Variant='Variant.Filled' DisableElevation>
+                                    <strong>Attachments</strong>
+                                </MudChip>
+                            </MudBadge>
+                            <MudPopover Open='isAttachmentsOpen' Fixed AnchorOrigin='Origin.BottomRight' TransformOrigin='Origin.TopRight'>
+                                <FileAttachmentsComponent 
+                                    CloseAttachmentPopOver='(() => isAttachmentsOpen = !isAttachmentsOpen)'
+                                    FilesAttached='Ticket.TicketFileAttachmentModels'/>
+                            </MudPopover>
+                        </div>
+                        <div class="pview-requestor">
+                            <MudIcon Icon='@Icons.Material.Filled.AccountBox' Size='Size.Small' />
+                            <p class='preview-ticket__lbl'>Requestor:</p>
+                            <MudChip Class='mchip-useraccount' Size='Size.Medium' Label >
+                                @if (requestorAccount.Picture.Count() == 0) 
+                                {
+                                    <MudAvatar Image='images/fglogo/fgci1-gs.png' Size='Size.Medium' />
+                                }
+                                else
+                                {
+                                    <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(requestorAccount.Picture)}")' Size='Size.Medium' />
+                                }
+                                <p class='chip-lbl'>@Ticket.RequestorName</p>
+                            </MudChip>
+                        </div>
+                        <div class="pview-reqtime">
+                                <p class='preview-ticket__lbl'>@currentTimeDifference</p>
+                                <p class='preview-ticket__lbl'>
+                                    (@Convert.ToDateTime(Ticket.TicketDate).ToString("MM/dd/yyyy hh:mm tt"))
+                                </p>
+                        </div>
+                        <div class="pview-taskdesc">
+                            <MudField Class='pview-taskdesc__desc-field' Label='Task Description:' Margin='Margin.Dense' Variant='Variant.Filled'>
+                                <div class='pview-taskdesc__container'>
+                                    <p class='pview-taskdesc__desc-lbl'>@Ticket.TaskDescription</p>
+                                    <MudTooltip Text='Copy Task Description' Arrow Placement='Placement.Top'>
+                                        <MudIconButton OnClick='(() => CopyTextToClipboard(Ticket.TaskDescription))' Icon='@Icons.Material.Filled.ContentCopy' Size='Size.Small' />
+                                    </MudTooltip>
+                                </div>
+                            </MudField>
+                        </div>
+                        <div class="pview-status">
+                             <p class='preview-ticket__lbl'>Status:</p>
+                             <MudChip Size='Size.Small' Style='@(Extensions.GetColor(Ticket.TicketStatusId))' Label >
+                                @Ticket.TicketStatusName
+                            </MudChip>
+                        </div>
+                        <div class="pview-assigned">
+                            <MudIcon Icon='@Icons.Material.Filled.AssignmentInd' Size='Size.Small' />
+                            <p class='preview-ticket__lbl'>Assigned to:</p>
+                            <MudChip Class='mchip-useraccount' Size='Size.Medium' Label >
+                             @if (assigneeAccount.EmployeeId != 0)
+                             {
+                                @if (assigneeAccount.Picture.Count() == 0) 
+                                {
+                                    <MudAvatar Image='images/fglogo/fgci1-gs.png' Size='Size.Medium' />
+                                }
+                                else
+                                {
+                                    <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(assigneeAccount.Picture)}")' Size='Size.Medium' />
+                                }
+                                <p class='chip-lbl'>@Ticket.AssigneeName</p>
+                             }
+                             else
+                             {
+                                <MudAvatar Image='images/fglogo/fgci1-gs.png' Size='Size.Medium' />
+                                <p>Not yet assigned</p>
+                             }
+                                
+                            </MudChip>
+                        </div>
+                        <div class="pview-chat-container">
+                            <div class='pview-chat-container__sub-container @(isMessagesOpen ? "max-width500":"max-width-zero")'>
+                                @if (isMessagesOpen)
+                                {
+                                    @* <CascadingValue @bind-Value='@ApplicationState.TicketMessages'> *@
+                                        <TicketMessages TicketMessages='ticketMessages' SenderId='@GlobalClass.CurrentUserAccount.EmployeeId' IsSendingMessage='isSending'
+                                            SendCommentClick='((string message) => SendComment(message))' MessageToSend='@messageToSend'/>
+                                    @* </CascadingValue> *@
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="dialog-footer">
+            <div class='dialog-footer__footer-notes'>
+                @if(dataFetched)
+                {
+                    <MudIcon Class='bounce-anim-sm' Icon='@Icons.Material.Filled.PriorityHigh' Size='Size.Small' Color='Color.Error' />
+                    <p>Note:</p>
+                    <p>@Extensions.GetStatusExplanation(Ticket.TicketStatusName)</p>
+                }
+            </div>
+            <MudSpacer />
+            <MudButton OnClick='Cancel' Variant='Variant.Text' Size='Size.Small' DisableElevation>
+                @CancelText
+            </MudButton>
+        </div>
+    </div>
+</div>

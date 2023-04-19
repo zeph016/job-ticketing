@@ -6,70 +6,84 @@
 @inject IEmployeeAccountService EmployeeAccountService //SAMPLE
 @inject ITicketUserAccountService ticketUserAccountService
 
-<MudContainer class='userAccountsContainer' MaxWidth='MaxWidth.ExtraExtraLarge' Fixed='false'>
-@if (!dataFetched)
-{
-    <MudPaper Class='ma-4 pa-2'>
-        <MudSkeleton SkeletonType='SkeletonType.Text' Height='100px' Animation='Animation.Wave'/>
-        <MudSkeleton SkeletonType='SkeletonType.Rectangle' Height='75vh' Animation='Animation.Wave'/>
-        <MudOverlay Visible="isVisible" DarkBackground="true" Absolute="true">
-                <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true"/>
-        </MudOverlay>
-    </MudPaper>
-}
-else
-{
-    <MudTable Class='ma-4 pa-2' Items='@ticketUserAccounts' Hover="true" Filter='new Func<TicketUserAccount,bool>(FilterItems)'
-            FixedHeader='true' FixedFooter='true' RowsPerPage='20' Striped='true'
-            Breakpoint="Breakpoint.Sm" Bordered='false' Dense='true' LoadingProgressColor="Color.Info">
-        <ToolBarContent>
-            <MudContainer>
-                <MudTextField @bind-Value='searchTerm' Placeholder='Search' Adornment='Adornment.Start' 
-                    AdornmentIcon='@Icons.Material.Filled.Search' IconSize='Size.Medium' Class='mt-0' Clearable='true'>
-                </MudTextField>
+<div class='page-cont'>
+   <MudPaper Class='page-cont__background' Square Elevation='0'>
+        @if (!dataFetched)
+        {
+            <SkeletonDefaultList />
+        }
+        else
+        {
+            <MudContainer Class='pa-2' Fixed MaxWidth='MaxWidth.ExtraExtraLarge'>
+                <MudTable Class='table-sm-type' Items='@ticketUserAccounts' Hover Filter='new Func<TicketUserAccount,bool>(FilterItems)'
+                    FixedHeader FixedFooter RowsPerPage='20' Bordered Dense Breakpoint="Breakpoint.Sm"  LoadingProgressColor="Color.Primary"
+                    Height='calc(100vh - 185px)' >
+                    <ToolBarContent>
+                        <MudContainer>
+                            <MudTextField @bind-Value='searchTerm' Placeholder='Search' Adornment='Adornment.Start' 
+                                AdornmentIcon='@Icons.Material.Filled.Search' IconSize='Size.Medium' Class='mt-0' Clearable='true'>
+                            </MudTextField>
+                        </MudContainer>
+                        <MudSpacer/>
+                    </ToolBarContent>
+                    <ColGroup>
+                        <col style="width:25%;"/>
+                        <col />
+                        <col />
+                        <col />
+                        <col />
+                        <col style='width:30px'/>
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel InitialDirection='SortDirection.Ascending' SortBy='new Func<TicketUserAccount, object>(x=>x.EmployeeName)'>
+                                Name
+                            </MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>Department</MudTh>
+                        <MudTh>Designation</MudTh>
+                        <MudTh>Email Address</MudTh>
+                        <MudTh>Phone Number</MudTh>
+                        <MudTh Class='tableActions'>Actions</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel='EmployeeName'>
+                            <div class='d-flex align-center gap-2'>
+                                <MudIcon Icon='@Icons.Material.Filled.Person' Title='Person' />
+                                <small>@context.EmployeeName</small>
+                            </div>
+                        </MudTd>
+                        <MudTd DataLabel='Department'>
+                            <small>@context.Department</small>
+                        </MudTd>
+                        <MudTd DataLabel='Designation'>
+                            <small>@context.Designation</small>
+                        </MudTd>
+                        <MudTd DataLabel='EmailAddress'>
+                            <small>@context.EmailAddress</small>
+                        </MudTd>
+                        <MudTd DataLabel='ContactInfo'>
+                            <small>@context.ContactInfo</small>
+                        </MudTd>
+                        <MudTd Class='text-center' DataLabel='Actions'>
+                            <MudMenu Icon="@Icons.Material.Filled.MoreVert" Direction='Direction.End' Dense='true' Size='Size.Small'>
+                                <MudMenuItem @onclick='@(() => Edit(context.HubUserAccountId))'>
+                                    <p style='display: flex;'>
+                                        <MudIcon Icon='@Icons.Material.Filled.Edit'/>
+                                        <MudText style='padding-left: 10px; font-size: 14px;'>Edit Account</MudText>
+                                    </p>
+                                </MudMenuItem>
+                            </MudMenu>
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions='new int[]{20,40}'/>
+                    </PagerContent>
+                </MudTable>
             </MudContainer>
-            <MudSpacer/>
-        </ToolBarContent>
-        <HeaderContent>
-            <MudTh>
-                <MudTableSortLabel InitialDirection='SortDirection.Ascending' SortBy='new Func<TicketUserAccount, object>(x=>x.EmployeeName)'>
-                    Name
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>Department</MudTh>
-            <MudTh>Designation</MudTh>
-            <MudTh>Email Address</MudTh>
-            <MudTh>Phone Number</MudTh>
-            <MudTh class='tableActions'>Actions</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel='EmployeeName'>
-                <MudText class='tableRowWithIcon'>
-                    <MudIcon Icon='@Icons.Material.Filled.Person' Title='Person' />
-                    @context.EmployeeName
-                </MudText>
-            </MudTd>
-            <MudTd DataLabel='Department'>@context.Department</MudTd>
-            <MudTd DataLabel='Designation'>@context.Designation</MudTd>
-            <MudTd DataLabel='EmailAddress'>@context.EmailAddress</MudTd>
-            <MudTd DataLabel='ContactInfo'>@context.ContactInfo</MudTd>
-            <MudTd DataLabel='Actions'>
-                <MudMenu Icon="@Icons.Material.Filled.MoreVert" Direction='Direction.End' Dense='true' Size='Size.Small'>
-                    <MudMenuItem @onclick='@(() => Edit(context.HubUserAccountId))'>
-                        <p style='display: flex;'>
-                            <MudIcon Icon='@Icons.Material.Filled.Edit'/>
-                            <MudText style='padding-left: 10px; font-size: 14px;'>Edit Account</MudText>
-                        </p>
-                    </MudMenuItem>
-                </MudMenu>
-            </MudTd>
-        </RowTemplate>
-        <PagerContent>
-            <MudTablePager PageSizeOptions='new int[]{20,40}'/>
-        </PagerContent>
-    </MudTable>
-}
-</MudContainer>
+        }
+    </MudPaper>
+</div>
 
 
 @code {
@@ -77,22 +91,20 @@ else
     public List<SampleList> userSampleList { get; set; } = new List<SampleList>();
     FilterParameter filterParameter = new FilterParameter();
     List<TicketUserAccount> ticketUserAccounts = new List<TicketUserAccount>();
-    @* private bool _hidePosition; *@
-    @* private bool _loading; *@
+ 
     private bool isVisible;
     private bool dataFetched;
     private string searchTerm = "";
-    public string Token { get; set; }
     
     //SAMPLE ONLY
     public class SampleList
     {
         public int Id { get; set; }
-        public string EmployeeName { get; set; }
-        public string Department { get; set; }
-        public string Designation { get; set; }
-        public string EmailAddress { get; set; }
-        public string ContactInfo { get; set; }
+        public string EmployeeName { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+        public string Designation { get; set; } = string.Empty;
+        public string EmailAddress { get; set; } = string.Empty;
+        public string ContactInfo { get; set; } = string.Empty;
     }
     //
 
@@ -117,7 +129,7 @@ else
     //SAMPLE ONLY
     async Task GetDepartmentList()
     {
-        departmentList = (await EmployeeAccountService.GetDepartment(Token)).ToList();
+        departmentList = (await EmployeeAccountService.GetDepartment(GlobalClass.Token)).ToList();
     }
     //
 

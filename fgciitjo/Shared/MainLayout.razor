@@ -6,206 +6,221 @@
 @inject IEmployeeAccountService employeeAccountService
 @inject ITicketCategoryService ticketCategoryService
 @inject ITicketBranchService ticketBranchService
-@inject ITicketStatusService ticketStatusService
+@inject ITicketStatusService TicketStatusService
+@inject ITicketCommentService TicketCommentService
 @inject IGlobalService globalService
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject Blazored.LocalStorage.ILocalStorageService localStorageService
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @inject IConfiguration config
 @inject ISnackbar Snackbar
 @inject IJSRuntime IJSrun
+@inject ApplicationState AppState
+@implements IDisposable
 
-<MudThemeProvider />
+<MudThemeProvider  @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
-<MudLayout>
-    <MudOverlay Visible='ShowLoadingOverlay' Absolute='true' DarkBackground='true'>
-         <MudProgressCircular class='loader-2' Size="Size.Large" Indeterminate="true" />
-    </MudOverlay>
-    <MudAppBar class='top-appbar' Fixed='true' Elevation='0' Dense='true'>
-        <MudText class='top-appbar__content-title' Typo='Typo.h6'>@GlobalContentTitle.contentTitle</MudText>
-        <MudSpacer />
-        <MudBadge Content='badgeContent' Origin='Origin.TopLeft' Color="Color.Error" Overlap="true" style='@badgeStyleString' Visible='@isVisible' >
-            <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Default" Size='Size.Small' OnClick='NotificationClick' />
-            <MudPopover class='top-appbar__popover' Open="@_isNotifOpen">
-                <MudContainer class="top-appbar__popovercontent">
-                        <MudTable class='top-appbar__table' Items='@notificationList' Hover='true' FixedHeader='true' FixedFooter='true' Striped='false' Outlined='false'
-                            Breakpoint='Breakpoint.Sm' Bordered='false' Dense='true' Elevation='0'>
-                            <ColGroup>
-                                <col style='width: 100%'/>
-                            </ColGroup>
-                            <HeaderContent>
-                                <MudTh class='top-appbar__tableheader'>
-                                    Notifications
+<MudLayout @onclick='RefreshPopUps'>
+    <MudAppBar class='top-appbar' Fixed Elevation='0' Dense>
+        <AuthorizeView>
+            <Authorized>
+                <MudText class='top-appbar__content-title' Typo='Typo.h6' Style='@updateStyleStr'>@GlobalContentTitle.contentTitle</MudText>
+                <MudSpacer />
+                <MudTooltip Text='@(!_isDarkMode ? "Dark Mode" : "Light Mode")' Arrow Placement='Placement.Top'>
+                    <MudIconButton OnClick='ToggleTheme' Icon='@(!_isDarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.LightMode)' 
+                        Size='Size.Small'/>
+                </MudTooltip>
+                <MudBadge Class='zindex-1' Content='@ApplicationState.Notifications.Where(x=>x.isRead == false).Count()' Color="Color.Error" Overlap Visible Style='@badgeStyleString'>
+                    <MudTooltip Text='View notifications' Arrow Placemen='Placement.Top'>
+                        <MudIconButton OnClick='NotificationClick'
+                            Icon="@(!ApplicationState.IsNotificationSilent ? Icons.Material.Filled.Notifications : Icons.Material.Filled.NotificationsOff)" Color="Color.Default" Size='Size.Small' />
+                    </MudTooltip>
+                </MudBadge>
+                <div class='user-panel mx-auto' @onclick='ToggleUserCp'>
+                    <MudExpansionPanels DisableBorders='@borderValue' Elevation='@elevationValue'>
+                        <MudExpansionPanel class='user-panel__expandpanel' IsExpanded='@userCpOpen'>
+                            <TitleContent>
+                                <div class='d-flex' style="@usercpStyleString">
+                                    <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(@GlobalClass.CurrentUserAccount.Picture)}")' />
+                                    <div>
+                                        <MudText class='user-panel__txtname'>@GlobalClass.CurrentUserAccount.FirstName</MudText>
+                                        <MudText class='user-panel__txtdesignation'>
+                                            @(GlobalClass.CurrentUserAccount.Designation + " - " + Extensions.GetEnumDescription(GlobalClass.CurrentUserAccount.AccessLevel))
+                                        </MudText>
+                                    </div>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+                                <MudDivider />
+                                <div class='user-panel__btncontainer py-2'>
+                                    <MudButton Class='user-panel__btncontainer-btn' Variant='Variant.Text' StartIcon='@Icons.Material.Filled.Settings' Size='Size.Small'>Settings</MudButton>
                                     <MudSpacer />
-                                    <MudIconButton Icon='@Icons.Material.Filled.ClearAll' Size='Size.Medium' OnClick='@(() => ClearNotificationList())' aria-label='Clear notifications'/>
-                                </MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd class='top-appbar__tabledata' @onclick='@(() => PeekTicketInfo(@context.TicketId, @context.EmployeeId))'>
-                                    <MudContainer class='top-appbar__notifcontainer'>
-                                    @if (notificationList.Count != 0 && !context.isRead)
-                                    {
-                                        @foreach (UserAccount accounts in requestorAccounts)
-                                        {
-                                            @if (accounts.EmployeeId == context.EmployeeId)
-                                            {
-                                                <MudAvatar class='top-appbar__avatar' Size='Size.Large' Image='@($"data:image/png;base64, {Convert.ToBase64String(@accounts.Picture)}")'/>
-                                                break;
-                                            }
-                                        }
-                                        <MudContainer class='top-appbar__notiflist'>
-                                            <MudText class='top-appbar__lblUserAcc'>
-                                                @context.UserAccountName
-                                            </MudText>
-                                            <MudText class='top-appbar__lblActivity'>
-                                                @context.TicketNumber :
-                                                @context.Activity
-                                            </MudText>
-                                            <MudText class='top-appbar__lblTimeDiff'>
-                                                @context.TimeMoment
-                                                @* @(DateTime.Now-Convert.ToDateTime(@context.LogDatetime)) *@
-                                            </MudText>
-                                        </MudContainer>
-                                    }
-                                    else
-                                    {
-                                        <MudContainer Class='empticket'>
-                                            <MudText>No new notifications</MudText>
-                                        </MudContainer>
-                                    }
-                                    </MudContainer>
-                                </MudTd>
-                            </RowTemplate>
-                        </MudTable>
-                </MudContainer>
-            </MudPopover>
-        </MudBadge>
-        <div class='user-panel mx-auto' @onclick='ToggleUserCp'>
-            <MudExpansionPanels DisableBorders='@borderValue' Elevation='@elevationValue'>
-                <MudExpansionPanel class='user-panel__expandpanel' IsExpanded='@userCpOpen' style='@styleString'>
-                    <TitleContent>
-                        <div class='d-flex' style="@usercpStyleString">
-                            <MudAvatar Image="@imageSource" />
-                            <div>
-                                <MudText class='user-panel__txtname'>@Name</MudText>
-                                <MudText class='user-panel__txtdesignation'>@Designation</MudText>
-                            </div>
-                        </div>
-                    </TitleContent>
-                    <ChildContent>
-                        <MudContainer class='lineHorizContainer'><hr></MudContainer>
-                        <MudContainer class='user-panel__btncontainer' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
-                            <MudButton class='user-panel__btncontainer-btn' Variant='Variant.Text' StartIcon='@Icons.Material.Filled.Settings' Size='Size.Small'>Settings</MudButton>
-                            <MudSpacer />
-                            <MudButton class='user-panel__btncontainer-btn' OnClick='ToHub' Variant='Variant.Text' StartIcon='@Icons.Material.Filled.ExitToApp' Size='Size.Small'>Back to Hub</MudButton>
-                        </MudContainer>
-                        <MudContainer class='lineHorizContainer' style='@hiddenStyleUserCPElements'><hr></MudContainer>
-                        <MudButton class='user-panel__logout-btn' OnClick='ToLogOut' Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Logout" Color="Color.Error" style='@hiddenStyleRem'>Log Out</MudButton>
-                    </ChildContent>
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-        </div>
+                                    <MudButton class='user-panel__btncontainer-btn' OnClick='ToHub' Variant='Variant.Text' StartIcon='@Icons.Material.Filled.ExitToApp' Size='Size.Small'>Back to Hub</MudButton>
+                                </div>
+                                <MudDivider />
+                                <div class='py-2'>
+                                    <MudButton class='user-panel__logout-btn' OnClick='LogOut' Variant="Variant.Filled" DisableElevation
+                                        StartIcon="@Icons.Material.Filled.Logout" Color="Color.Error" style='@hiddenStyleRem' FullWidth>
+                                        Log Out
+                                    </MudButton>
+                                </div>
+                            </ChildContent>
+                        </MudExpansionPanel>
+                        <MudPopover Open='@_isNotifOpen' AnchorOrigin='Origin.BottomRight' TransformOrigin='Origin.TopRight' OverflowBehavior='OverflowBehavior.FlipAlways'
+                            Paper='false'>
+                            <CascadingValue Value='@ApplicationState'>
+                                <NotificationListCard SetNotificationSetting='((bool value) => SetNotificationSetting(value))' CloseNotificationList='(() => { _isNotifOpen = false; StateHasChanged(); } )'/>
+                            </CascadingValue>
+                        </MudPopover>
+                    </MudExpansionPanels>
+                </div>
+            </Authorized>
+        </AuthorizeView>
     </MudAppBar>
-    <MudDrawer class='mainLayoutDrawer' @bind-Open='@drawerOpen' Elevation='1' Variant='DrawerVariant.Mini' OpenMiniOnHover='false'>
-        <MudNavMenu class='mainnavmenu' style="@navmenustylestring">
-            <MudContainer class='TopContainer' @onclick="ToggleDrawer">
-                <MudIconButton Icon='@Icons.Material.Filled.Menu' OnClick='@ToggleDrawer'></MudIconButton>
-                <MudText>TICKETING SYSTEM</MudText>
-            </MudContainer>
-
-            <MudNavLink Href='/dashboard' Icon='@Icons.Material.Filled.Dashboard'>DASHBOARD</MudNavLink>
-            <MudNavLink Href='/ticket/create' Icon='@Icons.Material.Filled.Assignment' style='@hiddenStyleRem'>CREATE TICKET</MudNavLink>
-            <MudNavLink Href='/ticketlist' Icon='@Icons.Filled.FactCheck' style='@hiddenStyleRem'>TICKET LIST</MudNavLink>
-            <MudNavLink Href='/createactivity' Icon='@Icons.Filled.SyncAlt' style='@hiddenStyleString'>OTHER ACTIVITY</MudNavLink>
-
-            <MudNavGroup Title='REPORTS' Icon='@Icons.Material.Filled.Assessment' style='@hiddenStyleString'>
-                @* <MudNavLink Href='/reports' Icon='@Icons.Filled.LocalPrintshop'>PRINT</MudNavLink>
-                    <MudNavLink Href='/accomplishmentreport' Icon='@Icons.Filled.Summarize'>ACCOMPLISHMENT REPORT</MudNavLink>
-                    <MudNavLink Href='/activityreport' Icon='@Icons.Filled.Summarize'>DAILY</MudNavLink> *@
-                <MudNavLink Href='/dailyaccompReport' Icon='@Icons.Filled.Summarize'>ACCOMPLISHMENT REPORT</MudNavLink>
-                <MudNavLink Href='/ticketlistReport' Icon='@Icons.Filled.Summarize'>TICKET LIST REPORT</MudNavLink>
-            </MudNavGroup>
-            <MudNavGroup Title='SETTINGS' Icon='@Icons.Material.Filled.Settings' style='@hiddenStyleString'>
-                <MudNavLink Href='/settings/useraccounts' Icon='@Icons.Filled.People'>USER ACCOUNTS</MudNavLink>
-                <MudNavLink Href='/settings/ticketstatus' Icon='@Icons.Filled.BookOnline'>TICKET STATUS</MudNavLink>
-                <MudNavLink Href='/settings/ticketcategory' Icon='@Icons.Filled.Article'>TICKET CATEGORY</MudNavLink>
-                <MudNavLink Href='/settings/ticketbranch' Icon='@Icons.Filled.CorporateFare'>TICKET BRANCH</MudNavLink>
-            </MudNavGroup>
-            @* <MudNavLink Href='/test' Icon='@Icons.Material.Filled.BugReport' style='@hiddenStyleString'>TEST</MudNavLink> *@
-        </MudNavMenu>
-        <MudText class='drawerFooterIcon'>
+    <MudDrawer Class='main-layout-drawer' @bind-Open='@drawerOpen' Elevation='0' Variant='DrawerVariant.Mini' OpenMiniOnHover='false'>
+        <MudDrawerHeader Class='drawer-header'>
+            <MudIconButton OnClick='@ToggleDrawer' Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" />
+            <MudText Class='drawer-header__header-text text-center'>TICKETING SYSTEM</MudText>
+        </MudDrawerHeader>
+        <AuthorizeView>
+            <Authorized>
+                <MudNavMenu class='mainnavmenu' style="@navmenustylestring">
+                    <MudNavLink Href='/dashboard' Icon='@Icons.Material.Filled.Dashboard'>DASHBOARD</MudNavLink>
+                    <MudNavLink Href='/ticket/create' Icon='@Icons.Material.Filled.Assignment' style='@hiddenStyleRem'>CREATE TICKET</MudNavLink>
+                    <MudNavLink Href='/ticket/list' Icon='@Icons.Material.Filled.FactCheck' style='@hiddenStyleRem'>TICKET LIST</MudNavLink>
+                    @if (GlobalClass.CurrentUserAccount.AccessLevel != Enums.AccessLevel.Client)
+                    {
+                        <MudNavLink Href='/create/other-activity' Icon='@Icons.Material.Filled.SyncAlt' style='@hiddenStyleString'>OTHER ACTIVITY</MudNavLink>
+                        <MudNavGroup Title='REPORTS' Icon='@Icons.Material.Filled.Assessment' HideExpandIcon style='@hiddenStyleString'>
+                            <MudNavLink Href='/report/daily-accomplishment' Icon='@Icons.Material.Filled.Summarize'>ACCOMPLISHMENT</MudNavLink>
+                            <MudNavLink Href='/report/ticket/list' Icon='@Icons.Material.Filled.Summarize'>TICKET LIST</MudNavLink>
+                        </MudNavGroup>
+                        <MudNavGroup Title='SETTINGS' Icon='@Icons.Material.Filled.Settings' HideExpandIcon style='@hiddenStyleString'>
+                            <MudNavLink Href='/settings/useraccounts' Icon='@Icons.Material.Filled.People'>USER ACCOUNTS</MudNavLink>
+                            <MudNavLink Href='/settings/ticket/status' Icon='@Icons.Material.Filled.BookOnline'>TICKET STATUS</MudNavLink>
+                            <MudNavLink Href='/settings/ticket/category' Icon='@Icons.Material.Filled.Article'>TICKET CATEGORY</MudNavLink>
+                            <MudNavLink Href='/settings/ticket/branch' Icon='@Icons.Material.Filled.CorporateFare'>TICKET BRANCH</MudNavLink>
+                        </MudNavGroup>
+                    }
+                </MudNavMenu>
+            </Authorized>
+            <NotAuthorized>
+                <MudNavMenu Class='pb-2'>
+                    <MudNavLink Class='txt-uppercase' Href='http://10.0.0.7:8000' Match='NavLinkMatch.All' Icon='@Icons.Material.Filled.Home'>
+                        Back To Hub
+                    </MudNavLink>
+                </MudNavMenu>
+           </NotAuthorized>
+        </AuthorizeView>
+        <MudSpacer />
+        <div class='d-flex align-center justify-center'>
             <MudIcon class='HeaderIcon' Icon="@Icons.Material.Filled.SupportAgent" Size="Size.Large" />
-        </MudText>
+        </div>
     </MudDrawer>
     <MudMainContent>
-        <MudContainer class='mainBodyContainer' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+        <div class='main-body-container blzr-bg-surface' style='overflow:hidden;'>
             @Body
-        </MudContainer>
+        </div>
     </MudMainContent>
-    <MudAppBar class='footerAppbar' Bottom='true' Fixed='true' Elevation='0' Dense='true'>
-        <MudText>
-            v1.0.0.40
+    <MudAppBar Class='footer-appbar' Bottom Fixed Elevation='0' Dense>
+        <MudText Color='Color.Default'>
+            v1.3.0.27
         </MudText>
-        <MudIconButton OnClick='RefreshPage' Icon="@Icons.Material.Filled.Refresh" aria-label="Refresh page"></MudIconButton>
+        <MudIconButton OnClick='RefreshPage' Icon="@Icons.Material.Filled.Refresh" aria-label="Refresh page" />
         <MudSpacer />
         <MudText>
-            @* @footerDate :  *@
-            <div @ref='timeElement'>
-                @* CLOCK *@
-            </div>
+            <div @ref='timeElement'>@* CLOCK *@</div>
         </MudText>
-        <MudIconButton OnClick='ToggleFullScreen' Icon="@Icons.Material.Filled.Fullscreen" aria-label="Fullscreen">
-
-        </MudIconButton>
+        <MudIconButton OnClick='ToggleFullScreen' Icon="@Icons.Material.Filled.Fullscreen" aria-label="Fullscreen" />
     </MudAppBar>
 </MudLayout>
+<UpdateAvailableDetector/>
 
 @code {
+    private bool _isDarkMode;
+    private MudThemeProvider _mudThemeProvider = new();
     FilterParameter filterParameter = new FilterParameter();
-    List<TicketModel> ticketModels = new List<TicketModel>();
-    private HubConnection hubConnection, commentConnection;
+    private HubConnection hubConnection = default!, commentConnection = default!;
     List<TicketAuditTrail> auditTrails = new List<TicketAuditTrail>();
     public List<UserAccount> requestorAccounts = new List<UserAccount>();
     public List<NotificationTrailModel> notificationList = new List<NotificationTrailModel>();
     private List<TicketComment> ticketComments = new List<TicketComment>();
     private List<NotificationTrailModel> notifs = new List<NotificationTrailModel>();
-    private UserAccount requestorAccount;
-    public string Token;
-    public UserAccount userAccount;
-    public string Name, Designation, ContentTitle;
-    public DateTime footerDate;
+    private UserAccount requestorAccount = new UserAccount();
+    public UserAccount userAccount = new UserAccount();
+    private TicketComment comment = new TicketComment();
     public Enums.AccessLevel accessLevel { get; set; }
     public string imageSource { get; set; } = "data:image/png;base64, ";
-    public bool drawerOpen = true, userCpOpen = false, ticketFetched, borderValue = true, isFullScreen, isTokenValidated, isAuthenticated, ShowLoadingOverlay;
+    public bool drawerOpen = true, userCpOpen = false, ticketFetched, borderValue = true, isFullScreen, isTokenValidated, isAuthenticated, ShowLoadingOverlay, isChatOpen;
     string styleString = "background-color: #F7F7F8;", usercpStyleString = "width: 250px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;",
-    hiddenStyleString = "display:none;", hiddenStyleRem, hiddenStyleUserCPElements, cookieToken, badgeStyleString, navmenustylestring;
+    hiddenStyleString = "display:none;", hiddenStyleRem = string.Empty, hiddenStyleUserCPElements = string.Empty, cookieToken = string.Empty, badgeStyleString = string.Empty, navmenustylestring = string.Empty;
     int elevationValue = 0;
     public int? badgeContent;
     ElementReference timeElement;
     public bool _isNotifOpen, dataFetched, isVisible;
-    private string imageConv = "data:image/png;base64, ";
-    private string requestorAvatarSource { get; set; }
+    private string imageConv = "data:image/png;base64, ", updateStyleStr = string.Empty;
+    private string requestorAvatarSource { get; set; } = string.Empty;
     private UserAccount requestorAvatar = new UserAccount();
-    public string activity;
-
     private List<TicketModel> newTickets = new List<TicketModel>();
-    private TimeSpan diff, seconds, minuteOne, minuteTwo, minutes, hourOne, hourTwo,
-    hours, dayOne, dayTwo, weekOne, weekTwo, monthOne, monthTwo, monthYearOne, monthYearTwo;
-    private string currentTimeDifferenceStr { get; set; }
+    private TimeSpan seconds, minuteOne, minuteTwo, minutes, hourOne, hourTwo,
+    dayOne, dayTwo, weekOne, weekTwo, monthOne, monthTwo, monthYearOne, monthYearTwo;
     private PeriodicTimer timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
-    List<string> list = new List<string>();
+    public AppStoreState ApplicationState = new();
 
-    void ToggleDrawer()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        drawerOpen = !drawerOpen;
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("startTime", timeElement);
+            _isDarkMode = await Extensions.GetDarkSetting(localStorageService);
+            StateHasChanged();
+        }
     }
 
-    void ToggleUserCp()
+    protected override async Task OnInitializedAsync()
+    {
+        if (GlobalClass.AccountAuthorized)
+        {
+            Task t = Task.WhenAll(CheckSetNotifications(), MapGlobalTime(), LoadConnection(), LoadTicketCommentConnection());
+            await t;
+            if (t.Status == TaskStatus.RanToCompletion)
+            {
+                GlobalList.TicketComments = new List<TicketComment>();
+                Task u = Task.WhenAll(LoadNotification(), LastTicketSaved(), LoadGlobaClassList(),PopulateCatTypeList());
+                await u;
+                if (u.Status == TaskStatus.RanToCompletion)
+                {
+                    notifyComments();
+                    InvokeNewTicket();
+                }
+                CheckAccessLevelLinks();
+                
+                CompletedFetch();
+                ApplicationState.OnChange += StateHasChanged;
+                AppState.OnChange += StateHasChanged;
+            }
+        }
+    }
+    private void ToggleDrawer() =>  drawerOpen = !drawerOpen;
+
+    private void ToggleUserCp()
     {
         userCpOpen = !userCpOpen;
+        _isNotifOpen = false;
+        ToggleUserCPdesign();
+    }
+    private void NotificationClick()
+    {
+        _isNotifOpen = !_isNotifOpen;
+        userCpOpen = false;
+        ToggleUserCPdesign();
+    }
+
+    private void ToggleUserCPdesign()
+    {
         if (userCpOpen == true)
         {
             borderValue = false;
@@ -222,126 +237,11 @@
         }
     }
 
-    protected override async Task OnInitializedAsync()
-    {
-        Token = await localStorage.GetItemAsync<string>("token");
-        cookieToken = await JSRuntime.InvokeAsync<string>("getCookie", "token");
-        Task t1 = Task.WhenAll(MapGlobalTime(), LoadConnection(), LoadTicketCommentConnection());
-        await t1;
-        @* await MapGlobalTime();
-        await LoadConnection();
-        await LoadTicketCommentConnection(); *@
-        GlobalClass.TicketComments = new List<TicketComment>();
-        footerDate = DateTime.Now;
-        if (string.IsNullOrEmpty(Token) || string.IsNullOrEmpty(cookieToken))
-        {
-            cookieToken = await JSRuntime.InvokeAsync<string>("getCookie", "token");
-            if (!string.IsNullOrEmpty(cookieToken))
-            {
-                isTokenValidated = await ValidateToken();
-                if (isTokenValidated && isAuthenticated)
-                {
-                    MapGlobal();
-                    Task t = Task.WhenAll(LoadNotification(), LastTicketSaved(), LoadGlobaClassList());
-                    await t;
-                    if (t.Status == TaskStatus.RanToCompletion)
-                    {
-                        notifyComments();
-                        InvokeNewTicket();
-                    }
-                    @* await LoadNotification();
-                        await LastTicketSaved();
-                        notifyComments();
-                        InvokeNewTicket(); *@
-                    NavigationManager.NavigateTo($"/dashboard");
-                    CompletedFetch();
-                }
-                else
-                {
-                    Console.WriteLine("User not authorized");
-                    DisableAllLinks();
-                    await localStorage.ClearAsync();
-                    await JSRuntime.InvokeAsync<string>("deleteCookie");
-                    NavigateToPage($"/error/403");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Token not found");
-                DisableAllLinks();
-                await localStorage.ClearAsync();
-                await JSRuntime.InvokeAsync<string>("deleteCookie");
-                NavigateToPage($"/error/403");
-            }
-        }
-        else
-        {
-            Console.WriteLine("Proceed");
-            isTokenValidated = await ValidateToken();
-            if (isTokenValidated && isAuthenticated)
-            {
-                MapGlobal();
-                Task t = Task.WhenAll(LoadNotification(), LastTicketSaved(), LoadGlobaClassList());
-                await t;
-                if (t.Status == TaskStatus.RanToCompletion)
-                {
-                    notifyComments();
-                    InvokeNewTicket();
-                }
-                @* await LoadNotification();
-                    await LastTicketSaved(); *@
-                @* notifyComments();
-                    InvokeNewTicket(); *@
-                    CompletedFetch();
-            }
-            else
-            {
-                Console.WriteLine("User not authorized");
-                DisableAllLinks();
-                await localStorage.ClearAsync();
-                await JSRuntime.InvokeAsync<string>("deleteCookie");
-                NavigateToPage($"/error/403");
-            }
-        }
-    }
-
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-            await JSRuntime.InvokeVoidAsync("startTime", timeElement);
-    }
-
-
-    private async Task<bool> ValidateToken()
-    {
-        await localStorage.SetItemAsync<string>("token", cookieToken);
-        Token = await localStorage.GetItemAsync<string>("token");
-        isAuthenticated = await Authenticate();
-        if (isAuthenticated)
-        {
-            return true;
-        }
-        return false;
-    }
-    private async Task<bool> Authenticate()
-    {
-        var _userAccount = await UserAccountService.AuthenticateToken(new UserAccount(), Token);
-        userAccount = _userAccount ?? new UserAccount();
-        if (userAccount.UserName != null)
-            return true;
-        return false;
-    }
-
-
     private void MapGlobal()
     {
         GlobalClass.CurrentUserAccount = userAccount;
-        Name = userAccount.FirstName;
-        Designation = userAccount.Designation + " - " + userAccount.AccessLevel;
         imageSource += Convert.ToBase64String(userAccount.Picture);
         accessLevel = userAccount.AccessLevel;
-
         CheckAccessLevelLinks();
     }
     private async Task MapGlobalTime()
@@ -349,15 +249,6 @@
         DateTime _serverTime = await globalService.LoadServerTime();
         GlobalContentTitle.contentServerTime = _serverTime;
     }
-
-    private void NotificationClick()
-    {
-        if (_isNotifOpen)
-            _isNotifOpen = false;
-        else
-            _isNotifOpen = true;
-    }
-
     private void NavigateToPage(string location)
     {
         NavigationManager.NavigateTo($"{location}");
@@ -373,28 +264,34 @@
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
 
         var resultDialog = await DialogService.Show<Dialogs.LogOutDialog>("Exit", parameters, options).Result;
-        if (!resultDialog.Cancelled)
+        if (!resultDialog.Canceled)
         {
             //Change according to production
             NavigateToPage($"http://10.0.0.7:8000"); //server 7 main hub
         }
     }
 
-    private async void ToLogOut()
+    private async Task LogOut()
     {
         var parameters = new DialogParameters();
-        parameters.Add("ContentText", "Logout from Ticketing System?");
-        parameters.Add("ButtonText", "Proceed");
-        parameters.Add("Color", Color.Error);
-
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-
-        var resultDialog = await DialogService.Show<Dialogs.LogOutDialog>("Logout", parameters, options).Result;
-        if (!resultDialog.Cancelled)
+        parameters.Add("DialogTitle", "Log out?");
+        parameters.Add("IconString", Icons.Material.Filled.Logout);
+        parameters.Add("CancelText", "Cancel");
+        parameters.Add("SubmitText", "Yes, Log out");
+        parameters.Add("ContentText", "Logging out of the system will return you to systems hub, all unsaved changes will be lost.");
+        parameters.Add("DialogAction", Enums.CrudeMode.Delete);
+        var options = new DialogOptions 
+        { 
+            NoHeader = true,
+            CloseOnEscapeKey = true,
+            DisableBackdropClick = true,
+            MaxWidth = MaxWidth.ExtraSmall
+        };
+        var resultDialog = await DialogService.Show<Shared.Components.Dialog>(string.Empty, parameters, options).Result;
+        if (!resultDialog.Canceled) 
         {
-            await localStorage.ClearAsync();
-            @* await localStorage.SetItemAsync<string>("token", ""); *@
-            await JSRuntime.InvokeVoidAsync("deleteCookie");
+            await localStorageService.ClearAsync();
+            await JSRuntime.InvokeVoidAsync("DeleteCookie");
             NavigateToPage($"http://10.0.0.7:8000");
         }
     }
@@ -443,7 +340,7 @@
         @* filterParameter.TicketUserAccountId = GlobalClass.CurrentUserAccount.EmployeeId; *@
         filterParameter.ActivityDateFrom = await globalService.LoadServerTime();
         @* filterParameter.ActivityDateFrom = Convert.ToDateTime("12-04-2021"); *@
-        auditTrails = await auditTrailService.GetAllAuditTrails(filterParameter, Token);
+        auditTrails = await auditTrailService.GetAllAuditTrails(filterParameter, GlobalClass.Token);
         badgeContent = auditTrails.Count();
         await CheckAccountsCache();
     }
@@ -456,7 +353,7 @@
         }
         filterParameter.RequestorId = GlobalClass.CurrentUserAccount.EmployeeId;
         filterParameter.ActivityDateFrom = await globalService.LoadServerTime();
-        auditTrails = await auditTrailService.GetAuditTrailsByEmployee(filterParameter, Token);
+        auditTrails = await auditTrailService.GetAuditTrailsByEmployee(filterParameter, GlobalClass.Token);
         badgeContent = auditTrails.Count();
         Task t =  CheckAccountsCache();
         await t;
@@ -471,7 +368,7 @@
         filterParameter.TicketUserAccountId = GlobalClass.CurrentUserAccount.EmployeeId;
         filterParameter.ActivityDateFrom = await globalService.LoadServerTime();
         @* filterParameter.ActivityDateFrom = Convert.ToDateTime("12-04-2021"); *@
-        auditTrails = await auditTrailService.GetAuditTrailsByIT(filterParameter, Token);
+        auditTrails = await auditTrailService.GetAuditTrailsByIT(filterParameter, GlobalClass.Token);
         badgeContent = auditTrails.Count();
         Task t = CheckAccountsCache();
         await t;
@@ -480,14 +377,6 @@
     {
         dataFetched = true;
         StateHasChanged();
-    }
-
-    async Task<string> GetRequestorAccount(long id)
-    {
-        @* requestorAvatar = await employeeAccountService.GetEmployee(Token, id); *@
-        requestorAvatar = await globalService.GetEmployeeV2(Token, id);
-        requestorAvatarSource = imageConv + Convert.ToBase64String(requestorAvatar.Picture);
-        return requestorAvatarSource;
     }
 
     private async Task CheckAccountsCache()
@@ -519,9 +408,11 @@
     }
     private async Task GetRequestorAccounts(long UserId)
     {
-        requestorAccount = await employeeAccountService.GetEmployee(Token, UserId);
-        requestorAccounts.Add(requestorAccount);
-
+        if (UserId != 0)
+        {
+             requestorAccount = await employeeAccountService.GetEmployee(GlobalClass.Token, UserId);
+            requestorAccounts.Add(requestorAccount);
+        }
     }
     private async void RefreshPage()
     {
@@ -653,31 +544,19 @@
         parameters.Add("Color", Color.Primary);
         parameters.Add("currTicketInfo", context);
         parameters.Add("FromNotif", true);
-        parameters.Add("Token", Token);
+        parameters.Add("Token", GlobalClass.Token);
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true, NoHeader = true };
 
         var resultDialog = await DialogService.Show<Shared.Dialogs.TicketPeekInfoDialog>("Ticket Info", parameters,
         options).Result;
-        if (!resultDialog.Cancelled)
+        if (!resultDialog.Canceled)
         {
             ShowLoadingOverlay = false;
         }
         else
         {
             ShowLoadingOverlay = false;
-        }
-    }
-
-    private async void startSomething()
-    {
-        while (await timer.WaitForNextTickAsync())
-        {
-            var Ping = await globalService.LoadServerTime();
-            if (Ping == null)
-                Console.WriteLine("No Connection");
-            else
-                Console.WriteLine("Stable Connection");
         }
     }
     void ShowAlert(string message, Severity severity, int displayed)
@@ -695,14 +574,14 @@
               .WithAutomaticReconnect()
               .Build();
         await commentConnection.StartAsync();
-
     }
+
     void notifyComments()
     {
         commentConnection.On<TicketComment>("ReceiveTicketComment", (comment) =>
         {
             ticketComments.Add(comment);
-            GlobalClass.TicketComments = ticketComments.ToList();
+            GlobalList.TicketComments = ticketComments.ToList();
             StateHasChanged();
             Task.Delay(1);
         });
@@ -715,30 +594,31 @@
            .Build();
         await hubConnection.StartAsync();
     }
-    void InvokeNewTicket()
+    private void InvokeNewTicket()
     {
-        hubConnection.On<List<TicketModel>>("GetAllTicketList", (_list) =>
+        hubConnection.On<List<TicketModel>>("GetAllTicketList", async (_list) =>
         {
-            GetLatestTicket();
+            await GetLatestTicket();
         });
     }
     async Task LastTicketSaved()
     {
-        var newTicket = await ticketService.GetLatestTicket(Token);
+        var newTicket = await ticketService.GetLatestTicket(GlobalClass.Token);
         newTickets.Add(newTicket);
     }
 
-    async Task GetLatestTicket()
+    private async Task GetLatestTicket()
     {
         if (GlobalClass.CurrentUserAccount.AccessLevel != Enums.AccessLevel.Client)
         {
-            var newTicket = await ticketService.GetLatestTicket(Token);
+            var newTicket = await ticketService.GetLatestTicket(GlobalClass.Token);
 
             if (!newTickets.Any(x => x.Id == newTicket.Id) && newTicket.RequestorId != GlobalClass.CurrentUserAccount.EmployeeId)
             {
-                ShowAlert("New Ticket | Ticket number: " + newTicket.TicketNumber + " | Requestor: " + newTicket.RequestorName, Severity.Normal, 10);
-                newTickets.Add(newTicket);
-                await IJSrun.InvokeVoidAsync("PlayAudioFile", "/notificationSound/newTicket.wav");
+                Task t = ShowNotificationCard(newTicket);
+                await t;
+                if (t.Status == TaskStatus.RanToCompletion)
+                    StateHasChanged();
             }
         }
     }
@@ -758,13 +638,13 @@
         filterParameter.ActivityDateFrom = await globalService.LoadServerTime();
 
         if (userAccount.AccessLevel == Enums.AccessLevel.Client)
-            auditTrails = await auditTrailService.GetAuditTrailsByEmployee(filterParameter, Token);
+            auditTrails = await auditTrailService.GetAuditTrailsByEmployee(filterParameter, GlobalClass.Token);
 
         else if (userAccount.AccessLevel == Enums.AccessLevel.IT)
-            auditTrails = await auditTrailService.GetAuditTrailsByIT(filterParameter, Token);
+            auditTrails = await auditTrailService.GetAuditTrailsByIT(filterParameter, GlobalClass.Token);
 
         else
-            auditTrails = await auditTrailService.GetAllAuditTrails(filterParameter, Token);
+            auditTrails = await auditTrailService.GetAllAuditTrails(filterParameter, GlobalClass.Token);
       
         if (auditTrails.Count() > 0) isVisible = true;
         else isVisible = false;
@@ -772,9 +652,8 @@
 
         Task t = CheckAccountsCache();
         await t;
-        @* StateHasChanged(); *@
     }
-    void NotificationList()
+    private void NotificationList()
     {
         foreach (var notify in notificationList)
         {
@@ -795,13 +674,13 @@
     {
         FilterParameter _filterParameters = new FilterParameter();
         _filterParameters.DepartmentId = "8";
-        GlobalList.ITDept = await globalService.GetDepartmentEmployees(_filterParameters, Token);
+        GlobalList.ITDept = await globalService.GetDepartmentEmployees(_filterParameters, GlobalClass.Token);
     }
 
     private async Task LoadTicketCategory()
     {
         FilterParameter _filterParameters = new FilterParameter();
-        GlobalList.ticketCategoryList = await ticketCategoryService.LoadTicketCategory(Token);
+        GlobalList.ticketCategoryList = await ticketCategoryService.LoadTicketCategory(GlobalClass.Token);
         while (GlobalList.ticketCategoryList == null)
             await Task.Delay(1);
     }
@@ -809,16 +688,123 @@
     private async Task LoadBranches()
     {
         FilterParameter _filterParameters = new FilterParameter();
-        GlobalList.ticketBranchList = await ticketBranchService.GetBranch(_filterParameters, Token);
+        GlobalList.TicketBranchList = await ticketBranchService.GetBranch(_filterParameters, GlobalClass.Token);
+        GlobalList.TicketBranchList = GlobalList.TicketBranchList.OrderBy(x=>x.BranchName).ToList();
     }
 
-    private async Task LoadAllDepartments()
-    {
-        GlobalList.departmentList = await globalService.GetAllDepartment(Token);
-    }
+    private async Task LoadAllDepartments() => GlobalList.DepartmentList = await globalService.GetAllDepartment(GlobalClass.Token);
+    
     private async Task LoadAllTicketStatus()
     {
         FilterParameter _filterParameters = new FilterParameter();
-        GlobalList.ticketStatusList = await ticketStatusService.GetTicketStatus(_filterParameters, Token);
+        GlobalList.TicketStatusList = await TicketStatusService.GetTicketStatus(_filterParameters, GlobalClass.Token);
+    }
+    private async Task PopulateCatTypeList()
+    {
+        await Task.Run(() =>
+        {
+            foreach (Enums.TicketCategoryType item in Enum.GetValues(typeof(Enums.TicketCategoryType)))
+            GlobalList.TicketCategoryTypeList.Add(item);
+        });
+    }
+    
+
+    void IDisposable.Dispose()
+    {
+        AppState.OnChange -= StateHasChanged;
+        ApplicationState.OnChange -= StateHasChanged;
+    }
+    public void UpdateLayoutAlert()
+    {
+        Console.WriteLine("Invoked");
+        if (AppState.IsDirty)
+            updateStyleStr = "background-color: inherit";
+        else
+            updateStyleStr = "";
+        StateHasChanged();
+    }
+
+    private async Task CheckSetNotifications()
+    {
+        ApplicationState.IsNotificationSilent = await NotificationMethods.CheckSilentSetting(localStorageService);
+        var notifications = await NotificationMethods.GetNotificationsFromLocalStorage(localStorageService);
+        if (notifications != null && notifications.Count() != 0)
+            ApplicationState.Notifications = notifications;
+        else
+            await NotificationMethods.SetNotificationLocalStorage(localStorageService, new());
+        StateHasChanged();
+    }
+
+    private async Task AddNotification(TicketModel ticket)
+    {
+        NotificationTrailModel notification = new()
+        {
+            EmployeeId = ticket.RequestorId,
+            TicketNumber = ticket.TicketNumber,
+            UserAccountName = ticket.RequestorName,
+            LogDateTime = await globalService.LoadServerTime(),
+            Activity = ticket.IssueSummary,
+            TicketId = ticket.Id
+        };
+        var result = await NotificationMethods.GetNotificationsFromLocalStorage(localStorageService);
+        result.Add(notification);
+        ApplicationState.Notifications = result;
+        await NotificationMethods.SetNotificationLocalStorage(localStorageService, result);
+    }
+
+    private async Task PlayNotificationSound()
+    {
+        ApplicationState.IsNotificationSilent = await NotificationMethods.CheckSilentSetting(localStorageService);
+        if (!ApplicationState.IsNotificationSilent)
+            await IJSrun.InvokeVoidAsync("PlayAudioFile", "/notificationSound/newTicket.wav");
+    }
+    private async Task ToggleTheme()
+    {
+        _isDarkMode = !_isDarkMode;
+        await Extensions.SetDarkMode(localStorageService, _isDarkMode);
+    }
+
+    private async Task SetNotificationSetting(bool value) => await NotificationMethods.SetSilentNotification(localStorageService, value);
+    private void RefreshPopUps()
+    {
+        _isNotifOpen = false;
+    }
+
+    private async Task ShowNotificationCard(TicketModel newTicket)
+    {
+        Task<UserAccount> getEmployeeTask = GetEmployeeAccount(newTicket.RequestorId);
+        await getEmployeeTask;
+        if (getEmployeeTask.Status == TaskStatus.RanToCompletion)
+        {
+            newTickets.Add(newTicket);
+            Task AddNotifTask = AddNotification(newTicket);
+            await AddNotifTask;
+            if (AddNotifTask.Status == TaskStatus.RanToCompletion)
+            {
+                await PlayNotificationSound();
+                NotificationMethods.ShowNotificationSnackbar(Snackbar, newTicket, NavigationManager, getEmployeeTask.Result, localStorageService);
+            }
+               
+        }
+        @* ShowAlert("New Ticket | Ticket number: " + newTicket.TicketNumber + " | Requestor: " + newTicket.RequestorName, Severity.Normal, 10); *@
+      
+    }
+
+    private async Task<UserAccount> GetEmployeeAccount(long employeeId)
+    {
+        var requestor = await Task.Run(() => GlobalList.TemporaryEmployeeList.Where(x => x.EmployeeId == employeeId).FirstOrDefault()); 
+        if (requestor != null)
+            return requestor;
+        else
+        {
+            requestor =  await globalService.GetEmployeeV2(GlobalClass.Token, employeeId);
+            return requestor;
+        }
+    }
+
+    public void NotifyChange()
+    {
+        badgeStyleString = "color:red";
+        InvokeAsync(StateHasChanged);
     }
 }

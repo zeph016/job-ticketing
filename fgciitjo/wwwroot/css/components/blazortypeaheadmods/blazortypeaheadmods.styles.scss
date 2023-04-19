@@ -1,0 +1,29 @@
+.blzrth-oflowhidden {
+  @extend .blzrth-maxheight-min-dd;
+  .blazored-typeahead {
+    overflow: hidden !important;
+  }
+}
+.blzrth-maxheight {
+  .blazored-typeahead__results {
+    max-height: calc(100vh - 640px) !important;
+  }
+}
+.blzrth-maxheight-min-multi {
+  .blazored-typeahead { 
+    min-height: 85px !important;
+  }
+  .blazored-typeahead__results {
+    max-height: calc(100vh - 640px) !important;
+  }
+}
+
+.blzrth-maxheight-min-dd {
+  .blazored-typeahead { 
+    min-height: 43px !important;
+  }
+}
+
+.blzr-bg-surface {
+  .blazored-typeahead__input, .blazored-typeahead__results { background-color: var(--mud-palette-surface); }
+}

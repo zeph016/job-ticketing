@@ -1,0 +1,82 @@
+
+@inherits NotificationListCardBase
+
+<MudPaper Class='notification-list-main'>
+    <div class="notification-list-main__grid">
+        <div class="notiflist-headtitle">
+            <p>Notifications</p>
+        </div>
+        <div class="notiflist-headctrls">
+            <MudIconButton OnClick='Refresh' Icon='@Icons.Material.Filled.Refresh' Size='Size.Small' />
+            <MudButton Class='nlm-notif-btn' OnClick='SetNotificationConfig'
+                StartIcon='@(ApplicationState.IsNotificationSilent ? 
+                    Icons.Material.Filled.Notifications : Icons.Material.Filled.NotificationsOff)' Variant='Variant.Text'
+                IconSize='Size.Small' Size='Size.Small'>
+                @(ApplicationState.IsNotificationSilent ? "Notify":"Silent")
+            </MudButton>
+        </div>
+        <div class="notiflist-tabcontent">
+             <MudTabs Class='notiflist-tab-container' MinimumTabWidth="20px">
+                <MudTabPanel OnClick='(() => FilterNotificationList(Enums.NotificationViewType.All))' Text='All' />
+                <MudTabPanel OnClick='(() => FilterNotificationList(Enums.NotificationViewType.Unread))' Text='Unread' />
+                <MudTabPanel OnClick='(() => FilterNotificationList(Enums.NotificationViewType.Read))' Text='Read' />
+                @if (!dataFetched)
+                {
+                    @foreach (var item in ApplicationState.Notifications)
+                    {
+                        <SkeletonNotifRow />
+                    }
+                }
+                else if (dataFetched && notificationList.Count() > 0)
+                {
+                    @foreach (var item in notificationList)
+                    {
+                        <div class='row-hover'>
+                            <div class="notif-row">
+                                <div class='notif-row__grid'>
+                                    <div class="notif-employeecard">
+                                        <MudBadge Icon="@(item.isRead ? Icons.Material.Filled.MarkEmailRead:Icons.Material.Filled.MarkEmailUnread)"
+                                            Origin='Origin.TopLeft' Overlap Color='@(item.isRead ? Color.Default : Color.Tertiary)' >
+                                                <EmployeeCardComponent isITEmployee='false' employeeId='@item.EmployeeId' />
+                                        </MudBadge>
+                                        <MudSpacer />
+                                        <small class='cursor-pointer' @onclick='(() => PreviewTicket(item.TicketId))'>View</small>
+                                    </div>
+                                    <div class="notif-content">
+                                        @item.Activity
+                                    </div>
+                                    <div class="notif-time">
+                                        @item.LogDateTime.ToString("ddd, hh:mm tt")
+                                    </div>
+                                    <div class="notif-date">
+                                        @item.LogDateTime.ToString("MMMM dd, yyyy")
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <MudDivider />
+                    }
+                }
+                else if (dataFetched && notificationList.Count() == 0)
+                {
+                    <div class='notiflist-tabcontent__no-content'>
+                        <p>None</p>
+                    </div>
+                }
+            </MudTabs>
+        </div>
+        <div class="notiflist-footer">
+            <MudButton OnClick='MarkAllRead' Disabled='@(notificationList.Count() == 0 ? true : false)'
+                StartIcon='@Icons.Material.Filled.Checklist' Variant='Variant.Text'
+                IconSize='Size.Small' Size='Size.Small'>
+                Mark all as read
+            </MudButton>
+            <MudSpacer />
+            <MudButton OnClick='ClearAllNotifications'  Disabled='@(notificationList.Count() == 0 ? true : false)'
+                StartIcon='@Icons.Material.Filled.ClearAll' Variant='Variant.Text'
+                IconSize='Size.Small' Size='Size.Small'>
+                Clear notifications
+            </MudButton>
+        </div>
+    </div>
+</MudPaper>

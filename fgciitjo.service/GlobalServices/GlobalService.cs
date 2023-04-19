@@ -92,21 +92,11 @@ namespace fgciitjo.service.GlobalServices
 
         public async Task<DateTime> LoadServerTime()
         {
-            try
-            {
-                DateTime serverDate = new DateTime();
-                HttpResponseMessage responseMessage = await client.GetAsync("/ticket/server-date");
-                if (responseMessage.IsSuccessStatusCode)
-                {
-                    serverDate = await responseMessage.Content.ReadAsAsync<DateTime>();
-                }
-                return serverDate;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
+            HttpResponseMessage responseMessage = await client.GetAsync("/ticket/server-date");
+            if (responseMessage.IsSuccessStatusCode)
+                return await responseMessage.Content.ReadAsAsync<DateTime>();
+            else
                 return DateTime.Now;
-            }
         }
 
         public async Task<UserAccount> GetEmployeeV2(string token, long employeeId)

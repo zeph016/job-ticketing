@@ -1,0 +1,17 @@
+.custombadge {
+  display: inline-table;
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+
+  // background-color: #bbb;
+  background-color: #00000078;
+  border-radius: 50%;
+}
+
+.custombadge__content {
+  display: table-cell;
+  font-size: 12px !important;
+  vertical-align: middle;
+  text-align: center;
+}

@@ -10,10 +10,10 @@ namespace fgciitjo.domain.clsTicketFileAttachment
     {
         public Int64 Id { get; set; }
         public Int64 TicketId { get; set; }
-        public string FileName { get; set; }
-        public byte[] FileAttachment { get; set; }
+        public string FileName { get; set; } = string.Empty;
+        public byte[] FileAttachment { get; set; } = new byte[]{};
         public Int64 UserAccountId { get; set; }
-        public string Remarks { get; set; }
+        public string Remarks { get; set; } = string.Empty;
         public bool IsActive { get; set; }
     }
 }

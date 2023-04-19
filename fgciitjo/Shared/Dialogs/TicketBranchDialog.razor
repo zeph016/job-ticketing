@@ -1,59 +1,89 @@
 ﻿@inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject ITicketBranchService ticketBranchService
-@inject ISnackbar Snackbar
+@inject ISnackbar SnackbarService
 
-<MudDialog>
+<MudDialog Class='custom-dialog1'>
     <TitleContent>
-        <MudText Typo='Typo.h6'>
-            <p class='pTicketBranch'>
-                <MudIcon Icon="@Icons.Material.Filled.CorporateFare" Size='Size.Large' />
-                @ContentText
-            </p>
-        </MudText>
+        <div class='d-flex align-center gap-2 custom-dialog1__title'>
+            @if (_action == Enums.CrudeMode.Edit)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" />
+            }
+            else if (_action == Enums.CrudeMode.Add)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3" />
+            }
+            <MudText Typo='Typo.h6'>@ContentText</MudText>
+        </div>
     </TitleContent>
     <DialogContent>
       <MudForm >
         <MudGrid>
-            <MudItem xs='8'>
-                <MudTextField Error='notValid' Required='true' RequiredError='Branch name is required!' @bind-Value='@currentBranch.BranchName' Label='Branch Name' />
-            </MudItem>
-            <MudItem xs='4'>
-                <MudCheckBox @bind-Checked='@currentBranch.IsActive' Label='Active' />
+            <MudItem xs='12'>
+                <MudTextField @bind-Value='@currentBranch.BranchName' Error='notValid' Required='true' RequiredError='Branch name is required!'  Label='Branch Name' 
+                    Margin='Margin.Dense'/>
             </MudItem>
         </MudGrid>
       </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel" Variant='Variant.Text' Color='Color.Error'>Cancel</MudButton>
-        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+        @if (currentBranch.Id != 0)
+        {
+            <MudCheckBox @bind-Checked='@currentBranch.IsActive' Label='Active' Dense Color='Color.Dark' Size='Size.Small' />
+        }
+        <MudSpacer />
+        <MudButton Class='btn-ios-d font12' OnClick="Cancel" Variant='Variant.Text' Size='Size.Small' DisableElevation>Cancel</MudButton>
+        <MudButton Class='btn-ios-d font12' OnClick="Submit" Variant="Variant.Filled" Size='Size.Small' DisableElevation
+            Color="@(!currentBranch.IsActive ? Color.Error : @Color)">
+            @(!currentBranch.IsActive ? "Deactivate" : @ButtonText)
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public string ContentText { get; set; }
-    [Parameter] public string ButtonText { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = new MudDialogInstance();
+    [Parameter] public string ContentText { get; set; } = string.Empty;
+    [Parameter] public string ButtonText { get; set; } = string.Empty;
     [Parameter] public Color Color { get; set; }
     [Parameter] public TicketBranchModel currentBranch { get; set; } = new TicketBranchModel();
     [Parameter] public Enums.CrudeMode _action { get; set; }
     bool notValid;
-    async void Submit()
+
+    public override async Task SetParametersAsync(ParameterView parameters)
     {
-     
+        await base.SetParametersAsync(parameters);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        while (GlobalClass.CurrentUserAccount == null)
+            await Task.Delay(1);
+        if (_action == Enums.CrudeMode.Add)
+            currentBranch.IsActive = true;
+    }
+    private async void Submit()
+    {
+        if (!currentBranch.IsActive)
+            _action = Enums.CrudeMode.Delete;
         if (!string.IsNullOrWhiteSpace(currentBranch.BranchName))
         {
-          if (currentBranch.Id == 0)
-        {
-            await ticketBranchService.AddBranch(currentBranch, await localStorage.GetItemAsync<string>("token"));
-            ShowAlert("Ticket Branch Added", Variant.Filled, Severity.Success);
-        }
-        else
-        {
-            await ticketBranchService.UpdateBranch(currentBranch, await localStorage.GetItemAsync<string>("token"));
-            ShowAlert("Ticket Branch Updated", Variant.Filled, Severity.Success);
-        }
-        MudDialog.Close(DialogResult.Ok(true));
+            if (_action == Enums.CrudeMode.Add)
+            {
+                await ticketBranchService.AddBranch(currentBranch, GlobalClass.Token);
+                Extensions.ShowAlert("Branch location has been added", Variant.Filled, SnackbarService, Severity.Success, string.Empty);
+            }
+            else if (_action == Enums.CrudeMode.Edit)
+            {
+                await ticketBranchService.UpdateBranch(currentBranch, GlobalClass.Token);
+                Extensions.ShowAlert("Branch location has been updated", Variant.Filled, SnackbarService, Severity.Info, string.Empty);
+            }
+            else if (_action == Enums.CrudeMode.Delete)
+            {
+                await ticketBranchService.UpdateBranch(currentBranch, GlobalClass.Token);
+                Extensions.ShowAlert("Branch location has been deactivated", Variant.Filled, SnackbarService, Severity.Warning, string.Empty);
+            }
+            MudDialog.Close(DialogResult.Ok(true));
         }
         else
         {
@@ -64,20 +94,7 @@
         
     void Cancel()
     {
+        Extensions.ShowAlert("Action Cancelled", Variant.Filled, SnackbarService, Severity.Normal, string.Empty);
         MudDialog.Cancel();
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
-        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
-        Snackbar.Add($"Cancelled action", Severity.Error);
-    }
-
-    void ShowAlert(string message, Variant variant, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-        Snackbar.Configuration.SnackbarVariant = variant;
-        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
-        Snackbar.Add($"{message}", severity);
     }
 }

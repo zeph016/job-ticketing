@@ -14,10 +14,7 @@ namespace fgciitjo.service.UserAccountServices
 {
     public class UserAccountService : IUserAccountService
     {
-        public UserAccountService(HttpClient _client)
-        {
-            this.client = _client;
-        }
+        public UserAccountService(HttpClient _client) => client = _client;
 
         #region Properties
 
@@ -63,20 +60,20 @@ namespace fgciitjo.service.UserAccountServices
             try
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
                 var parameter = JsonConvert.SerializeObject(new { systemname = userAccount.SystemName});
                 var bodyContent = new StringContent(parameter, Encoding.UTF8, "application/json");
-               
-                var response = await client.PostAsync("/hub/accounts/authenticate/system", bodyContent);
-                if (response.IsSuccessStatusCode)
+                var httpResponse = await client.PostAsync("/hub/accounts/authenticate/system", bodyContent);
+                if (httpResponse.IsSuccessStatusCode)
                 {
-                    userAccount = await response.Content.ReadAsAsync<UserAccount>();
+                    userAccount = await httpResponse.Content.ReadAsAsync<UserAccount>();
+                    userAccount.httpResponse = httpResponse.StatusCode;
                 }
+                else
+                    userAccount.httpResponse = httpResponse.StatusCode;
                 return userAccount;
             }
             catch (Exception ex)
             {
-
                 throw;
             }
         }

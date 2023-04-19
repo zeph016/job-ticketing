@@ -1,0 +1,32 @@
+.user-panel {
+  height: 55px !important;
+}
+.user-panel .mud-expand-panel-header {
+  max-width: 320px;
+  min-width: 320px;
+  padding: 0px 24px !important;
+  margin: 3px 0px !important;
+}
+.user-panel .mud-nav-item {
+  margin: 10px 0px;
+}
+.user-panel__txtname {
+  font-size: 15px !important;
+}
+.user-panel__txtdesignation {
+  font-size: 12px !important;
+}
+.user-panel .mud-avatar {
+  margin-right: 10px;
+}
+.user-panel__btncontainer {
+  display: flex !important;
+  padding: 0px 16px !important;
+}
+.user-panel__btncontainer-btn {
+  font-size: 14px !important;
+  text-transform: none !important;
+}
+.user-panel__logout-btn {
+  width: 100%;
+}/*# sourceMappingURL=userpanel.styles.css.map */

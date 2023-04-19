@@ -1,0 +1,38 @@
+.btnicon-mr-0 .mud-button-icon-start {
+  margin-right: 0px !important;
+}
+
+.btn-ios-d {
+  font-weight: 500 !important;
+  min-width: 70px !important;
+}
+.btn-ios-d .mud-button-icon-start {
+  margin-right: 0px !important;
+}
+
+.menu-lbl-1 .mud-button-label {
+  font-size: 10px !important;
+}
+.menu-lbl-1 .mud-button-root {
+  width: 100px !important;
+}
+
+.btnlbl-column .mud-button-label {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-absolute-right {
+  border-radius: 24px !important;
+  position: absolute !important;
+  left: 89%;
+}
+
+.button-m .mud-button {
+  padding: 2px 8px !important;
+}
+.button-m .mud-button .mud-button-label {
+  font-size: 0.8125rem !important;
+  text-transform: none !important;
+}/*# sourceMappingURL=buttonmods.styles.css.map */

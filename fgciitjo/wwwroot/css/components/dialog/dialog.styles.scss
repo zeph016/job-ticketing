@@ -1,0 +1,262 @@
+@use "../animations/animations.styles.css";
+@use "../flexgridmods/flexgridmods.styles.css";
+@use "../buttonmods/buttonmods.styles.css";
+@use "../icons-sizes/icon-sizes.styles.css";
+
+.custom-dialog {
+    min-width: 340px;
+    &__title {
+        @extend .dflex-row;
+        gap: 8px;
+        background-color: #012340;
+        padding: 16px 24px;
+        p { 
+            font-family: "SF-Pro-Display Regular";
+            font-size: 20px;
+            color: #ffffff; 
+        }
+        .mud-icon-root { color: #ffffff; }
+    }
+    &__content {
+        padding: 12px 24px;
+    }
+    &__actions {
+        @extend .dflex-row, .button-m;
+        gap: 8px;
+        padding: 8px;
+    }
+    &__warning-txt {
+        margin-top: 8px;
+        font-size: 12px;
+        color: rgb(148, 148, 148);
+    }
+}
+
+.dialog-action {
+    @extend .dflex-row, .button-m;
+    gap: 8px;
+}
+
+.native-dialog {
+    min-width: 600px;
+    &__grid {
+        display: grid; 
+        grid-template-columns: 1fr 1fr 1fr 1fr; 
+        grid-template-rows: auto 1fr 1fr auto; 
+        gap: 0px 0px; 
+        grid-template-areas: 
+            "dialog-header dialog-header dialog-header dialog-header"
+            "dialog-content dialog-content dialog-content dialog-content"
+            "dialog-content dialog-content dialog-content dialog-content"
+            "dialog-footer dialog-footer dialog-footer dialog-footer"; 
+        .dialog-header { grid-area: dialog-header; }
+        .dialog-content { grid-area: dialog-content; }
+        .dialog-footer { grid-area: dialog-footer; }
+
+        .dialog-header, .dialog-footer {
+            @extend .dflex-row;
+        }
+        .dialog-header {
+            border-radius: 4px 4px 0px 0px;
+            gap: 8px;
+            background-color: #012340;
+            padding: 8px 24px;
+            letter-spacing: 0.5px;
+            &__title,  &__lblticket {
+                color: white;
+                font-family: "SF-Pro-Display Regular";
+                font-weight: bold;
+                font-size: 18px;
+            }
+            .mud-icon-root { color: #ffffff; }
+        }
+        .dialog-content, .dialog-footer {
+            padding: 8px 16px;
+        }
+        .dialog-footer {
+            @extend .button-m;
+            justify-content: end;
+            &__footer-notes {
+                @extend .dflex-row;
+                gap: 4px;
+                p {
+                    font-family: "SF-Pro-Display Regular";
+                    font-size: 12px;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+            }
+        }
+    }
+}
+
+.native-dialog-freewidth {
+    &__grid {
+        display: grid; 
+        grid-template-columns: 1fr 1fr 1fr 1fr; 
+        grid-template-rows: auto 1fr 1fr auto; 
+        gap: 0px 0px; 
+        grid-template-areas: 
+            "dialog-header dialog-header dialog-header dialog-header"
+            "dialog-content dialog-content dialog-content dialog-content"
+            "dialog-content dialog-content dialog-content dialog-content"
+            "dialog-footer dialog-footer dialog-footer dialog-footer"; 
+        .dialog-header { grid-area: dialog-header; }
+        .dialog-content { grid-area: dialog-content; }
+        .dialog-footer { grid-area: dialog-footer; }
+
+        .dialog-header, .dialog-footer {
+            @extend .dflex-row;
+        }
+        .dialog-header {
+            border-radius: 4px 4px 0px 0px;
+            gap: 8px;
+            background-color: #012340;
+            padding: 8px 24px;
+            letter-spacing: 0.5px;
+            &__title,  &__lblticket {
+                color: white;
+                font-family: "SF-Pro-Display Regular";
+                font-weight: bold;
+                font-size: 18px;
+            }
+            .mud-icon-root { color: #ffffff; }
+        }
+        .dialog-content, .dialog-footer {
+            padding: 8px 16px;
+        }
+        .dialog-footer {
+            @extend .button-m;
+            justify-content: end;
+            &__footer-notes {
+                @extend .dflex-row;
+                gap: 4px;
+                p {
+                    font-family: "SF-Pro-Display Regular";
+                    font-size: 12px;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                }
+            }
+        }
+    }
+}
+
+.preview-ticket {
+    .chip-lbl { 
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    &__grid {
+        @extend .fade-in;
+        display: grid; 
+        grid-template-columns: minmax(100px,160px) minmax(100px,160px) minmax(100px,160px) 140px 130px auto; 
+        grid-template-rows: auto; 
+        gap: 0px 0px; 
+        grid-template-areas: 
+            "pview-issue pview-issue pview-issue pview-issue pview-chat pview-chat-container"
+            "pview-info-left pview-info-left pview-info-left pview-info-right pview-info-right pview-chat-container"
+            "pview-requestor pview-requestor pview-reqtime pview-reqtime pview-reqtime pview-chat-container"
+            "pview-taskdesc pview-taskdesc pview-taskdesc pview-taskdesc pview-taskdesc pview-chat-container"
+            "pview-status pview-status pview-assigned pview-assigned pview-assigned pview-chat-container";
+        .pview-issue { grid-area: pview-issue; }
+        .pview-chat { grid-area: pview-chat; }
+        .pview-info-left { grid-area: pview-info-left; }
+        .pview-info-right { grid-area: pview-info-right; }
+        .pview-requestor { grid-area: pview-requestor; }
+        .pview-reqtime { grid-area: pview-reqtime; }
+        .pview-taskdesc { grid-area: pview-taskdesc; }
+        .pview-status { grid-area: pview-status; }
+        .pview-assigned { grid-area: pview-assigned; }
+        .pview-chat-container { grid-area: pview-chat-container; }
+
+        .pview-issue, .pview-chat {
+            padding: 4px 8px;
+        }
+        .pview-chat {
+            @extend .dflex-row, .button-m;
+        }
+        .pview-issue {
+            &__container {
+                @extend .dflex-row;
+                align-items: start;
+            }
+            &__title {
+                @extend .line-clamp-2, .flex-grow;
+                font-family: "SF-Pro-Display-Bold";
+                margin-left: 8px;
+            }
+            &__title-field {
+                @extend .icon-15x15;
+                .mud-input-slot  {
+                    border-bottom: dotted thin black !important; 
+                }
+            }
+        }
+        .pview-info-left, .pview-info-right, .pview-requestor, .pview-assigned,
+        .pview-reqtime, .pview-status, .pview-chat-container { 
+            @extend .dflex-row; 
+        }
+        .pview-info-left, .pview-info-right { 
+            align-items: start; 
+            flex-wrap: wrap
+        }
+        .pview-info-right, .pview-reqtime, .pview-assigned {
+            justify-content: end;
+        }
+        .pview-requestor, .pview-reqtime, .pview-status, .pview-assigned {
+            padding: 4px 8px;
+            gap: 4px;
+        }
+        .pview-taskdesc {
+            &__container {
+                @extend .dflex-row;
+                align-items: start;
+                min-height: 175px;
+                max-height: 300px;
+            }
+            &__desc-field { @extend .icon-15x15; }
+            &__desc-lbl {
+                @extend .line-clamp-16, .flex-grow;
+                font-size: 12px;
+            }
+        }
+        .pview-chat-container {
+            padding-left: 12px;
+            &__sub-container {
+                @extend .transition-025s-ease;
+                height: 100%;   
+            }
+        }
+
+    }
+    &__lbl { font-size: 12px; }
+}
+
+.activity-dialog-form {  
+    width: 500px;
+    &__grid {
+        display: grid; 
+        grid-template-columns: 1fr 1fr 1fr 1fr; 
+        grid-template-rows: auto; 
+        gap: 8px; 
+        grid-template-areas: 
+            "act-date act-date act-status act-status"
+            "act-activity act-activity act-activity act-activity"
+            "act-remarks act-remarks act-remarks act-remarks"; 
+        .act-date { grid-area: act-date; }
+        .act-status { grid-area: act-status; }
+        .act-activity { grid-area: act-activity; }
+        .act-remarks { grid-area: act-remarks; }
+    }
+
+    &__lbl {
+        font-family: "SF-Pro-Display Regular";
+    }
+}
+  
+  
+  

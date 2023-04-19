@@ -1,0 +1,134 @@
+
+<MudIconButton Class='@(isExpanded ? "btn-absolute-right mudico-rotate180":"btn-absolute-right")' OnClick='ExpandClick' Icon='@Icons.Material.Filled.ExpandMore' Size='Size.Medium' 
+    Variant='Variant.Filled' Color='Color.Tertiary' Title='@(isExpanded ? "Collapse":"Expand")' />
+<MudGrid Spacing='1'>
+    @if (currentTicket.ReleasedById != 0)
+    {
+    <MudItem xs=12>
+        <img class='releaseImage'src="images/released.png">
+    </MudItem>
+    }
+    <MudItem xs=6>
+    <div class='small-dotted-field'>
+        <span>
+        <small>@currentTicket.TicketNumber</small>
+        </span>
+        <small>Ticket Number</small>
+    </div>
+    </MudItem>
+    <MudItem xs=6>
+    <div class='small-dotted-field'>
+        <span>
+            <MudChip Class='rounded'
+            Color='@(currentTicket.PriorityLevelId == Enums.PriorityLevel.Low ? Color.Info:
+                (currentTicket.PriorityLevelId == Enums.PriorityLevel.Medium ? Color.Warning:
+                (currentTicket.PriorityLevelId == Enums.PriorityLevel.High ? Color.Error:Color.Primary)))' 
+            Size='Size.Small'>
+            <small>@currentTicket.PriorityLevelId</small>
+            </MudChip>
+        </span>
+        <small>Priority Level</small>
+    </div>
+    </MudItem>
+    <MudItem xs=6>
+    <div class='small-dotted-field'>
+        <span>
+        <small>@currentTicket.IssueSummary</small>
+        </span>
+        <small>Issue</small>
+    </div>
+    </MudItem>
+    <MudItem xs=6>
+    <div class='small-dotted-field'>
+        <span>
+        <small>@Convert.ToDateTime(currentTicket.TicketDate).ToShortDateString()</small>
+        </span>
+        <small>Date</small>
+    </div>
+    </MudItem>
+    <MudItem xs=12>
+    <div class='small-dotted-field'>
+        <span>
+            <small>@currentTicket.TaskDescription</small>
+        </span>
+        <small>Task Description:</small>
+    </div>
+    </MudItem>
+    <MudItem xs=6>
+    <div class='small-dotted-field'>
+        <span>
+        <small>@currentTicket.TicketStatusName</small>
+        </span>
+        <small>Status</small>
+    </div>
+    </MudItem>
+    <MudItem xs=6>
+    <div class='small-dotted-field'>
+        <span>
+        <small>@currentTicket.TicketBranchName</small>
+        </span>
+        <small>Branch</small>
+    </div>
+    </MudItem>
+    <MudItem xs=6>
+    <div class='small-dotted-field'>
+        <span>
+        <small>@tCatType</small>
+        </span>
+        <small>Type</small>
+    </div>
+    </MudItem>
+    <MudItem xs=6>
+    <div class='small-dotted-field'>
+        <span>
+        <small>@currentTicket.TicketCategoryName</small>
+        </span>
+        <small>Category</small>
+    </div>
+    </MudItem>
+    <MudItem xs=12>
+    <div class='small-dotted-field'>
+        <span>
+        <small>@currentTicket.RequestorName</small>
+        </span>
+        <small>Requestor</small>
+    </div>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter] public EventCallback ExpandClickEvent { get; set; }
+    [Parameter] public TicketModel currentTicket { get; set; } = new TicketModel();
+    private Enums.TicketCategoryType tCatType = new Enums.TicketCategoryType();
+
+    bool isExpanded;
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        await base.SetParametersAsync(parameters);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Task t = Task.WhenAll(GetTCatType());
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion)
+            CompletedFetch();
+    }
+
+    private void CompletedFetch()
+    {
+        StateHasChanged();
+    }
+    private async Task ExpandClick()
+    {
+        isExpanded = !isExpanded;
+        await ExpandClickEvent.InvokeAsync();
+    }
+
+    private async Task GetTCatType()
+    {
+        var result = await Task.Run(() => GlobalList.ticketCategoryList.Where(x=>x.Id == currentTicket.TicketCategoryId).FirstOrDefault());
+        if (result != null)
+            tCatType = result.CategoryTypeId;
+    }
+}

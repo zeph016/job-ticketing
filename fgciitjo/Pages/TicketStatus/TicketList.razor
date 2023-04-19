@@ -1,766 +1,322 @@
-﻿@page "/ticketlist"
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject IConfiguration config
-@inject IDialogService DialogService
-@inject ITicketService ticketService
-@inject IGlobalService globalService
-@inject ITicketStatusService ticketStatusService
-@inject NavigationManager NavigationManager
-@inject ITicketListService ticketListService
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject IJSRuntime IJSrun;
-@inject ISnackbar Snackbar
+﻿@page "/ticket/list"
 
-<MudContainer class='ticketListContainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
-    <MudOverlay Visible='ShowLoadingOverlay' Absolute='true' DarkBackground='true'>
-        <MudProgressCircular class='loader-2' Size="Size.Large" Indeterminate="true" />
-    </MudOverlay>
-    @if (!dataFetched)
-    {
-        <MudPaper Class='ma-2 pa-2'>
-            <MudSkeleton SkeletonType='SkeletonType.Text' Height='100px' Animation='Animation.Wave' />
-            <MudSkeleton SkeletonType='SkeletonType.Rectangle' Height='71vh' Animation='Animation.Wave' />
-        </MudPaper>
-    }
-    else
-    {
-        <MudTable Class='ma-2 pa-2 ticketlist-table' Hover='false' Virtualize="true"
-        Filter='new Func<TicketModel,bool>(FilterItems)' FixedHeader='true' FixedFooter='true' RowsPerPage='10'
-        Striped='true' Breakpoint="Breakpoint.Sm" Bordered='false' Dense='true' Loading='isTableLoading'
-        ServerData='new Func<TableState, Task<TableData<TicketModel>>>(LoadData)' @ref="tableVariable">
-            <ToolBarContent>
-                <MudTextField class='ticketlist-table__txtsearch' T='string' ValueChanged='@(s=>OnSearch(s))'
-                Placeholder='Search Ticket #' Adornment='Adornment.Start' AdornmentIcon='@Icons.Material.Filled.Search'
-                IconSize='Size.Small'></MudTextField>
-                <MudSpacer />
-                <MudIconButton Class='ticketlist-table__btnrefreshtable' OnClick='ReloadTable'
-                Icon="@Icons.Material.Filled.Refresh" aria-label="Refresh" />
-                <MudButton OnClick='@(() => SearchFilterParameterDialog())' Variant='Variant.Text'
-                StartIcon='@Icons.Material.Filled.Tune'>Filter</MudButton>
-                <MudMenu Label='More' StartIcon="@Icons.Material.Filled.MoreVert" Direction='Direction.End' Dense='true'
-                OffsetY='true'>
-                    <MudMenuItem class='menuList' @onclick='@(() => Add())'>
-                        <p style='display: flex;'>
-                            <MudIcon Icon='@Icons.Material.Filled.Add' />
-                            <MudText style='padding-left: 10px; font-size: 14px; align-self: center;'>Create Ticket
-                            </MudText>
-                        </p>
-                    </MudMenuItem>
-                </MudMenu>
-            </ToolBarContent>
-            <ColGroup>
-                <col style="width: 100%;" />
-            </ColGroup>
-            <HeaderContent>
-                <MudTh>
-                    <MudTableSortLabel InitialDirection='SortDirection.Descending'
-                    SortBy='new Func<TicketModel, object>(x=>x.TicketDate)'>
-                        Ticket Requests
-                    </MudTableSortLabel>
-                </MudTh>
-            </HeaderContent>
-            <RowTemplate>
-                <MudTd>
-                    <MudContainer class='ticketlist-table__rowcontainer' Fixed='true'>
-                        <MudContainer class='ticketlist-table__subrowcontainer'>
-                            <MudText class='ticketlist-table__txttno'>
-                                # @context.TicketNumber
-                            </MudText>
-                            <MudText class='ticketlist-table__chipprior'>
-                                @if (context.PriorityLevelId == Enums.PriorityLevel.Low)
+@inherits TicketListBase
+@implements IDisposable
+@attribute [Authorize]
+
+<div class='page-cont' Square Elevation='0'>
+    <MudPaper Class='page-cont__background' Square Elevation='0'>
+        @if (!dataFetched)
+        {
+            <SkeletonDefaultList />
+        }
+        else
+        {
+            <MudContainer Class='ticketlist' MaxWidth='MaxWidth.ExtraExtraLarge'>
+                <MudTable Class='ticketlist__table' Hover FixedHeader FixedFooter RowsPerPage='rowsPerPage' Breakpoint="Breakpoint.Xs" Dense Loading='isTableLoading' LoadingProgressColor='Color.Primary'
+                    ServerData='new Func<TableState, Task<TableData<TicketModel>>>(LoadData)' @ref="tableVariable" Height='calc(100vh - 185px)'>
+                    <ToolBarContent>
+                        <MudGrid Class='ticketlist__table-toolbar' Spacing='1'>
+                            <MudItem Class='left-toolbar' xs='8'>
+                                @if (GlobalList.TicketStatusList.Count() != 0)
                                 {
-                                <MudChip Color='Color.Info' Size='Size.Small'>@context.PriorityLevelId</MudChip>
+                                    <MudChip Class='color-white d-flex align-center' OnClick='(() => FilterTableByChip("For IT Approval"))'
+                                        Size='Size.Small' Style='@(Extensions.GetColor(1))'>
+                                        <MudText Class='font12'>For IT Approval</MudText>
+                                        <MudDivider Class='ml-1' Vertical />
+                                        <div class='ml-1 custombadge'>
+                                            <MudText Class='custombadge__content'>@chip1</MudText>
+                                        </div>
+                                    </MudChip>
+                                    <MudChip Class='color-white' OnClick='(() => FilterTableByChip("In Progress"))'
+                                        Size='Size.Small' Style='@(Extensions.GetColor(2))'>
+                                        <MudText Class='font12'>In Progress</MudText>
+                                        <MudDivider Class='ml-1' Vertical />
+                                        <div class='ml-1 custombadge'>
+                                            <MudText Class='custombadge__content'>@chip2</MudText>
+                                        </div>
+                                    </MudChip>
+                                    <MudChip Class='color-white' OnClick='(() => FilterTableByChip("Assigned"))'
+                                        Size='Size.Small' Style='@(Extensions.GetColor(8))'>
+                                        <MudText Class='font12'>Assigned</MudText>
+                                        <MudDivider Class='ml-1' Vertical />
+                                        <div class='ml-1 custombadge'>
+                                            <MudText Class='custombadge__content'>@chip3</MudText>
+                                        </div>
+                                    </MudChip>
+                                    <MudChip Class='color-white' OnClick='(() => FilterTableByChip("Pending"))'
+                                        Size='Size.Small' Style='@(Extensions.GetColor(5))'>
+                                        <MudText Class='font12'>Pending</MudText>
+                                        <MudDivider Class='ml-1' Vertical />
+                                        <div class='ml-1 custombadge'>
+                                            <MudText Class='custombadge__content'>@chip4</MudText>
+                                        </div>
+                                    </MudChip>
+                                    <MudChip Class='color-white' OnClick='(() => FilterTableByChip("Done"))'
+                                        Size='Size.Small' Style='@(Extensions.GetColor(6))'>
+                                        <MudText Class='font12'>Done</MudText>
+                                        <MudDivider Class='ml-1' Vertical />
+                                        <div class='ml-1 custombadge'>
+                                            <MudText Class='custombadge__content'>@chip5</MudText>
+                                        </div>
+                                    </MudChip>
                                 }
-                            @if (context.PriorityLevelId == Enums.PriorityLevel.Medium)
-                                {
-                                <MudChip Color='Color.Warning' Size='Size.Small'>@context.PriorityLevelId</MudChip>
-                                }
-                            @if (context.PriorityLevelId == Enums.PriorityLevel.High)
-                                {
-                                <MudChip Color='Color.Error' Size='Size.Small'>@context.PriorityLevelId</MudChip>
-                                }
-                        </MudText>
-                        <MudText class='ticketlist-table__chipstatus'>
-                            @foreach (var item in ticketStatusList)
-                                {
-                                    if (item.Id == context.TicketStatusId)
-                                    {
-                                    <MudChip Size='Size.Small' style='@($"background-color:{item.StatusColor};")'>
-                                        @context.TicketStatusName</MudChip>
-                                        break;
-                                    }
-                                }
-                        </MudText>
-                    </MudContainer>
-                    @if (IsVisibleToAssignedIT(context))
-                        {
-                        <MudBadge Content='GlobalClass.TicketComments.Where(x=>x.TicketId == context.Id).Count()'
-                        Color="Color.Error" Overlap="true">
-                            <MudContainer class='ticketlist-table__subrowcontainer' Fixed='true'>
-                                <MudText class='ticketlist-table__contentissue'>
-                                    <MudIcon Icon='@Icons.Material.Filled.AppRegistration' Size='Size.Small' />
-                                    <MudText class='ticketlist-table__txtsummary'>Issue: @context.IssueSummary - </MudText>
-                                    <MudText class='ticketlist-table__txtdate'>
-                                        (@Convert.ToDateTime(context.TicketDate).ToString("MM/dd/yyyy hh:mm tt"))</MudText>
-                                    <MudSpacer />
-                                    <MudButton class='ticketlist-table__viewticketbtn'
-                                    StartIcon='@Icons.Material.Filled.Visibility'
-                                    OnClick='@(() => PeekTicketInfo(@context))' Size='Size.Small'>PREVIEW</MudButton>
-                                </MudText>
-                                <MudText class='ticketlist-table__txtdesc' style="text-align: left;">
-                                    @context.TaskDescription
-                                </MudText>
-                            </MudContainer>
-                        </MudBadge>
-                        }
-                        else if (IsVisibleToClientAndNotAssigned(context))
-                        {
-                        <MudBadge Content='GlobalClass.TicketComments.Where(x=>x.TicketId == context.Id).Count()'
-                        Color="Color.Error" Overlap="true"
-                        Visible='GlobalClass.TicketComments.Where(x=>x.TicketId == context.Id).Count() == 0 ? false : true'>
-                            <MudContainer class='ticketlist-table__subrowcontainer' Fixed='true'>
-                                <MudText class='ticketlist-table__contentissue'>
-                                    <MudIcon Icon='@Icons.Material.Filled.AppRegistration' Size='Size.Small' />
-                                    <MudText class='ticketlist-table__txtsummary'>Issue: @context.IssueSummary - </MudText>
-                                    <MudText class='ticketlist-table__txtdate'>
-                                        (@Convert.ToDateTime(context.TicketDate).ToString("MM/dd/yyyy hh:mm tt"))</MudText>
-                                    <MudSpacer />
-                                    <MudButton class='ticketlist-table__viewticketbtn'
-                                    StartIcon='@Icons.Material.Filled.Visibility'
-                                    OnClick='@(() => PeekTicketInfo(@context))' Size='Size.Small'>PREVIEW</MudButton>
-                                </MudText>
-                                <MudText class='ticketlist-table__txtdesc' style="text-align: left;">
-                                    @context.TaskDescription
-                                </MudText>
-                            </MudContainer>
-                        </MudBadge>
-                        }
-                        else
-                        {
-                        <MudContainer class='ticketlist-table__subrowcontainer' Fixed='true'>
-                            <MudText class='ticketlist-table__contentissue'>
-                                <MudIcon Icon='@Icons.Material.Filled.AppRegistration' Size='Size.Small' />
-                                <MudText class='ticketlist-table__txtsummary'>Issue: @context.IssueSummary - </MudText>
-                                <MudText class='ticketlist-table__txtdate'>
-                                    (@Convert.ToDateTime(context.TicketDate).ToString("MM/dd/yyyy hh:mm tt"))</MudText>
-                                <MudSpacer />
-                                <MudButton class='ticketlist-table__viewticketbtn'
-                                StartIcon='@Icons.Material.Filled.Visibility'
-                                OnClick='@(() => PeekTicketInfo(@context))' Size='Size.Small'>PREVIEW</MudButton>
-                            </MudText>
-                            <MudText class='ticketlist-table__txtdesc'>
-                                @context.TaskDescription
-                            </MudText>
-                        </MudContainer>
-                        }
-                    <MudContainer class='ticketlist-table__subrowcontainer' Fixed='true'>
-                        <MudText class='ticketlist-table__contenttag'>
-                            <MudText class='ticketlist-table__itemtags'>
-                                <MudIcon Icon='@Icons.Material.Filled.AccountCircle' Size='Size.Small' />
-                                <MudText>
-                                    <MudText class='ticketlist-table__lbltitle'>Requestor:</MudText>
-                                    <MudText class='ticketlist-table__lblcontent'>@context.RequestorName</MudText>
-                                </MudText>
-                            </MudText>
-                            <MudText class='ticketlist-table__itemtags'>
-                                @* <MudIcon Icon='@Icons.Material.Filled.LocationOn' Size='Size.Small'/> *@
-                                <MudText>
-                                    <MudText class='ticketlist-table__lbltitle'>Branch:</MudText>
-                                    <MudText class='ticketlist-table__lblcontent'>@context.TicketBranchName</MudText>
-                                </MudText>
-                            </MudText>
-                            <MudText class='ticketlist-table__itemtags'>
-                                @* <MudIcon Icon='@Icons.Material.Filled.Apartment' Size='Size.Small'/> *@
-                                <MudText>
-                                    <MudText class='ticketlist-table__lbltitle'>Department:</MudText>
-                                    <MudText class='ticketlist-table__lblcontent'>@context.RequestorDepartment</MudText>
-                                </MudText>
-                            </MudText>
-                            <MudText class='ticketlist-table__itemtags'>
-                                @* <MudIcon Icon='@Icons.Material.Filled.Article' Size='Size.Small'/> *@
-                                <MudText>
-                                    <MudText class='ticketlist-table__lbltitle'>Category:</MudText>
-                                    <MudText class='ticketlist-table__lblcontent'>@context.TicketCategoryName</MudText>
-                                </MudText>
-                            </MudText>
-                            <MudText class='ticketlist-table__itemtags'>
-                                <MudIcon Icon='@Icons.Material.Filled.AssignmentInd' Size='Size.Small' />
-                                <MudText>
-                                    <MudText class='ticketlist-table__lbltitle'>Assigned To:</MudText>
-                                    @if (string.IsNullOrWhiteSpace(context.AssigneeName))
+                                <MudTooltip Text='Click status for quick filter' Arrow Placement='Placement.Top' IsVisible='filterChipsVisible'>
+                                    <MudIconButton Class='wiggle-anim-sm' OnClick='(() => filterChipsVisible = !filterChipsVisible)'
+                                        Icon='@Icons.Material.Filled.Info' Size='Size.Small' Color='Color.Info' />
+                                </MudTooltip>
+                            </MudItem>
+                            <MudItem Class='right-toolbar' xs='4'>
+                                <MudTooltip Text='Refresh table' Arrow>
+                                    <MudIconButton Class='@(isTableLoading ? "mudbtnico-rotate":"")' OnClick='(() => ReloadTable(false))' Size='Size.Small' Icon="@Icons.Material.Filled.Refresh" Color='@(isTableLoading ? Color.Info : Color.Default)'
+                                        aria-label="Refresh" />
+                                </MudTooltip>
+                                <div>
+                                    <MudTooltip Text='Filter table' Arrow>
+                                        <MudButton Class='@(AppState.isTListFilterOpen ? "mudico-rotate180":"")' OnClick='(() => { AppState.isTListFilterOpen = !AppState.isTListFilterOpen; GlobalClass.isFromFilter = !GlobalClass.isFromFilter; })' 
+                                            Size='Size.Small' StartIcon="@Icons.Material.Filled.Tune" Color='@(AppState.isTListFilterOpen ? Color.Info : Color.Default)'>
+                                            Filter
+                                        </MudButton>
+                                    </MudTooltip>
+                                    <MudPopover Class='tlist-popover-custom1' Open='AppState.isTListFilterOpen' Fixed='false' AnchorOrigin='Origin.BottomLeft' TransformOrigin='Origin.TopRight' OverflowBehavior='OverflowBehavior.FlipAlways'>
+                                        <TicketListFilterComp FilterApplyClick="(() => ReloadTable(true))" />
+                                    </MudPopover>
+                                </div>
+                                <MudMenu Class='ticketlist__table-menu mudbtnico-rotate-90' Label='More' StartIcon="@Icons.Material.Filled.MoreVert" AnchorOrigin='Origin.BottomCenter' ActivationEvent='MouseEvent.MouseOver'
+                                    TransformOrigin='Origin.TopRight' Dense>
+                                    <MudMenuItem OnClick='Add'>
+                                        <div class='d-flex align-center gap-2'>
+                                            <MudIcon Icon='@Icons.Material.Filled.Add' Size='Size.Small'/>
+                                            <MudText Typo='Typo.body2'>Create Ticket</MudText>
+                                        </div>
+                                    </MudMenuItem>
+                                </MudMenu>
+                            </MudItem>
+                        </MudGrid>
+                    </ToolBarContent>
+                    <ColGroup>
+                        <col style="width: 100%;" />
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudGrid Spacing='1'>
+                                <MudItem Class='d-flex align-center' xs=12>
+                                    <div class='d-flex align-center gap-2'>
+                                        <MudText Typo='Typo.subtitle2'>Sort</MudText>
+                                        <MudIcon Icon='@Icons.Material.Filled.Sort' Size='Size.Small' />
+                                    </div>
+                                    <MudChip Label Size='Size.Small' Color='Color.Default'>
+                                        <MudTableSortLabel SortLabel='SortTicketNumber' T='TicketModel' 
+                                            InitialDirection='SortDirection.Descending'>
+                                            Ticket
+                                        </MudTableSortLabel>
+                                    </MudChip>
+                                    <MudChip Label Size='Size.Small' Color='Color.Default'>
+                                        <MudTableSortLabel SortLabel='SortTicketStatus' T='TicketModel' 
+                                            InitialDirection='SortDirection.Descending'>
+                                            Status
+                                        </MudTableSortLabel>
+                                    </MudChip>
+                                    <MudChip Label Size='Size.Small' Color='Color.Default'>
+                                        <MudTableSortLabel SortLabel='SortTicketDate' T='TicketModel' 
+                                            InitialDirection='SortDirection.None'>
+                                            Date
+                                        </MudTableSortLabel>
+                                    </MudChip>
+                                    <MudChip Label Size='Size.Small' Color='Color.Default'>
+                                        <MudTableSortLabel SortLabel='SortCategory' T='TicketModel' 
+                                            InitialDirection='SortDirection.None'>
+                                            Category
+                                        </MudTableSortLabel>
+                                    </MudChip>
+                                    <MudChip Label Size='Size.Small' Color='Color.Default'>
+                                        <MudTableSortLabel SortLabel='SortBranch' T='TicketModel' 
+                                            InitialDirection='SortDirection.None'>
+                                            Branch
+                                        </MudTableSortLabel>
+                                    </MudChip>
+                                    <MudChip Label Size='Size.Small' Color='Color.Default'>
+                                        <MudTableSortLabel SortLabel='SortDepartment' T='TicketModel' 
+                                            InitialDirection='SortDirection.None'>
+                                            Department
+                                        </MudTableSortLabel>
+                                    </MudChip>
+                                    <MudChip Label Size='Size.Small' Color='Color.Default'>
+                                        <MudTableSortLabel SortLabel='SortAssignee' T='TicketModel' 
+                                            InitialDirection='SortDirection.None'>
+                                            Assignee
+                                        </MudTableSortLabel>
+                                    </MudChip>
+                                </MudItem>
+                            </MudGrid>
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>
+                            <div class="tlistrow-container">
+                                <div class="tlistrow-tnumber d-flex align-center justify-center">
+                                    <MudText Class='font12 font-bold'># @context.TicketNumber</MudText>
+                                </div>
+                                <div class="tlistrow-priority d-flex justify-center">
+                                    <MudChip Class='mchip-fullwidth' Color='@(context.PriorityLevelId == Enums.PriorityLevel.Low ? Color.Info :
+                                        (context.PriorityLevelId == Enums.PriorityLevel.Medium ? Color.Warning :
+                                        (context.PriorityLevelId == Enums.PriorityLevel.High ? Color.Error : Color.Default)))' Size='Size.Small'>
+                                            @context.PriorityLevelId
+                                    </MudChip>
+                                </div>
+                                <div class="tlistrow-status d-flex align-center justify-center">
+                                    <MudChip Class='mchip-fullwidthheight' Label Size='Size.Small'
+                                        Style='@(Extensions.GetColor(context.TicketStatusId))'>
+                                        @context.TicketStatusName
+                                    </MudChip>
+                                </div>
+                                <div class="tlistrow-header rounded-tr rounded-tl">
+                                    <div class="thead-left px-2">
+                                        <TicketListCatTypeIdIconIdentifier TicketCategoryId='context.TicketCategoryId' />
+                                        <MudDivider Class='mx-2' Vertical />
+                                        <MudText Class='txt-oflow-elipsis' Typo='Typo.subtitle2'>@context.IssueSummary</MudText>
+                                        <MudSpacer />
+                                        <TListSubTaskCheckComp TicketId='context.Id' TicketNumber='@context.TicketNumber' />
+                                    </div>
+                                    <div class="thead-center overflow-hidden">
+                                        <MudTooltip Text='@Convert.ToDateTime(context.TicketDate).ToString("MM/dd/yyyy hh:mm tt")' Arrow Color='Color.Dark'>
+                                            <MudIcon Icon='@Icons.Material.Filled.CalendarMonth' Size='Size.Small' />
+                                        </MudTooltip>
+                                        <MudText Class='font12 txt-oflow-elipsis' Typo='Typo.caption'>@Convert.ToDateTime(context.TicketDate).ToString("MM/dd/yyyy hh:mm tt")</MudText>
+                                    </div>
+                                    <div class="thead-right px-2">
+                                        @if (IsVisibleToAssignedIT(context))
                                         {
-                                        <MudText class='ticketlist-table__lblcontent'>Not yet assigned</MudText>
+                                            <MudBadge Content='GlobalList.TicketComments.Where(x=>x.TicketId == context.Id).Count()'
+                                                Color="Color.Error" Overlap Bordered >
+                                                <MudIconButton Icon='@Icons.Material.Outlined.Info' Size='Size.Small'/>
+                                            </MudBadge>
+                                        }
+                                        else if (IsVisibleToClientAndNotAssigned(context))
+                                        {
+                                            <MudBadge Content='GlobalList.TicketComments.Where(x=>x.TicketId == context.Id).Count()' Bordered
+                                                Color="Color.Error" Overlap Visible='GlobalList.TicketComments.Where(x=>x.TicketId == context.Id).Count() == 0 ? false : true'>
+                                                <MudIconButton Icon='@Icons.Material.Outlined.Info' Size='Size.Small'/>
+                                            </MudBadge>
                                         }
                                         else
                                         {
-                                        <MudText class='ticketlist-table__lblcontent'>@context.AssigneeName</MudText>
+                                            <MudIconButton Icon='@Icons.Material.Outlined.Info' Size='Size.Small' />
                                         }
-                                </MudText>
-                            </MudText>
-                        </MudText>
-                    </MudContainer>
-                    <MudContainer class='ticketlist-table__subrowcontainer' Fixed='true'>
-                        <MudMenu Icon='@Icons.Material.Filled.MoreVert' Direction='Direction.End' Dense='true'
-                            Size='Size.Small'>
-                            <MudMenuItem Class='ticketlist-table__menu'>
-                                <a class='d-flex justify-center' href='/ticket/@context.Id'>
-                                    <MudIcon Icon='@Icons.Filled.Ballot' />
-                                    <MudText style='padding-left: 10px; font-size: 14px; align-self: center;'>
-                                        @(lblViewUpdate = context.TicketStatusId == 1 ? "Modify Ticket" : "View Ticket")
-                                    </MudText>
-                                </a>
-                            </MudMenuItem>
-
-                            @if (GlobalClass.CurrentUserAccount.AccessLevel != Enums.AccessLevel.Client)
-                                {
-                                <MudMenuItem @onclick='(() => Update(context))'>
-                                    <p style='display: flex;'>
-                                        <MudIcon Icon='@Icons.Material.Filled.Edit' />
-                                        @if (context.AssigneeId > 0)
+                                        <MudButton Class='btn-ios-d font12' OnClick='@(() => PreviewTicket(@context))' Size='Size.Small'
+                                            StartIcon='@Icons.Material.Filled.ViewTimeline'>
+                                            Preview
+                                        </MudButton>
+                                        <MudMenu Class='mudbtnico-rotate-90' StartIcon='@Icons.Material.Filled.MoreVert' AnchorOrigin='Origin.BottomLeft' TransformOrigin='Origin.TopRight' Dense ActivationEvent='MouseEvent.MouseOver'
+                                            Size='Size.Small' Label='Menu'>
+                                            <MudMenuItem>
+                                                <a class='d-flex align-center gap-2' href='/ticket/@context.Id'>
+                                                    <MudIcon Icon='@Icons.Material.Filled.Ballot' Size='Size.Small' />
+                                                    <MudText Typo='Typo.body2'>
+                                                        @(lblViewUpdate = context.TicketStatusId == 1 ? "Modify Ticket" : "View Ticket")
+                                                    </MudText>
+                                                </a>
+                                            </MudMenuItem>
+                                            @if (GlobalClass.CurrentUserAccount.AccessLevel != Enums.AccessLevel.Client)
                                             {
-                                            <MudText style='padding-left: 10px; font-size: 14px; align-self: center;'>
-                                                Update Status
-                                            </MudText>
+                                                <MudMenuItem OnClick='(() => Update(context))'>
+                                                    <div class='d-flex align-center gap-2'>
+                                                        <MudIcon Icon='@Icons.Material.Filled.PlaylistAddCheckCircle' Size='Size.Small'/>
+                                                        <MudText Typo='Typo.body2'>
+                                                            @(context.AssigneeId > 0 ? "Update Status" :"Assign IT")
+                                                        </MudText>
+                                                    </div>
+                                                </MudMenuItem>
                                             }
-                                            else
+                                            <MudMenuItem>
+                                                <a class='d-flex align-center gap-2' href='/subtask/@context.Id'>
+                                                    <MudIcon Icon='@Icons.Material.Filled.Task' Size='Size.Small'/>
+                                                    <MudText Typo='Typo.body2'>Sub Ticket</MudText>
+                                                </a>
+                                            </MudMenuItem>
+                                            @if (((byte)accesslevel) != 2 && context.TicketStatusId != 1 && context.TicketStatusId != 7  && context.TicketStatusId != 8 && context.TicketStatusId != 9)
                                             {
-                                            <MudText style='padding-left: 10px; font-size: 14px; align-self: center;'>
-                                                Assign IT
-                                            </MudText>
+                                                <MudMenuItem>
+                                                    <a class='d-flex align-center gap-2' href='/ticket/activity/@context.Id'>
+                                                        <MudIcon Icon="fa-solid fa-list-check" Size='Size.Small'/>
+                                                        <MudText Typo='Typo.body2'>Ticket Activity</MudText>
+                                                    </a>
+                                                </MudMenuItem>
                                             }
-                                    </p>
-                                </MudMenuItem>
-                                }
-
-                            <MudMenuItem Class='ticketlist-table__menu'>
-                                <a class='d-flex justify-center' href='/subtask/@context.Id'>
-                                    <MudIcon Icon='@Icons.Material.Filled.Task' />
-                                    <MudText style='padding-left: 10px; font-size: 14px; align-self: center;'>Sub Ticket
-                                    </MudText>
-                                </a>
-                            </MudMenuItem>
-                            @if (((byte)accesslevel) != 2)
-                                {
-                                <MudMenuItem Class='ticketlist-table__menu'>
-                                    <a class='d-flex justify-center' href="/activitybyid/@context.Id">
-                                        <MudIcon Icon="@Icons.Material.Filled.Reviews" Title="Ticket Actvity" />
-                                        <MudText style='padding-left: 10px; font-size: 14px; align-self: center;'>Ticket
-                                            Activity</MudText>
-                                    </a>
-                                </MudMenuItem>
-                                }
-                            <MudMenuItem Class='ticketlist-table__menu'>
-                                <a class='d-flex justify-center' href='/audittrail/@context.Id'>
-                                    <MudIcon Icon='@Icons.Material.Filled.ViewAgenda' />
-                                    <MudText style='padding-left: 10px; font-size: 14px; align-self: center;'>Audit
-                                        Trail</MudText>
-                                </a>
-
-
-                            </MudMenuItem>
-                            <MudMenuItem @onclick='@(()=> Print(context.Id))'>
-                                <p style='display: flex;'>
-                                    <MudIcon Icon="@Icons.Material.Filled.Print" />
-                                    <MudText style='padding-left: 10px; font-size: 14px; align-self: center;'>Print
-                                    </MudText>
-                                </p>
-                            </MudMenuItem>
-                            <MudMenuItem @onclick='@(()=> CancelTicket(context))'>
-                                <p style='display: flex;'>
-                                    <MudIcon Icon="@Icons.Material.Filled.Cancel" />
-                                    <MudText style='padding-left: 10px; font-size: 14px; align-self: center;'>Cancel
-                                        Ticket</MudText>
-                                </p>
-                            </MudMenuItem>
-                            @* <MudMenuItem @onclick='@(()=> ViewChatPage())'>
-                                <p style='display: flex;'>
-                                <MudIcon Icon="@Icons.Material.Filled.ViewAgenda" />
-                                <MudText style='padding-left: 10px; font-size: 14px; align-self: center;'>Chat</MudText>
-                                </p>
-                                </MudMenuItem> *@
-                        </MudMenu>
-                    </MudContainer>
-                </MudContainer>
-            </MudTd>
-        </RowTemplate>
-        <PagerContent>
-            <MudTablePager PageSizeOptions="@pageSize" />
-        </PagerContent>
-    </MudTable>
-    }
-</MudContainer>
-
-@* this is hidden kindly not delete testing something - dhan *@
-<div hidden>
-    @* <MudTextField @bind-Value='searchTerm' Placeholder='Search' Adornment='Adornment.Start'
-        AdornmentIcon='@Icons.Material.Filled.Search' IconSize='Size.Medium' Class='mt-0'>
-        </MudTextField> *@
+                                            <MudMenuItem>
+                                                <a class='d-flex align-center gap-2' href='/audit/trail/@context.Id'>
+                                                    <MudIcon Icon='@Icons.Material.Filled.ViewAgenda' Size='Size.Small'/>
+                                                    <MudText Typo='Typo.body2'>Audit Trail</MudText>
+                                                </a>
+                                            </MudMenuItem>
+                                            <MudMenuItem OnClick='(() => Print(context.Id))'>
+                                                <div class='d-flex align-center gap-2'>
+                                                    <MudIcon Icon="@Icons.Material.Filled.Print" Size='Size.Small'/>
+                                                    <MudText Typo='Typo.body2'>Print</MudText>
+                                                </div>
+                                            </MudMenuItem>
+                                            @if (context.TicketStatusId == 1)
+                                            {
+                                                <MudMenuItem OnClick='(() => CancelTicket(context))'>
+                                                    <div class='d-flex align-center gap-2'>
+                                                        <MudIcon Icon="@Icons.Material.Filled.Cancel" Size='Size.Small'/>
+                                                        <MudText Typo='Typo.body2'>Cancel Ticket</MudText>
+                                                    </div>
+                                                </MudMenuItem>
+                                            }
+                                        </MudMenu>
+                                    </div>
+                                </div>
+                                <div class="tlistrow-content">
+                                    <MudText Class='font12 txt-oflow-elipsis pa-2' Typo='Typo.body2'>@context.TaskDescription</MudText>
+                                </div>
+                                <div class='tlistrow-footer'>
+                                    <div class="tfooter-req px-2">
+                                        <MudText Typo='Typo.caption'>Requestor:</MudText>
+                                        <EmployeeCardComponent isITEmployee='false' employeeId='context.RequestorId' />
+                                    </div>
+                                    <div class="tfooter-branch px-2">
+                                        <MudField Class='px-2' Label='Branch:' DisableUnderline Margin='Margin.Dense'>
+                                            <div class='d-flex align-center gap-2 mt-1'>
+                                                <MudIcon Icon='@Icons.Material.Filled.LocationOn' Size='Size.Small' />
+                                                <MudText Class='font12 txt-oflow-elipsis'>@context.TicketBranchName</MudText>
+                                            </div>
+                                        </MudField>
+                                    </div>
+                                    <div class="tfooter-dept px-2">
+                                        <MudText Typo='Typo.caption'>Department:</MudText>
+                                        <DepartmentCardComponent employeeId='@context.RequestorId' />
+                                    </div>
+                                    <div class="tfooter-cat px-2">
+                                        <MudText Typo='Typo.caption'>Category:</MudText>
+                                        <div class='d-flex align-center gap-2 mt-1'>
+                                            <MudIcon Icon='@Icons.Material.Filled.ListAlt' Size='Size.Small' />
+                                            <MudText Class='font12 txt-oflow-elipsis'>@context.TicketCategoryName</MudText>
+                                        </div>
+                                    </div>
+                                    <div class="tfooter-assign px-2">
+                                        <MudText Typo='Typo.caption'>Assigned to:</MudText>
+                                        @if (string.IsNullOrWhiteSpace(context.AssigneeName))
+                                        {
+                                            <div class='d-flex align-center gap-2'>
+                                                <MudAvatar Class='mb-1 mt-1' Image='images/fglogo/fgci1-gs.png' Size='Size.Small' />
+                                                <small>Not yet assigned</small>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <EmployeeCardComponent isITEmployee='true' employeeITId='@(context.AssigneeId != null ?  (long)context.AssigneeId : 0)' />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions='@GlobalVariable.pageSize' />
+                    </PagerContent>
+                </MudTable>
+            </MudContainer>
+        }
+    </MudPaper>
 </div>
-@* // *@
-
-@code {
-    FilterParameter filterParameter = new FilterParameter();
-    private HubConnection hubConnection, commentConnection;
-    private int[] pageSize = new int[] { 30, 50, 100, 500, 1000 };
-    private int tablePageSize, badgeContent;
-    private MudTable<TicketModel> tableVariable;
-    private IEnumerable<TicketModel> pagedData;
-    private TicketModel ticketStatus = new TicketModel();
-    private List<TicketModel> ticketModels = new List<TicketModel>();
-    private List<TicketModel> ticketModelSub = new List<TicketModel>();
-    private List<TicketStatusModel> ticketStatusList = new List<TicketStatusModel>();
-    private List<TicketModel> newTickets = new List<TicketModel>();
-    private List<TicketComment> ticketComments = new List<TicketComment>();
-    private UserAccount accountPicture = new UserAccount();
-    private bool dataFetched, disable, ShowLoadingOverlay, isSearch, isTableLoading;
-    private string searchTerm = default!, Token;
-    private Enums.AccessLevel accesslevel;
-    private string styleStringTdPriority = "";
-    private string iconString = "@Icons.Material.Filled.Visibility", lblViewUpdate;
-    private DateTime dateNow;
-
-    protected override async Task OnInitializedAsync()
-    {
-        GlobalContentTitle.contentTitle = "TICKET LIST";
-        Token = await localStorage.GetItemAsync<string>("token");
-        while (GlobalClass.CurrentUserAccount == null)
-        {
-            await Task.Delay(1);
-        }
-        Task t = Task.WhenAll(GetTicketStatus(), GetFromGlobalClass(), LoadSignalR(), LoadTicketCommentConnection());
-        await t;
-        if (t.Status == TaskStatus.RanToCompletion)
-        {
-            CompletedFetch();
-        }
-    }
-
-    #region Reload Server Data
-    async Task LoadSignalR()
-    {
-        try
-        {
-            hubConnection = new HubConnectionBuilder()
-            .WithUrl(config["SignalRConnection"] + "ticketlisthub")
-            .WithAutomaticReconnect()
-            .Build();
-
-            await hubConnection.StartAsync();
-
-            hubConnection.On<List<TicketModel>>("GetAllTicketList", (_list) =>
-            {
-                tableVariable.ReloadServerData();
-                @* StateHasChanged(); *@
-            });
-        }
-        catch (System.Exception ex)
-        {
-            Console.WriteLine("error: " + ex.Message);
-        }
-    }
-    #endregion
-
-    #region Last Ticket Saved
-
-
-    #endregion
-
-    #region Server Data Table
-    async Task<TableData<TicketModel>> LoadData(TableState tableState)
-    {
-        isTableLoading = true;
-        DetermineFilterParams(tableState);
-        GlobalClass.Tickets = await LoadTickets();
-        int totalItems = GlobalClass.Tickets.Count();
-        pagedData = GlobalClass.Tickets.Skip(tableState.Page * tableState.PageSize).Take(tableState.PageSize).ToArray();
-        if (isSearch == false)
-        {
-            isTableLoading = false;
-            return new TableData<TicketModel>()
-            {
-                TotalItems = totalItems,
-                Items = pagedData
-                @* Items = GlobalClass.Tickets.ToList(),
-                    TotalItems = GlobalClass.Tickets.Count() *@
-            };
-        }
-        else
-        {
-            isTableLoading = false;
-            return new TableData<TicketModel>()
-            {
-                TotalItems = totalItems,
-                Items = pagedData.Where(x => x.TicketNumber.Contains(searchTerm)).ToList()
-                @* Items = GlobalClass.Tickets.Where(x => x.TicketNumber.Contains(searchTerm)).ToList(),
-                    TotalItems = GlobalClass.Tickets.Count *@
-            };
-        }
-
-    }
-    public async ValueTask DisposeAsync()
-    {
-        if (hubConnection is not null)
-            await hubConnection.DisposeAsync();
-    }
-    #endregion
-
-    private void DetermineFilterParams(TableState tableState)
-    {
-        Console.WriteLine(GlobalClass.filterParameter.IsAssignee);
-        if (!GlobalClass.isFromFilter)
-        {
-            filterParameter.TicketAccessLevel = Enums.AccessLevel.Administrator;
-            @* filterParameter.PageNo = GlobalClass.PageNo; *@
-            @* filterParameter.PageSize = tableState.PageSize; *@
-            filterParameter.SortDirection = Convert.ToString(tableState.SortDirection);
-            GlobalClass.PageSize = tableState.PageSize;
-            if (GlobalClass.CurrentUserAccount.AccessLevel != Enums.AccessLevel.Client)
-            {
-                filterParameter.IsDate = true;
-                filterParameter.DateFrom = Convert.ToDateTime(DateTime.Now.AddDays(-5).ToShortDateString());
-                filterParameter.DateTo = Convert.ToDateTime(DateTime.Now.ToShortDateString());
-            }
-            if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Client)
-            {
-                filterParameter.IsRequestor = true;
-                filterParameter.RequestorId = GlobalClass.CurrentUserAccount.EmployeeId;
-            }
-        }
-        else if (GlobalClass.isFromFilter)
-        {
-            filterParameter = GlobalClass.filterParameter;
-            filterParameter.TicketAccessLevel = Enums.AccessLevel.Administrator;
-            filterParameter.SortDirection = Convert.ToString(tableState.SortDirection);
-            GlobalClass.PageSize = tableState.PageSize;
-
-            @* filterParameter.PageNo = tableState.Page;
-                filterParameter.PageSize = tableState.PageSize; *@
-            @* isFromFilter = false; *@
-        }
-
-    }
-
-    #region Load Tickets From API
-    async Task<List<TicketModel>> LoadTickets()
-    {
-        var tickets = await ticketListService.LoadTicket(filterParameter, Token);
-        if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.IT && !GlobalClass.isFromFilter)
-            tickets = tickets.Where(x => x.TicketStatusTypeId != Enums.TicketStatusType.Complete).Where(x => x.AssigneeId == null ||
-            x.AssigneeId == GlobalClass.CurrentUserAccount.EmployeeId).ToList();
-        if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Client)
-            tickets = tickets.OrderByDescending(x => x.TicketDate).ToList();
-        if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Administrator & !GlobalClass.isFromFilter)
-            tickets = tickets.Where(x => x.TicketStatusTypeId !=
-            Enums.TicketStatusType.Complete).OrderByDescending(x => x.TicketDate).ToList();
-        @* isFromFilter = false; *@
-        return tickets;
-    }
-    #endregion
-
-    #region GetTicketStatus
-    async Task GetTicketStatus()
-    {
-        var parameter = new FilterParameter();
-        while (GlobalList.ticketStatusList == null)
-        {
-            Console.WriteLine("1ms");
-            await Task.Delay(1);
-        }
-        ticketStatusList = GlobalList.ticketStatusList;
-        filterParameter.TicketStatusId = string.Join(", ", ticketStatusList.Where(x => x.StatusTypeId !=
-        Enums.TicketStatusType.Complete).Select(x => x.Id).Distinct());
-    }
-    #endregion
-
-    private async Task GetFromGlobalClass()
-    {
-        await Task.Run(() =>
-        {
-            accesslevel = GlobalClass.CurrentUserAccount.AccessLevel;
-        });
-    }
-
-    async void Update(TicketModel ticket)
-    {
-        if (ticket.AssigneeId > 0)
-        {
-            var parameters = new DialogParameters { ["currentTicket"] = ticket };
-            parameters.Add("ContentText", "Update Status");
-            parameters.Add("ButtonText", "Update");
-            parameters.Add("Color", Color.Success);
-            parameters.Add("_action", Enums.CrudeMode.Edit);
-
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-
-            var resultDialog = await DialogService.Show<Shared.Dialogs.UpdateTicketStatusDialog>("Update Status", parameters,
-            options).Result;
-
-            if (!resultDialog.Cancelled)
-            {
-                await hubConnection.InvokeAsync("GetTickets", filterParameter);
-                await hubConnection.InvokeAsync("GetTicketAuditTrail", filterParameter);
-            }
-        }
-        else
-        {
-            var parameters = new DialogParameters { ["currentTicket"] = ticket };
-            parameters.Add("ContentText", "Assign IT");
-            parameters.Add("ButtonText", "Assign");
-            parameters.Add("Color", Color.Success);
-
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-
-            var resultDialog = await DialogService.Show<Shared.Dialogs.AssignTicketDialog>("Update Status", parameters,
-            options).Result;
-            if (!resultDialog.Cancelled)
-            {
-                await hubConnection.InvokeAsync("GetTickets", filterParameter);
-                await hubConnection.InvokeAsync("GetTicketAuditTrail", filterParameter);
-            }
-        }
-    }
-
-    private void Print(long ticketId)
-    {
-        NavigationManager.NavigateTo($"/ticketreport/{ticketId}");
-        @* await IJSrun.InvokeVoidAsync("PrintInvoke"); *@
-    }
-
-    async void CancelTicket(TicketModel ticket)
-    {
-        var parameters = new DialogParameters();
-        parameters.Add("ContentText", "Cancel ticket ?");
-        parameters.Add("ButtonText", "Confirm");
-        parameters.Add("Color", Color.Success);
-        parameters.Add("DialogContentText", "Are you sure you want to cancel ticket with ticket number ' " + ticket.TicketNumber
-        + "' ?");
-
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-
-        var resultDialog = await DialogService.Show<Shared.Dialogs.RemoveSubTicketDialog>("Cancel Ticket", parameters,
-        options).Result;
-        if (!resultDialog.Cancelled)
-        {
-            if (ticket.AssigneeId == null || ticket.AssigneeId == 0)
-            {
-                ticket.Activity = "Cancel Ticket; " + "Employee name: " + GlobalClass.CurrentUserAccount.EmployeeName;
-                ticket.UserId = GlobalClass.CurrentUserAccount.EmployeeId;
-                ticket.TicketId = ticket.Id;
-                ticket.Id = ticket.Id;
-                ticket.PCName = "";
-                ticket.TicketStatusTypeId = Enums.TicketStatusType.Complete;
-                ticket.TicketStatusId = 7;
-                await ticketService.CancelTicket(ticket, Token);
-                await hubConnection.InvokeAsync("GetTickets", filterParameter);
-                await hubConnection.InvokeAsync("GetTicketAuditTrail", filterParameter);
-            }
-        }
-        else
-        {
-            ShowAlert("Ticket is already " + ticket.TicketStatusName, Severity.Normal);
-        }
-    }
-
-    void ShowAlert(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
-        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
-        Snackbar.Add($"{message}", severity);
-    }
-
-    private async Task SearchFilterParameterDialog()
-    {
-        var parameters = new DialogParameters();
-        parameters.Add("ContentText", "Search Filter");
-        parameters.Add("ButtonText", "Search");
-        parameters.Add("isFromTicketList", true);
-        parameters.Add("Color", Color.Success);
-
-        var options = new DialogOptions()
-        {
-            CloseButton = true,
-            MaxWidth = MaxWidth.Medium,
-            FullWidth = true,
-            NoHeader = true,
-            DisableBackdropClick = true
-        };
-
-        var resultDialog = await DialogService.Show<Shared.Dialogs.TicketListFilterDialog>("Search Filter", parameters,
-        options).Result;
-        if (!resultDialog.Cancelled)
-        {
-            isTableLoading = true;
-            dataFetched = false;
-            GlobalClass.isFromFilter = true;
-            filterParameter = (FilterParameter)resultDialog.Data;
-            GlobalClass.filterParameter = (FilterParameter)resultDialog.Data;
-            Task t = Task.WhenAll(tableVariable.ReloadServerData());
-            await t;
-            if (t.Status == TaskStatus.RanToCompletion)
-            {
-                if (GlobalClass.Tickets.Count() == 0)
-                {
-                    Snackbar.Clear();
-                    Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-                    Snackbar.Configuration.SnackbarVariant = Variant.Filled;
-                    Snackbar.Configuration.MaxDisplayedSnackbars = 10;
-                    Snackbar.Add($"No Data Found", Severity.Warning);
-                }
-                CompletedFetch(); //Reset Render
-            }
-        }
-        else
-        {
-            @* isFromFilter = true;
-                filterParameter = GlobalClass.filterParameter;
-                Task t = Task.WhenAll(tableVariable.ReloadServerData());
-                await t;
-                if (t.Status == TaskStatus.RanToCompletion)
-                CompletedFetch(); *@
-            isTableLoading = false;
-            StateHasChanged();
-        }
-    }
-
-    private async void PeekTicketInfo(TicketModel context)
-    {
-        ViewedComments(context);
-        await ShowPeekInfoDialog(context);
-    }
-
-    private async Task ShowPeekInfoDialog(TicketModel context)
-    {
-        @* GlobalContentTitle.contentServerTime = await globalService.LoadServerTime(); *@
-        var parameters = new DialogParameters();
-        parameters.Add("ContentText", "Ticket Info");
-        parameters.Add("ButtonText", "Return");
-        parameters.Add("Color", Color.Primary);
-        parameters.Add("currTicketInfo", context);
-        parameters.Add("ticketStatusList", ticketStatusList);
-        parameters.Add("Token", Token);
-
-        var options = new DialogOptions()
-        {
-            CloseButton = true,
-            MaxWidth = MaxWidth.Medium,
-            FullWidth = true,
-            NoHeader = true,
-            DisableBackdropClick = true
-        };
-
-        var resultDialog = await DialogService.Show<Shared.Dialogs.TicketPeekInfoDialog>("Ticket Info", parameters,
-        options).Result;
-        if (!resultDialog.Cancelled)
-        {
-            ShowLoadingOverlay = false;
-            Console.WriteLine("OK");
-        }
-        else
-        {
-            ShowLoadingOverlay = false;
-            Console.WriteLine("Cancelled");
-        }
-        ViewedComments(context);
-    }
-
-    async Task LoadTicket()
-    {
-        while (GlobalClass.CurrentUserAccount == null)
-        {
-            //Delay UI if GlobalClass is not loaded yet
-            await Task.Delay(1);
-        }
-        filterParameter.TicketAccessLevel = GlobalClass.CurrentUserAccount.AccessLevel;
-        filterParameter.TicketUserAccountId = GlobalClass.CurrentUserAccount.EmployeeId;
-        ticketModels = await ticketListService.LoadTicket(filterParameter, Token);
-        if (filterParameter.TicketStatusId == null || filterParameter.IsTicketStatus == false)
-            if (!filterParameter.IsName)
-                ticketModels = ticketModels.Where(x => x.TicketStatusTypeId != Enums.TicketStatusType.Complete).ToList();
-    }
-
-    void CompletedFetch()
-    {
-        dataFetched = true;
-        ShowLoadingOverlay = false;
-        isTableLoading = false;
-        StateHasChanged();
-    }
-    void Add()
-    {
-        NavigationManager.NavigateTo($"/ticket/create");
-    }
-    private void ViewChatPage()
-    {
-        NavigationManager.NavigateTo($"/chat");
-    }
-
-    private bool FilterItems(TicketModel items)
-    {
-        if (string.IsNullOrEmpty(searchTerm))
-            return true;
-        if (items.RequestorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-            return true;
-        return false;
-    }
-
-    private void OnSearch(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            isSearch = false;
-        }
-        else
-            isSearch = true;
-        searchTerm = text;
-        tableVariable.ReloadServerData();
-    }
-    private async Task LoadTicketCommentConnection()
-    {
-        commentConnection = new HubConnectionBuilder()
-        .WithUrl(config["SignalRConnection"] + "ticketcommenthub")
-        .WithAutomaticReconnect()
-        .Build();
-        await commentConnection.StartAsync();
-
-        commentConnection.On<TicketComment>("ReceiveTicketComment", (comment) =>
-        {
-            ticketComments.Add(comment);
-            GlobalClass.TicketComments = ticketComments.ToList();
-            @* StateHasChanged(); *@
-        });
-
-    }
-    void ViewedComments(TicketModel ticket)
-    {
-        ticketComments.RemoveAll(x => x.TicketId == ticket.Id);
-        GlobalClass.TicketComments.RemoveAll(x => x.TicketId == ticket.Id);
-    }
-    private bool IsVisibleToAssignedIT(TicketModel ticketModel)
-    {
-        return GlobalClass.TicketComments.Any(x => x.TicketId == ticketModel.Id)
-        && GlobalClass.TicketComments.Any(x => x.UserId != GlobalClass.CurrentUserAccount.EmployeeId)
-        && GlobalClass.CurrentUserAccount.EmployeeId == ticketModel.AssigneeId;
-    }
-    private bool IsVisibleToClientAndNotAssigned(TicketModel ticketModel)
-    {
-        return ticketModel.AssigneeId == null
-        && GlobalClass.TicketComments.Any(x => x.UserId != GlobalClass.CurrentUserAccount.EmployeeId)
-        || GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Client;
-    }
-
-    private async Task ReloadTable()
-    {
-        isTableLoading = true;
-        filterParameter = new FilterParameter();
-        GlobalClass.isFromFilter = false;
-        await GetTicketStatus();
-        Task t = Task.WhenAll(tableVariable.ReloadServerData());
-        await t;
-        if (t.Status == TaskStatus.RanToCompletion)
-        {
-            CompletedFetch();
-        }
-    }
-}

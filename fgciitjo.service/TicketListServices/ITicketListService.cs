@@ -14,5 +14,6 @@ namespace fgciitjo.service.TicketListServices
         Task<List<TicketModel>> LoadTicket(FilterParameter filterParameter, string token);
         Task<List<TicketAuditTrail>> LoadTicketAuditTrail(Int64 Id, string token);        
         Task<List<TicketModel>> LoadTicketv2(FilterParameter filterParameter, string token);
+        Task<long> CountTickets(FilterParameter filterParameter, string token);
     }
 }

@@ -10,11 +10,11 @@ namespace fgciitjo.domain.clsNotificationTrail
     {
         public Int64 Id { get; set; }
         public Int64 EmployeeId { get; set; }
-        public string TicketNumber { get; set; }
-        public string UserAccountName { get; set; }
+        public string TicketNumber { get; set; } = string.Empty;
+        public string UserAccountName { get; set; } = string.Empty;
         public DateTime LogDateTime { get; set; }
-        public string Activity { get; set; }
-        public string TimeMoment { get; set; }
+        public string Activity { get; set; } = string.Empty;
+        public string TimeMoment { get; set; } = string.Empty;
         public bool isRead { get; set; }
         public Int64 TicketId { get; set;}
     }

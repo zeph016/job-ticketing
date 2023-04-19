@@ -1,0 +1,159 @@
+.font10 {
+  font-size: 10px !important;
+}
+
+.font12 {
+  font-size: 12px !important;
+}
+
+.font14 {
+  font-size: 14px !important;
+}
+
+.font-bold {
+  font-weight: bold !important;
+}
+
+.txtinput-bold .mud-input {
+  font-weight: bold !important;
+}
+
+.txt-uppercase {
+  text-transform: uppercase !important;
+}
+
+.minput-lbl-1 .mud-input-label {
+  font-weight: bold !important;
+}
+
+.txt-mdense .mud-input {
+  margin-top: 0px !important;
+}
+
+.txt-mdense .mud-input-slot {
+  font-size: 14px !important;
+}
+
+.ff-theramin {
+  font-family: "Theramin" !important;
+}
+
+.val-msg-12px .validation-message {
+  font-size: 12px;
+}
+
+.wspace-nowrap {
+  white-space: nowrap !important;
+}
+
+.oflow-elipsis {
+  text-overflow: ellipsis !important;
+}
+
+.txt-oflow-elipsis {
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+.rdb-font12px .mud-typography {
+  align-items: center;
+  display: flex;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.ltr-spc-1px {
+  letter-spacing: 1px !important;
+}
+
+.text-center {
+  text-align: center !important;
+}
+
+.inputs-12pxbold .mud-input-control .mud-input {
+  font-size: 12px !important;
+  font-weight: bold !important;
+}
+
+.inputs-12px .mud-input {
+  font-size: 12px !important;
+}
+
+.inputs-14px .mud-input {
+  font-size: 14px !important;
+}
+
+.font-date14px, .datepicker-popover-adjright20 {
+  font-size: 14px !important;
+}
+
+.chkbx-font12px .mud-typography {
+  font-size: 12px !important;
+}
+
+.blzrth-oflowhidden .blazored-typeahead {
+  overflow: hidden !important;
+}
+
+.blzrth-maxheight .blazored-typeahead__results {
+  max-height: calc(100vh - 640px) !important;
+} 
+.tlist-popover-custom1 {
+  transform: scale(0.88);
+  top: 70px !important;
+}
+
+.tlist-popover-custom2 {
+  transform: scale(0.9);
+  top: 140px !important;
+  left: calc(100vw - 470px) !important;
+}
+
+.popover-custom1 {
+  transform: scale(0.88);
+  left: calc(100vw - 520px) !important;
+  top: 90px !important;
+}
+
+.popover-custom2 {
+  transform: scale(0.88);
+  top: 50.5px !important;
+}
+
+.datepicker-popover-adjright20 .mud-overlay-content {
+  right: 20%;
+}
+
+.popover-custom-zindex-102 {
+  z-index: calc(var(--mud-zindex-popover) + 102) !important;
+}
+.popover-custom-zindex-102 .mud-popover {
+  z-index: calc(var(--mud-zindex-popover) + 102) !important;
+}
+.popover-custom-zindex-102 .mud-popover-open {
+  z-index: calc(var(--mud-zindex-popover) + 102) !important;
+}
+
+.native-popover {
+  position: absolute;
+  width: 200px;
+  height: 100px;
+  background-color: #ffffff;
+  border-radius: 4px;
+  top: 50px;
+  left: 50%;
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  z-index: 1;
+}
+
+.native-popover-arrow {
+  position: absolute;
+  top: -18px;
+  left: 150px;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+  border-bottom: 20px solid rgb(233, 212, 222);
+  width: 0;
+  height: 0;
+}/*# sourceMappingURL=popovers.styles.css.map */

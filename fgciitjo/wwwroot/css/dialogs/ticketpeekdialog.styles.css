@@ -1,216 +1,139 @@
 .tinfodialog .mud-dialog-content {
   padding: 0px !important;
 }
-
 .tinfodialog__dialogcont {
-  display: -ms-grid !important;
   display: grid !important;
-  -ms-grid-columns: 1fr;
-      grid-template-columns: 1fr;
-  -ms-grid-rows: 0.2fr 1fr 0.1fr;
-      grid-template-rows: 0.2fr 1fr 0.1fr;
-      grid-template-areas: "top-l side-r" "center-l side-r" "bott-l side-r";
+  grid-template-columns: 1fr;
+  grid-template-rows: 0.2fr 1fr 0.1fr;
+  grid-template-areas: "top-l side-r" "center-l side-r" "bott-l side-r";
   padding: 0px 16px !important;
 }
-
 .tinfodialog__subcont {
   padding: 0px !important;
 }
-
 .tinfodialog__subcont:nth-child(1) {
-  -ms-grid-row: 1;
-  -ms-grid-column: 1;
   grid-area: top-l;
 }
-
 .tinfodialog__subcont:nth-child(2) {
-  -ms-grid-row: 2;
-  -ms-grid-column: 1;
   grid-area: center-l;
 }
-
 .tinfodialog__subcont:nth-child(3) {
-  -ms-grid-row: 3;
-  -ms-grid-column: 1;
   grid-area: bott-l;
   text-align: right;
 }
-
 .tinfodialog__subcont:nth-child(4) {
-  -ms-grid-row: 1;
-  -ms-grid-row-span: 3;
-  -ms-grid-column: 2;
   grid-area: side-r;
 }
-
 .tinfodialog__tncontainer {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
   background-color: #012340;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
   color: white;
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
   display: flex !important;
   padding: 8px 16px;
 }
-
 .tinfodialog__tncontainer .mud-typography {
-  font-family: 'Theramin';
+  font-family: "Theramin";
   font-weight: bold;
 }
-
 .tinfodialog__issuetags {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  display: -webkit-box;
-  display: -ms-flexbox;
+  align-items: center;
   display: flex;
   overflow: auto;
 }
-
 .tinfodialog__issuetags .mud-chip {
   border-radius: 2px !important;
 }
-
 .tinfodialog__requestorcont {
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
   display: flex !important;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
 }
-
 .tinfodialog__bodycont {
-  display: -ms-grid;
   display: grid;
-  -ms-grid-columns: 1fr;
-      grid-template-columns: 1fr;
-  -ms-grid-rows: 1fr calc(30vh - 30px) 1fr;
-      grid-template-rows: 1fr calc(30vh - 30px) 1fr;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr calc(30vh - 30px) 1fr;
   gap: 0.2rem;
   height: 100%;
 }
-
 .tinfodialog__desccont {
   background-color: whitesmoke;
   border-radius: 5px;
   padding: 5px;
 }
-
 .tinfodialog__desccont .mud-input-label {
   color: black;
   font-weight: bold !important;
 }
-
 .tinfodialog__desccont .mud-input-slot {
-  font-size: .875rem !important;
+  font-size: 0.875rem !important;
   padding: 10px !important;
 }
-
 .tinfodialog__maincontainer {
   padding: 0px !important;
 }
-
 .tinfodialog__issuecontainer {
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
   display: flex !important;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
+  flex-direction: column;
   gap: 5px;
   padding: 0px !important;
 }
-
 .tinfodialog__avatarcontainer, .tinfodialog__assigneecontainer {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
+  align-items: center;
   display: flex !important;
   overflow: auto;
 }
-
 .tinfodialog__avatarcontainer .mud-chip, .tinfodialog__assigneecontainer .mud-chip {
   border-radius: 2px !important;
 }
-
 .tinfodialog__avatarcontainer .mud-chip .mud-typography, .tinfodialog__assigneecontainer .mud-chip .mud-typography {
   margin-left: 5px;
   font-size: 12px;
   font-weight: bold;
 }
-
 .tinfodialog__txtissue-container {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  display: -webkit-box;
-  display: -ms-flexbox;
+  align-items: center;
   display: flex;
   gap: 2px;
 }
-
 .tinfodialog__txtissue-l {
   font-size: 18px !important;
   font-weight: bold !important;
 }
-
 .tinfodialog__txtissue-r {
   font-size: 14px !important;
   font-weight: bold !important;
 }
-
 .tinfodialog__txtdesc .mud-input {
   font-weight: 500;
 }
-
 .tinfodialog__txtavatar, .tinfodialog__txtstatus {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
   font-weight: bold !important;
 }
-
 .tinfodialog__txtavatar .mud-typography, .tinfodialog__txtstatus .mud-typography {
   font-size: 12px !important;
   font-weight: bold !important;
   margin-left: 5px;
 }
-
 .tinfodialog__txtavatar .reqavatar {
   margin: 0px 10px 0px 0px;
 }
-
 .tinfodialog__txtavatar .assignavatar {
   margin: 0px 0px 0px 10px;
 }
-
 .tinfodialog__txtdate {
   font-size: 12px !important;
   font-weight: bold !important;
 }
-
 .tinfodialog__actionscontainer {
   padding: 5px 16px;
   text-align: right;
 }
-
 .tinfodialog__attachmentmenu .mud-icon-button {
   padding: 0px;
 }
-
 .tinfodialog__cont-btn-return {
   padding-top: 5px;
-}
-/*# sourceMappingURL=ticketpeekdialog.styles.css.map */
+}/*# sourceMappingURL=ticketpeekdialog.styles.css.map */

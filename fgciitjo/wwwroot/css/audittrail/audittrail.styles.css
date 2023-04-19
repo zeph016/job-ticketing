@@ -1,124 +1,94 @@
 .auditTrailContainer {
   width: 100% !important;
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
   display: flex !important;
 }
-
 .auditTrailContainer .auditToolBarContainer {
   padding: 0px;
 }
-
 .auditTrailContainer .auditTrailToolBar {
   background-color: white;
 }
-
 .auditTrailContainer .auditTrailToolBar .auditTrailHeader {
-  font-family: 'Theramin', sans-serif;
+  font-family: "Theramin", sans-serif;
   font-size: 20px;
   margin-left: 5px;
   color: rgba(0, 0, 0, 0.6);
 }
-
 .auditTrailContainer .auditTrailToolBar .mud-button {
   font-size: 10px;
 }
-
 .auditTrailContainer .auditTrailToolBar .mud-icon-root {
   color: rgba(0, 0, 0, 0.6);
 }
-
 .auditTrailContainer .auditTimelineContainer {
   overflow: auto;
   height: 70vh;
 }
-
 .auditTrailContainer .auditSelect .mud-input-slot {
   height: 32px;
 }
-
 .auditTrailContainer .mud-timeline {
   overflow: auto;
 }
-
 .auditTrailContainer .mud-timeline .auditUpdateColor .mud-alert {
   color: #1565C0;
 }
-
 .auditTrailContainer .mud-timeline .auditUpdateColor .mud-icon-root {
   color: #1565C0;
 }
-
 .auditTrailContainer .mud-timeline .auditUpdateColor .mud-timeline-item-dot-inner {
   background-color: #1565C0;
 }
-
 .auditTrailContainer .mud-timeline .auditDoneColor .mud-alert {
   color: #1B5E20;
 }
-
 .auditTrailContainer .mud-timeline .auditDoneColor .mud-icon-root {
   color: #1B5E20;
 }
-
 .auditTrailContainer .mud-timeline .auditDoneColor .mud-timeline-item-dot-inner {
   background-color: #1B5E20;
 }
-
 .auditTrailContainer .mud-timeline .auditApprovedColor .mud-alert {
   color: #00C853;
 }
-
 .auditTrailContainer .mud-timeline .auditApprovedColor .mud-icon-root {
   color: #00C853;
 }
-
 .auditTrailContainer .mud-timeline .auditApprovedColor .mud-timeline-item-dot-inner {
   background-color: #00C853;
 }
-
 .auditTrailContainer .mud-timeline .auditInProgressColor .mud-alert {
   color: #00E676;
 }
-
 .auditTrailContainer .mud-timeline .auditInProgressColor .mud-icon-root {
   color: #00E676;
 }
-
 .auditTrailContainer .mud-timeline .auditInProgressColor .mud-timeline-item-dot-inner {
   background-color: #00E676;
 }
-
 .auditTrailContainer .mud-timeline .auditAddSubClass .mud-alert {
   color: #388E3C;
 }
-
 .auditTrailContainer .mud-timeline .auditAddSubClass .mud-icon-root {
   color: #388E3C;
 }
-
 .auditTrailContainer .mud-timeline .auditAddSubClass .mud-timeline-item-dot-inner {
   background-color: #388E3C;
 }
-
 .auditTrailContainer .mud-timeline-vertical {
   padding-top: 4px !important;
 }
-
 .auditTrailContainer .mud-timeline-item {
   padding-bottom: 4px !important;
 }
-
 .auditTrailContainer .mud-timeline-item .mud-alert-message > p:nth-child(1) {
   font-size: 11px !important;
   font-weight: bold !important;
 }
-
 .auditTrailContainer .mud-timeline-item .mud-alert-message > p:nth-child(2) {
   font-size: 12px !important;
   font-weight: bold !important;
 }
-
 .auditTrailContainer .mud-timeline-item .mud-alert-message > p:nth-child(3) {
   font-size: 10px !important;
 }
@@ -133,14 +103,10 @@
   min-width: 320px;
   overflow: auto;
 }
-
 .paperClassTrailInfo .chipIconText {
-  display: -ms-grid;
   display: grid;
   font-size: 12px !important;
 }
-
 .paperClassTrailInfo .chipIconText .mud-chip-content {
   color: white;
-}
-/*# sourceMappingURL=audittrail.styles.css.map */
+}/*# sourceMappingURL=audittrail.styles.css.map */

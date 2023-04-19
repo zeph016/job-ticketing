@@ -4,8 +4,10 @@
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
 @inject IJSRuntime IJSrun
 @inject NavigationManager navigate;
-<div id="PrintDiv">
-  <div class="ticket-container">
+
+
+<div id="PrintDiv" class='d-flex flex-column justify-center'>
+  <div class=" d-flex flex-column">
     <div class="header">
       <div class="title">
         <MudIcon id="ticket-icon" Icon="@Icons.Material.Filled.ConfirmationNumber" />
@@ -145,45 +147,45 @@
   @if (ticket.ReleasedById != 0)
   {
     <div class="border-line"></div>
-    <div class="release-container">
-    <div class="release-header">
-      <div class="release-subtitle">
-        <h4>RELEASE SLIP</h4>
-      </div>
-      <div class="release-date">
-      <h4>RELEASE DATE: @releasedDate</h4>
-      </div>
-    </div>
-    <div class="release-details">
-      <div class="released-to">
-        <div class="check-img">
-        <div class="field-name">
-          <span>@ticket.ReleasedByName</span>
-          <small>RELEASED BY</small>
+      <div class="release-container">
+      <div class="release-header">
+        <div class="release-subtitle">
+          <h4>RELEASE SLIP</h4>
         </div>
-        </div>
-        <div class="field-name">
-          <span>@ticket.RequestorName</span>
-          <small>RELEASED TO</small>
+        <div class="release-date">
+        <h4>RELEASE DATE: @releasedDate</h4>
         </div>
       </div>
-      <div class="terms">
-          <p>TERMS AND CONDITIONS: Received from F. Gurrea Construction, Inc.(FGCI), the stated equipment or in the Property Accountability Slip (PAS).
-          <br>I hereby agree that only the equipment stated or in the Property Accountability Slip (PAS) are allowed out of the company.
-          <br>Furthermore, I shall be accountable and liable for lost items during transit, any damages occur while the equipment is in my possession, and the Receiver did not receive the equipment.
-          </p>
+      <div class="release-details">
+        <div class="released-to">
+          <div class="check-img">
+          <div class="field-name">
+            <span>@ticket.ReleasedByName</span>
+            <small>RELEASED BY</small>
+          </div>
+          </div>
+          <div class="field-name">
+            <span>@ticket.RequestorName</span>
+            <small>RELEASED TO</small>
+          </div>
         </div>
-      <div class="release-doc-ref">
-       @if (ticket.DocumentReference != null || ticket.DocumentReference != "")
-       {
-          <h5>@ticket.DocumentReference</h5>
-       }
+        <div class="terms">
+            <p>TERMS AND CONDITIONS: Received from F. Gurrea Construction, Inc.(FGCI), the stated equipment or in the Property Accountability Slip (PAS).
+            <br>I hereby agree that only the equipment stated or in the Property Accountability Slip (PAS) are allowed out of the company.
+            <br>Furthermore, I shall be accountable and liable for lost items during transit, any damages occur while the equipment is in my possession, and the Receiver did not receive the equipment.
+            </p>
+          </div>
+        <div class="release-doc-ref">
+        @if (ticket.DocumentReference != null || ticket.DocumentReference != "")
+        {
+            <h5>@ticket.DocumentReference</h5>
+        }
+        </div>
+        <div class="it-assets">
+          <small>IT ASSET(S)/ PAS NO.</small>
+        </div>
+          
       </div>
-      <div class="it-assets">
-        <small>IT ASSET(S)/ PAS NO.</small>
-      </div>
-        
-    </div>
     @* <div class="footer-container">
         <div class="control-number">
           <small>MIS-001-02</small>
@@ -192,7 +194,7 @@
           <small>EFF: 01/01/22</small>
         </div>
       </div> *@
-  </div>
+    </div>
   }
 </div>
 
@@ -220,7 +222,7 @@
   }
   void Back()
   {
-    navigate.NavigateTo($"/ticketlist");
+    navigate.NavigateTo($"/ticket/list");
   }
   async Task<TicketModel> GetTicket()
   {

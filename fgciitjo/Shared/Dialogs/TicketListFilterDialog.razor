@@ -6,7 +6,14 @@
 @inject ITicketBranchService ticketBranchService
 @inject ITicketCategoryService ticketCategoryService
 
-<MudDialog class="filterdialog">
+
+<MudDialog Class="custom-dialog1">
+    <TitleContent>
+        <div class='d-flex align-center gap-2 custom-dialog1__title'>
+            <MudIcon Icon='@Icons.Material.Filled.FilterAlt' Class="mr-3" />
+            <MudText Typo='Typo.h6'>@ContentText</MudText>
+        </div>
+    </TitleContent>
     <DialogContent>
         @if (!isDataFetched)
         {
@@ -17,58 +24,144 @@
         }
         else
         {
-            <MudContainer Class='filterdialog__title-container' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
-                <MudIcon Icon='@Icons.Material.Filled.FilterAlt' Title='Filter Tickets' Size='Size.Medium' />
-                <MudText Typo='Typo.h5'>
-                    <p>Search Filter</p>
-                </MudText>
-            </MudContainer>
-            <MudContainer Class='filterdialog__body-container' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
-                <div class='filterdialog__body-lcont'>
-                    <MudGrid>
-                        <MudItem xs='5'>
-                            <MudCheckBox @bind-Checked="@filterParameter.IsDate" Label="Ticket Date" Dense="true" />
-                        </MudItem>
-                        <MudItem xs='7'>
-                            <MudDatePicker PickerVariant="PickerVariant.Inline" Label="Date From" @bind-Text="datefrom"
-                            Disabled="!filterParameter.IsDate" Margin="Margin.Dense"></MudDatePicker>
-                            <MudDatePicker PickerVariant="PickerVariant.Inline" Label="Date To" @bind-Text="@dateto"
-                            Disabled="!filterParameter.IsDate" Margin="Margin.Dense"></MudDatePicker>
-                        </MudItem>
-                        @if (((byte)accesslevel) != 2 && !isFromTicketList)
-                        {
-                            <MudItem xs="5">
-                                <MudCheckBox @bind-Checked="@filterParameter.IsActivityDate" Label="Activity Date"
-                            Dense="true" />
-                            </MudItem>
-                            <MudItem xs="7">
-                                <MudDatePicker PickerVariant="PickerVariant.Inline" Label="Date From"
-                            @bind-Text="activitydatefrom" Disabled="!filterParameter.IsActivityDate"
-                            Margin="Margin.Dense"></MudDatePicker>
-                                <MudDatePicker PickerVariant="PickerVariant.Inline" Label="Date To" @bind-Text="@activitydateto"
-                            Disabled="!filterParameter.IsActivityDate" Margin="Margin.Dense"></MudDatePicker>
-                            </MudItem>
-                        }
-                    </MudGrid>
-                </div>
-                <div class='filterdialog__body-rcont'>
-                    <MudGrid Spacing='1'>
-                        <MudItem Class='filterdialog__chkboxcont' xs="4">
-                            <MudCheckBox @bind-Checked="@filterParameter.IsName" Label="Control Number" Dense="true">
-                            </MudCheckBox>
-                        </MudItem>
-                        <MudItem xs='8'>
-                            <MudTextField Class='filterdialog__tbxctrlno' @bind-Value='@filterParameter.Name' Disabled="!filterParameter.IsName"
-                            Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Tag" />
-                        </MudItem>
-                        @if (((byte)accesslevel) != 2)
-                        {
-                            <MudItem Class='filterdialog__chkboxcont' xs='4'>
-                                <MudCheckBox @bind-Checked="@filterParameter.IsRequestor" Label="Requestor" Dense="true" />
+            <MudPaper Elevation='0' Square Height='500px'>
+                <MudGrid Spacing='1'>
+                    <MudItem xs=6>
+                        <MudGrid Spacing='1'>
+                            <MudItem xs='4'>
+                                <MudCheckBox @bind-Checked="@filterParameter.IsDate" Label="Ticket Date" Dense UnCheckedColor='Color.Default' Color='Color.Info' />
                             </MudItem>
                             <MudItem xs='8'>
-                                <BlazoredTypeahead SearchMethod='SearchEmployee' @bind-Value='selectedUser'
-                                    Disabled='!filterParameter.IsRequestor'>
+                                <MudDatePicker PickerVariant="PickerVariant.Inline" Label="Date From" @bind-Text="datefrom"
+                                    Disabled="!filterParameter.IsDate" Margin="Margin.Dense" />
+                                <MudDatePicker PickerVariant="PickerVariant.Inline" Label="Date To" @bind-Text="@dateto"
+                                    Disabled="!filterParameter.IsDate" Margin="Margin.Dense" />
+                            </MudItem>
+                            @if (((byte)accesslevel) != 2 && !isFromTicketList)
+                            {
+                                <MudItem xs="5">
+                                    <MudCheckBox @bind-Checked="@filterParameter.IsActivityDate" Label="Activity Date" Dense UnCheckedColor='Color.Default' Color='Color.Info'/>
+                                </MudItem>
+                                <MudItem xs="7">
+                                    <MudDatePicker @bind-Text="activitydatefrom" PickerVariant="PickerVariant.Inline" Label="Date From"
+                                        Disabled="!filterParameter.IsActivityDate" Margin="Margin.Dense" />
+                                    <MudDatePicker @bind-Text="@activitydateto" PickerVariant="PickerVariant.Inline" Label="Date To" 
+                                        Disabled="!filterParameter.IsActivityDate" Margin="Margin.Dense" />
+                                </MudItem>
+                            }
+                            </MudGrid>
+                    </MudItem>
+                    <MudItem xs=6>
+                        <MudGrid Spacing='1'>
+                            <MudItem Class='filterdialog__chkboxcont' xs="4">
+                                <MudCheckBox @bind-Checked="@filterParameter.IsName" Label="Control Number" Dense UnCheckedColor='Color.Default' Color='Color.Info'/>
+                            </MudItem>
+                            <MudItem xs='8'>
+                                <MudTextField Class='filterdialog__tbxctrlno' @bind-Value='@filterParameter.Name' Disabled="!filterParameter.IsName" Margin="Margin.Dense"/>
+                            </MudItem>
+                            @if (((byte)accesslevel) != 2)
+                            {
+                                <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                                    <MudCheckBox @bind-Checked="@filterParameter.IsRequestor" Label="Requestor" Dense UnCheckedColor='Color.Default' Color='Color.Info'/>
+                                </MudItem>
+                                <MudItem xs='8'>
+                                    <BlazoredTypeahead SearchMethod='SearchEmployee' @bind-Value='selectedUser' Disabled='!filterParameter.IsRequestor'>
+                                        <SelectedTemplate>
+                                            <div class='filterdialog__tbxrequestor'>
+                                            @if (context.Picture != null)
+                                            {
+                                                <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(@context.Picture)}")' Size='Size.Small'/>  
+                                            }
+                                            @context.EmployeeName
+                                            </div>
+                                        </SelectedTemplate>
+                                        <ResultTemplate>
+                                            <div class='filterdialog__tbxrequestor'>
+                                                <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(@context.Picture)}")'/>  
+                                                @context.EmployeeName
+                                            </div>
+                                        </ResultTemplate>
+                                    </BlazoredTypeahead>
+                                </MudItem>
+                            }
+                            @if (((byte)accesslevel) != 2)
+                            {
+                                <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                                    <MudCheckBox @bind-Checked="@filterParameter.IsDepartment" Label="Department" Dense UnCheckedColor='Color.Default' Color='Color.Info'/>
+                                </MudItem>
+                                <MudItem Class='filterdialog__grid-tbxdeptsearch' xs='8'>
+                                    <BlazoredTypeahead SearchMethod='SearchDepartment' @bind-Values='selectedDepts'
+                                        EnableDropDown='true' placeholder='Choose or Search Dept.'
+                                        Disabled='!filterParameter.IsDepartment'>
+                                        <SelectedTemplate Context="dept">
+                                                @dept.Name
+                                        </SelectedTemplate>
+                                        <ResultTemplate Context="dept">
+                                            @dept.Name
+                                        </ResultTemplate>
+                                    </BlazoredTypeahead>
+                                </MudItem>
+                            }
+                            <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                                <MudCheckBox @bind-Checked="@filterParameter.IsTicketStatus" Label="Ticket Status" Dense UnCheckedColor='Color.Default' Color='Color.Info' />
+                            </MudItem>
+                            <MudItem xs='8'>
+                                <BlazoredTypeahead SearchMethod='SearchStatus' @bind-Values='selectedStatus'
+                                EnableDropDown Disabled='!filterParameter.IsTicketStatus'>
+                                    <SelectedTemplate>
+                                        @context.StatusName
+                                    </SelectedTemplate>
+                                    <ResultTemplate>
+                                        @context.StatusName
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </MudItem>
+                            <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                                <MudCheckBox @bind-Checked="@filterParameter.IsTicketBranch" Label="Ticket Branch" Dense UnCheckedColor='Color.Default' Color='Color.Info'/>
+                            </MudItem>
+                            <MudItem xs='8'>
+                                <BlazoredTypeahead SearchMethod='SearchBranch' @bind-Values='selectedBranches'
+                                    EnableDropDown Disabled='!filterParameter.IsTicketBranch'>
+                                    <SelectedTemplate>
+                                        @context.BranchName
+                                    </SelectedTemplate>
+                                    <ResultTemplate>
+                                        @context.BranchName
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </MudItem>
+                            <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                                <MudCheckBox @bind-Checked="@filterParameter.IsTicketCategoryType" Label="Category Type" Dense UnCheckedColor='Color.Default' Color='Color.Info'/>
+                            </MudItem>
+                            <MudItem xs='8'>
+                                <BlazoredTypeahead SearchMethod='SearchCatType' @bind-Values='selectedCatType' EnableDropDown
+                                    Disabled='!filterParameter.IsTicketCategoryType'>
+                                    <SelectedTemplate>
+                                        @context
+                                    </SelectedTemplate>
+                                    <ResultTemplate>
+                                        @context
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </MudItem>
+                            <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                                <MudCheckBox @bind-Checked="@filterParameter.IsTicketCategory" Label="Ticket Category" Dense UnCheckedColor='Color.Default' Color='Color.Info'/>
+                            </MudItem>
+                            <MudItem xs='8'>
+                                <BlazoredTypeahead SearchMethod='SearchCategory' @bind-Values='selectedCategories' EnableDropDown Disabled='!filterParameter.IsTicketCategory'>
+                                    <SelectedTemplate>
+                                        @context.CategoryName
+                                    </SelectedTemplate>
+                                    <ResultTemplate>
+                                        @context.CategoryName
+                                    </ResultTemplate>
+                                </BlazoredTypeahead>
+                            </MudItem>
+                            <MudItem Class='filterdialog__chkboxcont' xs='4'>
+                                    <MudCheckBox @bind-Checked="@filterParameter.IsAssignee" Label="Assignee" Dense UnCheckedColor='Color.Default' Color='Color.Info'/>
+                            </MudItem>
+                            <MudItem xs='8'>
+                                <BlazoredTypeahead SearchMethod='SearchAssignee' @bind-Values='selectedAssignees' EnableDropDown Disabled='!filterParameter.IsAssignee'>
                                     <SelectedTemplate>
                                         <div class='filterdialog__tbxrequestor'>
                                         @if (context.Picture != null)
@@ -86,138 +179,38 @@
                                     </ResultTemplate>
                                 </BlazoredTypeahead>
                             </MudItem>
-                        }
-                        @if (((byte)accesslevel) != 2)
-                        {
-                            <MudItem Class='filterdialog__chkboxcont' xs='4'>
-                                <MudCheckBox @bind-Checked="@filterParameter.IsDepartment" Label="Department" Dense="true" />
+                            <MudItem Class='filterdialog__chkboxcont' xs='6'>
+                                <MudCheckBox @bind-Checked="@filterParameter.IsTicketPriorityLevel" Label="Ticket Priority Level" Dense UnCheckedColor='Color.Default' Color='Color.Info'/>
                             </MudItem>
-                            <MudItem Class='filterdialog__grid-tbxdeptsearch' xs='8'>
-                                <BlazoredTypeahead SearchMethod='SearchDepartment' @bind-Values='selectedDepts'
-                                    EnableDropDown='true' placeholder='Choose or Search Dept.'
-                                    Disabled='!filterParameter.IsDepartment'>
-                                    <SelectedTemplate Context="dept">
-                                         @dept.Name
+                            <MudItem xs='6'>
+                                <BlazoredTypeahead SearchMethod='SearchPriority' @bind-Values='selectedPriority' EnableDropDown Disabled='!filterParameter.IsTicketPriorityLevel'>
+                                    <SelectedTemplate>
+                                        @context
                                     </SelectedTemplate>
-                                    <ResultTemplate Context="dept">
-                                        @dept.Name
+                                    <ResultTemplate>
+                                        @context
                                     </ResultTemplate>
                                 </BlazoredTypeahead>
                             </MudItem>
-                        }
-                        <MudItem Class='filterdialog__chkboxcont' xs='4'>
-                            <MudCheckBox @bind-Checked="@filterParameter.IsTicketStatus"
-                            Label="Ticket Status" Dense="true" />
-                        </MudItem>
-                        <MudItem xs='8'>
-                            <BlazoredTypeahead SearchMethod='SearchStatus' @bind-Values='selectedStatus'
-                            EnableDropDown='true' Disabled='!filterParameter.IsTicketStatus'>
-                                <SelectedTemplate>
-                                    @context.StatusName
-                                </SelectedTemplate>
-                                <ResultTemplate>
-                                    @context.StatusName
-                                </ResultTemplate>
-                            </BlazoredTypeahead>
-                        </MudItem>
-                        <MudItem Class='filterdialog__chkboxcont' xs='4'>
-                            <MudCheckBox @bind-Checked="@filterParameter.IsTicketBranch" Label="Ticket Branch"
-                            Dense="true" />
-                        </MudItem>
-                        <MudItem xs='8'>
-                            <BlazoredTypeahead SearchMethod='SearchBranch' @bind-Values='selectedBranches'
-                            EnableDropDown='true' Disabled='!filterParameter.IsTicketBranch'>
-                                <SelectedTemplate>
-                                    @context.BranchName
-                                </SelectedTemplate>
-                                <ResultTemplate>
-                                    @context.BranchName
-                                </ResultTemplate>
-                            </BlazoredTypeahead>
-                        </MudItem>
-                        <MudItem Class='filterdialog__chkboxcont' xs='4'>
-                            <MudCheckBox @bind-Checked="@filterParameter.IsTicketCategoryType" Label="Category Type"
-                            Dense="true" />
-                        </MudItem>
-                        <MudItem xs='8'>
-                            <BlazoredTypeahead SearchMethod='SearchCatType' @bind-Values='selectedCatType' EnableDropDown='true'
-                            Disabled='!filterParameter.IsTicketCategoryType'>
-                                <SelectedTemplate>
-                                    @context
-                                </SelectedTemplate>
-                                <ResultTemplate>
-                                    @context
-                                </ResultTemplate>
-                            </BlazoredTypeahead>
-                        </MudItem>
-                        <MudItem Class='filterdialog__chkboxcont' xs='4'>
-                            <MudCheckBox @bind-Checked="@filterParameter.IsTicketCategory" Label="Ticket Category" Dense="true"/>
-                        </MudItem>
-                        <MudItem xs='8'>
-                            <BlazoredTypeahead SearchMethod='SearchCategory' @bind-Values='selectedCategories' EnableDropDown='true' Disabled='!filterParameter.IsTicketCategory'>
-                                <SelectedTemplate>
-                                    @context.CategoryName
-                                </SelectedTemplate>
-                                <ResultTemplate>
-                                    @context.CategoryName
-                                </ResultTemplate>
-                            </BlazoredTypeahead>
-                        </MudItem>
-                        <MudItem Class='filterdialog__chkboxcont' xs='4'>
-                             <MudCheckBox @bind-Checked="@filterParameter.IsAssignee" Label="Assignee" Dense="true"/>
-                        </MudItem>
-                        <MudItem xs='8'>
-                            <BlazoredTypeahead SearchMethod='SearchAssignee' @bind-Values='selectedAssignees' EnableDropDown='true' Disabled='!filterParameter.IsAssignee'>
-                                <SelectedTemplate>
-                                    <div class='filterdialog__tbxrequestor'>
-                                    @if (context.Picture != null)
-                                    {
-                                        <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(@context.Picture)}")' Size='Size.Small'/>  
-                                    }
-                                    @context.EmployeeName
-                                    </div>
-                                </SelectedTemplate>
-                                <ResultTemplate>
-                                    <div class='filterdialog__tbxrequestor'>
-                                        <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(@context.Picture)}")'/>  
-                                        @context.EmployeeName
-                                    </div>
-                                </ResultTemplate>
-                            </BlazoredTypeahead>
-                        </MudItem>
-                        <MudItem Class='filterdialog__chkboxcont' xs='6'>
-                            <MudCheckBox @bind-Checked="@filterParameter.IsTicketPriorityLevel" Label="Ticket Priority Level"
-                            Dense="true"/>
-                        </MudItem>
-                        <MudItem xs='6'>
-                            <BlazoredTypeahead SearchMethod='SearchPriority' @bind-Values='selectedPriority' EnableDropDown='true' 
-                                Disabled='!filterParameter.IsTicketPriorityLevel'>
-                                <SelectedTemplate>
-                                    @context
-                                </SelectedTemplate>
-                                <ResultTemplate>
-                                    @context
-                                </ResultTemplate>
-                            </BlazoredTypeahead>
-                        </MudItem>
                     </MudGrid>
-                </div>
-                    @*<---->ControlNumber</---->*@
-                    @* <MudItem xs="5">
-                        <MudCheckBox @bind-Checked="@filterParameter.IsName" Label="Control Number" Dense="true">
-                        </MudCheckBox>
-                        </MudItem>
-                        <MudItem xs='7'>
-                        <MudTextField @bind-Value='@filterParameter.Name' Disabled="!filterParameter.IsName"
-                        Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Tag" />
-                        </MudItem> *@
-                    @*<---->ControlNumber</---->*@
-            </MudContainer>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+            @*<---->ControlNumber</---->*@
+            @* <MudItem xs="5">
+                <MudCheckBox @bind-Checked="@filterParameter.IsName" Label="Control Number" Dense="true">
+                </MudCheckBox>
+                </MudItem>
+                <MudItem xs='7'>
+                <MudTextField @bind-Value='@filterParameter.Name' Disabled="!filterParameter.IsName"
+                Margin="Margin.Dense" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Tag" />
+                </MudItem> *@
+            @*<---->ControlNumber</---->*@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel" Variant='Variant.Text' Color='Color.Default'>Cancel</MudButton>
-        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+        <MudButton Class='btn-ios-d font12' OnClick="Cancel" Variant='Variant.Text' Color='Color.Default' Size='Size.Small' DisableElevation>Cancel</MudButton>
+        <MudButton Class='btn-ios-d font12' OnClick="Submit" Color="@Color" Variant="Variant.Filled" Size='Size.Small' DisableElevation>@ButtonText</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -272,21 +265,21 @@
     #region GetTicketStatus
     async Task GetTicketStatus()
     {
-        ticketStatusModels = await Task.Run(() => GlobalList.ticketStatusList);
+        ticketStatusModels = await Task.Run(() => GlobalList.TicketStatusList);
     }
     #endregion
 
     #region GetAllDepartment
     private async Task GetAllDepartment()
     {
-        departments = await Task.Run(() => GlobalList.departmentList);
+        departments = await Task.Run(() => GlobalList.DepartmentList);
     }
     #endregion
 
     #region GetBranch
     private async Task GetBranch()
     {
-        ticketBranchList = await Task.Run(() => GlobalList.ticketBranchList);
+        ticketBranchList = await Task.Run(() => GlobalList.TicketBranchList);
     }
     #endregion
 
@@ -402,11 +395,11 @@
         if (filterParameter.IsRequestor)
             stringParam.Add("Requestor: " + selectedUser.EmployeeName);
 
-        if (filterParameter.IsDate)
+        if (filterParameter.IsDate && filterParameter.DateFrom != null && filterParameter.DateTo != null)
             stringParam.Add("Ticket Date: " + filterParameter.DateFrom.Value.ToShortDateString() + " - " +
             filterParameter.DateTo.Value.ToShortDateString());
 
-        if (filterParameter.IsActivityDate)
+        if (filterParameter.IsActivityDate && filterParameter.ActivityDateFrom !=  null && filterParameter.ActivityDateTo != null)
             stringParam.Add("Activity Date: " + filterParameter.ActivityDateFrom.Value.ToShortDateString() + " - " +
             filterParameter.ActivityDateTo.Value.ToShortDateString());
 

@@ -1,18 +1,16 @@
 .errorpagecontainer {
-    display: flex !important;
-    align-content: center;
-    flex-wrap: wrap;
-    flex-direction: column;
-    // display: grid;
-    text-align: center;
-    &__btn {
-        background-color: #012340 !important;
-        color: white !important;
-        font-size: 16px !important;
-        font-weight: bold !important;
-        font-family: 'Theramin' !important;
-    }
-    &__img {
-        width: 45%;
-    }
+  align-items: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+  text-align: center;
+  &__btn {
+    color: white !important;
+    font-size: 1rem !important;
+    font-weight: bold !important;
+    font-family: "Theramin" !important;
+    width: 40%;
+  }
+  &__img {
+    width: 45%;
+  }
 }

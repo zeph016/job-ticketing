@@ -1,9 +1,1 @@
-{
-    "version": 3,
-    "mappings": "",
-    "sources": [
-        "useraccounts.styles.scss"
-    ],
-    "names": [],
-    "file": "useraccounts.styles.css"
-}
+{"version":3,"sources":[],"names":[],"mappings":"","file":"useraccounts.styles.css"}

@@ -1,0 +1,89 @@
+.dflex-row, .mchip-useraccount span {
+  align-items: center;
+  display: flex !important;
+}
+
+.dflex-col {
+  flex-direction: column;
+  display: flex;
+}
+
+.dflex-ac {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+}
+
+.flex-full {
+  flex: 1 1 0%;
+}
+
+.flex-grow {
+  flex-grow: 1 !important;
+}
+
+.dflex {
+  display: flex;
+}
+
+.dblock {
+  display: block;
+}
+
+.dblock-inline {
+  display: inline-block;
+}
+
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
+}
+
+.line-clamp-8 {
+  -webkit-line-clamp: 8;
+}
+
+.line-clamp-10 {
+  -webkit-line-clamp: 10;
+}
+
+.line-clamp-16 {
+  -webkit-line-clamp: 16;
+}
+
+.line-clamp-props, .line-clamp-2, .line-clamp-3, .line-clamp-8, .line-clamp-10, .line-clamp-16 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+} 
+.mchip-small-10px {
+  font-size: 10px !important;
+  font-weight: bold !important;
+  text-transform: uppercase !important;
+}
+
+.mchip-fullwidth {
+  border-radius: 4px !important;
+  font-weight: bold;
+  width: 100%;
+}
+
+.mchip-fullwidthheight {
+  font-weight: bold !important;
+  height: 100% !important;
+  text-align: center;
+  width: 100%;
+  white-space: normal !important;
+}
+
+.mchip-useraccount span {
+  gap: 8px;
+}
+.mchip-useraccount p {
+  font-size: 12px;
+  font-weight: bold;
+}/*# sourceMappingURL=mudchips.styles.css.map */

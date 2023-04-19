@@ -1,3 +1,65 @@
+.dflex-row, .accmp-report__grid .accmp-header, .accmp-report__grid .accmp-footer, .accmp-report__grid .accmp-header__controls {
+  align-items: center;
+  display: flex !important;
+}
+
+.dflex-col, .accmp-report__grid .accmp-body {
+  flex-direction: column;
+  display: flex;
+}
+
+.dflex-ac {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+}
+
+.flex-full, .accmp-report__grid .accmp-body {
+  flex: 1 1 0%;
+}
+
+.flex-grow {
+  flex-grow: 1 !important;
+}
+
+.dflex {
+  display: flex;
+}
+
+.dblock {
+  display: block;
+}
+
+.dblock-inline {
+  display: inline-block;
+}
+
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
+}
+
+.line-clamp-8 {
+  -webkit-line-clamp: 8;
+}
+
+.line-clamp-10 {
+  -webkit-line-clamp: 10;
+}
+
+.line-clamp-16 {
+  -webkit-line-clamp: 16;
+}
+
+.line-clamp-props, .line-clamp-2, .line-clamp-3, .line-clamp-8, .line-clamp-10, .line-clamp-16 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+} 
 @media print {
   body * {
     visibility: hidden;
@@ -25,7 +87,6 @@
     margin: 0.9cm !important;
   }
 }
-
 .headerTitle {
   color: black;
   font-size: 11px;
@@ -36,7 +97,6 @@
   overflow-x: auto;
   text-align: center;
 }
-
 .accompPrintDiv .main {
   height: 100%;
   margin-bottom: 3%;
@@ -105,7 +165,6 @@
   page-break-after: always;
   text-align: center;
 }
-
 .Table .dayscount {
   padding-left: 2px !important;
   padding-right: 2px !important;
@@ -179,4 +238,55 @@ td {
   min-width: 40px;
   max-width: 40px;
 }
-/*# sourceMappingURL=accomplishmentreport.styles.css.map */
+
+.accmp-report__container {
+  padding: 8px;
+}
+.accmp-report__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 30px 1fr 1fr 30px;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas: "accmp-header accmp-header accmp-header accmp-header" "accmp-body accmp-body accmp-body accmp-body" "accmp-body accmp-body accmp-body accmp-body" "accmp-footer accmp-footer accmp-footer accmp-footer";
+  height: calc(100vh - 105px);
+}
+.accmp-report__grid .accmp-header {
+  grid-area: accmp-header;
+}
+.accmp-report__grid .accmp-body {
+  grid-area: accmp-body;
+}
+.accmp-report__grid .accmp-footer {
+  grid-area: accmp-footer;
+}
+.accmp-report__grid .accmp-header, .accmp-report__grid .accmp-body {
+  border-bottom: solid thin var(--mud-palette-table-lines);
+}
+.accmp-report__grid .accmp-header, .accmp-report__grid .accmp-footer {
+  padding: 4px 8px;
+}
+.accmp-report__grid .accmp-header {
+  justify-content: space-between;
+}
+.accmp-report__grid .accmp-body {
+  align-items: center;
+  justify-content: center;
+}
+.accmp-report__grid .accmp-footer {
+  gap: 4px;
+}
+.accmp-report__title, .accmp-report__title-noreport {
+  font-family: "R-Flex Bold";
+}
+.accmp-report__title {
+  font-size: 14px;
+  margin-right: 4px;
+}
+.accmp-report__lbl {
+  font-family: "R-Flex Regular";
+  font-size: 12px;
+}
+.accmp-report__title-noreport {
+  font-size: 16px;
+}/*# sourceMappingURL=accomplishmentreport.styles.css.map */

@@ -1,0 +1,182 @@
+.dflex-row, .ticketlist__table-toolbar .left-toolbar, .ticketlist__table-toolbar .right-toolbar {
+  align-items: center;
+  display: flex !important;
+}
+
+.dflex-col {
+  flex-direction: column;
+  display: flex;
+}
+
+.dflex-ac {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+}
+
+.flex-full {
+  flex: 1 1 0%;
+}
+
+.flex-grow {
+  flex-grow: 1 !important;
+}
+
+.dflex {
+  display: flex;
+}
+
+.dblock {
+  display: block;
+}
+
+.dblock-inline {
+  display: inline-block;
+}
+
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
+}
+
+.line-clamp-8 {
+  -webkit-line-clamp: 8;
+}
+
+.line-clamp-10 {
+  -webkit-line-clamp: 10;
+}
+
+.line-clamp-16 {
+  -webkit-line-clamp: 16;
+}
+
+.line-clamp-props, .line-clamp-2, .line-clamp-3, .line-clamp-8, .line-clamp-10, .line-clamp-16 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+} 
+.ticketlist {
+  padding: 8px !important;
+}
+.ticketlist__table .mud-toolbar {
+  border-radius: 4px !important;
+  height: 40px !important;
+}
+.ticketlist__table-menu .mud-button-label {
+  font-size: 12px !important;
+}
+.ticketlist__menu-row .mud-button-root {
+  font-size: 12px !important;
+  font-weight: unset !important;
+}
+.ticketlist__table-toolbar .left-toolbar, .ticketlist__table-toolbar .right-toolbar {
+  overflow: auto;
+}
+.ticketlist__table-toolbar .right-toolbar {
+  justify-content: end;
+}
+
+.tlistrow-container {
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 60px;
+  gap: 0px 4px;
+  grid-auto-flow: row;
+  grid-template-areas: "tlistrow-tnumber tlistrow-header tlistrow-header tlistrow-header tlistrow-header tlistrow-header" "tlistrow-priority tlistrow-content tlistrow-content tlistrow-content tlistrow-content tlistrow-content" "tlistrow-status tlistrow-footer tlistrow-footer tlistrow-footer tlistrow-footer tlistrow-footer";
+}
+
+.tlistrow-tnumber {
+  grid-area: tlistrow-tnumber;
+}
+
+.tlistrow-priority {
+  grid-area: tlistrow-priority;
+}
+
+.tlistrow-status {
+  grid-area: tlistrow-status;
+}
+
+.tlistrow-header {
+  grid-area: tlistrow-header;
+  display: grid;
+  grid-template-columns: 1fr 0.5fr 0.5fr 0.5fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-template-areas: "thead-left thead-left thead-left thead-center thead-right";
+  overflow: hidden;
+}
+.tlistrow-header .thead-left {
+  grid-area: thead-left;
+  overflow: hidden;
+}
+.tlistrow-header .thead-center {
+  border-right: solid thin var(--mud-palette-table-lines);
+  border-left: solid thin var(--mud-palette-table-lines);
+  grid-area: thead-center;
+  padding: 4px;
+  justify-content: center;
+}
+.tlistrow-header .thead-right {
+  grid-area: thead-right;
+  justify-content: end;
+}
+.tlistrow-header .thead-left,
+.tlistrow-header .thead-center,
+.tlistrow-header .thead-right {
+  display: flex;
+  align-items: center;
+}
+
+.tlistrow-header,
+.tlistrow-content {
+  background-color: rgba(10, 133, 255, 0.3098039216);
+}
+
+.tlistrow-content {
+  grid-area: tlistrow-content;
+  overflow: hidden;
+  border-top: dotted thin black;
+}
+
+.tlistrow-footer {
+  grid-area: tlistrow-footer;
+  border: solid thin var(--mud-palette-table-lines);
+  display: grid;
+  grid-template-columns: 1fr 0.5fr 0.5fr 0.5fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 0px 0px;
+  grid-template-areas: "tfooter-req tfooter-branch tfooter-dept tfooter-cat tfooter-assign";
+}
+.tlistrow-footer .tfooter-req {
+  grid-area: tfooter-req;
+}
+.tlistrow-footer .tfooter-branch {
+  grid-area: tfooter-branch;
+}
+.tlistrow-footer .tfooter-dept {
+  grid-area: tfooter-dept;
+}
+.tlistrow-footer .tfooter-cat {
+  grid-area: tfooter-cat;
+}
+.tlistrow-footer .tfooter-assign {
+  grid-area: tfooter-assign;
+}
+.tlistrow-footer .tfooter-branch,
+.tlistrow-footer .tfooter-cat {
+  border-left: solid thin var(--mud-palette-table-lines);
+  border-right: solid thin var(--mud-palette-table-lines);
+}
+.tlistrow-footer .tfooter-req,
+.tlistrow-footer .tfooter-branch,
+.tlistrow-footer .tfooter-dept,
+.tlistrow-footer .tfooter-cat,
+.tlistrow-footer .tfooter-assign {
+  overflow: hidden;
+}/*# sourceMappingURL=ticketlist.styles.css.map */

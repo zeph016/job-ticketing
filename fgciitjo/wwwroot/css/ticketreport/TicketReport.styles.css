@@ -2,7 +2,8 @@
   body * {
     visibility: hidden;
   }
-  #PrintDiv, #PrintDiv * {
+  #PrintDiv,
+  #PrintDiv * {
     visibility: visible;
   }
   #PrintDiv {
@@ -20,23 +21,20 @@
     margin: none;
   }
 }
-
 .ticket-details {
   width: 785px;
   height: 384px;
   border: 1px solid black;
   border-top: none;
-  background: url(http://10.0.0.9:4001/images/FGCIWatermark.png);
+  background-image: url(./ticketreport-images/FGCIWatermark.png);
   background-repeat: no-repeat;
   background-size: 255px 255px;
   background-position-x: 528px;
   background-position-y: 129px;
 }
-
 .ticket-details span {
   text-transform: uppercase;
 }
-
 .ticket-details h4 {
   font-size: 11px;
   font-family: sans-serif;
@@ -53,12 +51,9 @@
 .header .title {
   float: left;
   clear: none;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   padding-bottom: 4px;
 }
-
 .header .title h4 {
   font-family: Orbitron;
   font-size: 21px;
@@ -67,19 +62,13 @@
   padding-top: 1px;
   padding-bottom: 2px;
 }
-
 .header .title #ticket-icon {
   width: 35px;
   height: 35px;
 }
-
 .header .fg-logo {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: end;
-      -ms-flex-pack: end;
-          justify-content: flex-end;
+  justify-content: flex-end;
   margin-bottom: 4px;
 }
 
@@ -93,90 +82,69 @@
 .subtitle {
   width: inherit;
   border-bottom: 1px solid;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  justify-content: center;
   font-weight: bold;
 }
 
 .ticket-info-title {
   width: inherit;
   border-bottom: 1px solid;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  justify-content: center;
   font-weight: bold;
 }
 
 .task-title {
   width: inherit;
   border-bottom: 1px solid black;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  justify-content: center;
   font-weight: bold;
 }
 
 .field-name {
-  display: -ms-inline-grid;
   display: inline-grid;
   width: 250px;
 }
-
 .field-name span {
   border-bottom: 1px dotted;
   margin: 15px 15px 0px 15px;
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-weight: bold;
   width: 230px;
 }
-
 .field-name small {
   margin: 0px 15px 15px 15px;
 }
 
 .field-name-resize {
-  display: -ms-inline-grid;
   display: inline-grid;
   width: 250px;
 }
-
 .field-name-resize span {
   border-bottom: 1px dotted;
   margin: 15px 15px 0px 15px;
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-weight: bold;
   font-size: 9px !important;
   width: 230px;
 }
-
 .field-name-resize small {
   margin: 0px 15px 15px 15px;
 }
 
 .field-name-ticket {
-  display: -ms-inline-grid;
   display: inline-grid;
   width: 250px;
 }
-
 .field-name-ticket span {
   border-bottom: 1px dotted black;
   margin: 15px 15px 0px 15px;
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-weight: bolder;
   color: red;
 }
-
 .field-name-ticket small {
   margin: 0px 15px 15px 15px;
 }
@@ -190,24 +158,20 @@
 }
 
 .date {
-  -webkit-box-sizing: content-box;
-          box-sizing: content-box;
+  box-sizing: content-box;
   border: 1px solid;
   display: inline-block;
   width: 220px;
   height: 40px;
   margin: 5px 0px 0px 5px;
 }
-
 .date span {
   font-size: 14px;
-  font-family: 'Roboto';
+  font-family: "Roboto";
   font-weight: bolder;
 }
 
 .date-container {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
   display: inline-flex;
 }
 
@@ -216,7 +180,7 @@
 }
 
 .task-description-container {
-  width: 540px;
+  width: 547px;
   border: 1px solid;
   border-top: 0px;
   border-right: 0px;
@@ -225,26 +189,16 @@
 }
 
 .assignee {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: start;
+  justify-content: center;
 }
-
 .assignee .assignee-contain {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: start;
-  border-right: 0px;
+  flex: 1 1 0%;
+  align-items: center;
+  justify-content: center;
   border-top: 1px solid black;
-  border-bottom: 0px;
   border-left: 0px solid black;
-  width: 540px;
 }
 
 .description p {
@@ -257,23 +211,19 @@
 .ticket-details span {
   font-size: 11.3px;
 }
-
 .ticket-details small {
   font: 11px;
 }
-
 .ticket-details .subtitle {
   background-color: #383838;
   width: 783px;
   color: white;
 }
-
 .ticket-details .ticket-info-title {
   background-color: #383838;
   width: 783px;
   color: white;
 }
-
 .ticket-details .task-title {
   background-color: #383838;
   color: white;
@@ -291,18 +241,13 @@
 .date {
   text-align: center;
 }
-
 .date .day small {
   font-size: 13px;
 }
 
 .completed-title {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  justify-content: center;
   background-color: #383838;
   margin-left: 5px;
   color: white;
@@ -310,12 +255,8 @@
 }
 
 .req-date {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  justify-content: center;
   background-color: #383838;
   margin-left: 5px;
   color: white;
@@ -324,34 +265,23 @@
 .footer-container {
   border-top: 1px solid black;
 }
-
 .footer-container .control-number {
   float: left;
 }
-
 .footer-container .control-number small {
   display: block;
   padding-left: 5px;
 }
-
 .footer-container .eff {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: right;
-      -ms-flex-pack: right;
-          justify-content: right;
+  justify-content: right;
   padding: 0px 5px 0px 0px;
   text-align: center;
 }
 
 .date #empty-field {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  justify-content: center;
   padding-top: 10px;
 }
 
@@ -372,25 +302,16 @@
   width: 785px;
   border-bottom: 1px solid black;
 }
-
 .release-header .release-date {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: end;
-      -ms-flex-pack: end;
-          justify-content: flex-end;
+  justify-content: flex-end;
 }
-
 .release-header .release-date h4 {
   text-transform: uppercase;
 }
-
 .release-header .release-subtitle {
   float: left;
   clear: none;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
 }
 
@@ -399,7 +320,6 @@
   height: 120px;
   border-top: none;
 }
-
 .release-details .release-doc-ref {
   width: 240px;
   height: 96px;
@@ -408,12 +328,10 @@
   padding: 15px 15px 15px 30px;
   overflow-wrap: break-word;
 }
-
 .release-details .release-doc-ref li {
   list-style: circle;
   color: black;
 }
-
 .release-details .it-assets {
   width: 240px;
   margin: 0px 0px 0px 5px;
@@ -425,21 +343,17 @@
 
 .released-to {
   width: 500px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   float: right;
   margin-right: 20px;
 }
-
 .released-to img {
   width: 30px;
   height: 30px;
   display: inline;
 }
-
 .released-to .check-img {
-  background: url(http://10.0.0.9:4001/images/releaseby.png);
+  background-image: url(./ticketreport-images/releaseby.png);
   background-repeat: no-repeat;
   background-size: 70px 68px;
   background-position-x: 75px;
@@ -447,16 +361,12 @@
 
 .terms {
   width: 520px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   float: right;
   padding: 0px 0px 0px 5px;
 }
-
 .terms p {
   text-align: left;
   font-size: 7.5px;
   font-weight: bold;
-}
-/*# sourceMappingURL=TicketReport.styles.css.map */
+}/*# sourceMappingURL=ticketreport.styles.css.map */

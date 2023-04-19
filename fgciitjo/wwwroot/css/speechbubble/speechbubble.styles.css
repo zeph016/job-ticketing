@@ -1,66 +1,44 @@
 .speech-bubble .mud-avatar {
-  -ms-flex-item-align: end !important;
-      align-self: flex-end !important;
+  align-self: flex-end !important;
   bottom: 0.25rem;
   height: 25px !important;
   width: 25px !important;
 }
-
 .speech-bubble__bubble-cont {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
   gap: 0.6rem;
 }
-
 .speech-bubble .mud-tooltip-root:nth-child(1) {
-  -ms-flex-item-align: end;
-      align-self: flex-end;
+  align-self: flex-end;
 }
-
 .speech-bubble .mud-tooltip-root:nth-child(2) {
-  -ms-flex-item-align: end;
-      align-self: flex-end;
+  align-self: flex-end;
 }
-
 .speech-bubble__from-them {
-  -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
+  justify-content: flex-start;
 }
-
 .speech-bubble__from-me {
-  -webkit-box-pack: end;
-      -ms-flex-pack: end;
-          justify-content: flex-end;
+  justify-content: flex-end;
 }
-
 .speech-bubble__timelog {
   font-size: 8px;
   font-weight: bold;
 }
-
 .speech-bubble__comment-custom1 .mud-input {
   margin-top: 0px;
 }
-
 .speech-bubble__custom-menu1 {
-  -ms-flex-item-align: center;
-      -ms-grid-row-align: center;
-      align-self: center;
+  align-self: center;
   display: none !important;
 }
 
 .speech-bubble__bubble-cont:hover .speech-bubble__custom-menu1 {
-  -ms-flex-item-align: center;
-      align-self: center;
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
+  align-self: center;
   display: flex !important;
 }
 
 .speech-bubble p {
-  padding: 0.5rem .875rem;
+  padding: 0.5rem 0.875rem;
   position: relative;
   word-wrap: break-word;
 }
@@ -74,8 +52,7 @@
 }
 
 p.from-me {
-  -ms-flex-item-align: end;
-      align-self: flex-end;
+  align-self: flex-end;
   background-color: #248bf5;
   color: #fff;
 }
@@ -84,22 +61,19 @@ p.from-me::before {
   border-bottom-left-radius: 0.8rem 0.7rem;
   border-right: 1rem solid #248bf5;
   right: -0.35rem;
-  -webkit-transform: translate(0, -0.1rem);
-          transform: translate(0, -0.1rem);
+  transform: translate(0, -0.1rem);
 }
 
 p.from-me::after {
   background-color: #fff;
   border-bottom-left-radius: 0.5rem;
   right: -40px;
-  -webkit-transform: translate(-30px, -2px);
-          transform: translate(-30px, -2px);
+  transform: translate(-30px, -2px);
   width: 10px;
 }
 
-p[class^="from-"] {
+p[class^=from-] {
   margin: 0.5rem 0;
-  width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
 }
@@ -117,9 +91,7 @@ p.from-me ~ p.from-me:last-child {
 }
 
 p.from-them {
-  -webkit-box-align: start;
-      -ms-flex-align: start;
-          align-items: flex-start;
+  align-items: flex-start;
   background-color: #e5e5ea;
   color: #000;
 }
@@ -128,25 +100,23 @@ p.from-them:before {
   border-bottom-right-radius: 0.8rem 0.7rem;
   border-left: 1rem solid #e5e5ea;
   left: -0.35rem;
-  -webkit-transform: translate(0, -0.1rem);
-          transform: translate(0, -0.1rem);
+  transform: translate(0, -0.1rem);
 }
 
 p.from-them::after {
   background-color: #fff;
   border-bottom-right-radius: 0.5rem;
   left: 20px;
-  -webkit-transform: translate(-30px, -2px);
-          transform: translate(-30px, -2px);
+  transform: translate(-30px, -2px);
   width: 10px;
 }
 
-p[class^="from-"].emoji {
+p[class^=from-].emoji {
   background: none;
   font-size: 2.5rem;
 }
 
-p[class^="from-"].emoji::before {
+p[class^=from-].emoji::before {
   content: none;
 }
 
@@ -155,15 +125,10 @@ p[class^="from-"].emoji::before {
 }
 
 .show-menu-speech {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
 }
 
 .hide-menu-speech {
   display: none;
-}
-/*# sourceMappingURL=speechbubble.styles.css.map */
+}/*# sourceMappingURL=speechbubble.styles.css.map */

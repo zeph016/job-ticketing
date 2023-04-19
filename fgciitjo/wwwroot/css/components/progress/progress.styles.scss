@@ -1,0 +1,9 @@
+@use "../flexgridmods/flexgridmods.styles.css";
+
+.circular-progress-cont {
+    @extend .dflex-col;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+    min-width: 500px;
+  }

@@ -1,122 +1,83 @@
-@page "/ticketlistReport"
 
-@using System.Net.Http.Headers
+@page "/report/ticket/list"
+
+@inject IReportService ReportService
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
+@inject ISnackbar SnackbarService
 @inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inherits TicketListReportBase
+@implements IDisposable
+@attribute [Authorize]
 
-
-<MudContainer class='DailyAccomplishmentContainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
-    <MudOverlay Visible='ShowLoadingOverlay' Absolute='true' DarkBackground='true'>
-        <MudProgressCircular class='loader-2' Size="Size.Large" Indeterminate="true" />
-    </MudOverlay>
-    @if (!dataFetched)
-    {
-        <MudPaper Class='ma-4 pa-2'>
-            <MudSkeleton SkeletonType='SkeletonType.Text' Height='100px' Animation='Animation.Wave' />
-            <MudSkeleton SkeletonType='SkeletonType.Rectangle' Height='75vh' Animation='Animation.Wave' />
-        </MudPaper>
-    }
-    else
-    {
-        <MudPaper class="paper">
-            <MudPaper Class="d-flex justify-space-around">
-                @* <MudText Typo='Typo.h6' Style="margin:5px;"> </MudText> *@
-                <MudSpacer />
-                <MudButton class="filterBtn" @onclick='@(() => SearchFilterParameterDialog())'
-                StartIcon="@Icons.Material.Filled.Tune">Filter</MudButton>
-            </MudPaper>
-            <iframe class="frameReport" src="@pdfContent"></iframe>
-        </MudPaper>
-    }
-</MudContainer>
-
-@code {
-    private bool ShowLoadingOverlay, dataFetched, disable;
-    HttpClient client = new HttpClient();
-    FilterParameter filterParameter = new FilterParameter();
-    string pdfContent;
-    private string searchTerm = "";
-
-    protected override async Task OnInitializedAsync()
-    {
-        client.BaseAddress = new Uri("http://10.0.0.7:9000/");
-        GlobalContentTitle.contentTitle = "Ticket List Report";
-        ShowLoadingOverlay = true;
-        while (GlobalClass.CurrentUserAccount == null)
+<div class='page-cont'>
+    <MudPaper Class='page-cont__background' Square Elevation='0'>
+        @if (!dataFetched)
         {
-            //Delay UI if GlobalClass is not loaded yet
-            await Task.Delay(250);
+            <SkeletonDefaultList />
         }
-        filterParameter.IsAssignee = true;
-        filterParameter.AssigneeId = GlobalClass.CurrentUserAccount.EmployeeId.ToString();
-        Task t = Task.WhenAll(LoadReport());
-        await t;
-        if (t.Status == TaskStatus.RanToCompletion)
+        else
         {
-            CompletedFetch();
+            <MudContainer Class='accmp-report' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge'>
+                <div class='accmp-report__container'>
+                <MudPaper Class='accmp-report__container-paper'>
+                    <div class='accmp-report__grid'>
+                        <div class='accmp-header'>
+                            <div class='accmp-header__controls'>
+                                <p class='accmp-report__title'>Note:</p>
+                                <p class='accmp-report__lbl'>Accomplishment report cut-off dates are 
+                                    <strong>7th to 21st</strong> and <strong>22nd to 6th</strong>
+                                </p>
+                            </div>
+                            <div class='accmp-header__controls'>
+                                <MudTooltip Text='Reset report' Arrow>
+                                    <MudIconButton Class='@(isTableReset ? "mudico-move-right-10px":"mudico-move-default-loc")' OnClick='ResetReport'
+                                        Size='Size.Small' StartIcon="@Icons.Material.Filled.ClearAll" Color='@(isTableReset ? Color.Error : Color.Default)' />
+                                </MudTooltip>
+                                <MudTooltip Text='Filter report' Arrow>
+                                    <MudIconButton Class='@(AppState.isTListFilterOpen ? "mudico-rotate180":"")' OnClick='(() => AppState.isTListFilterOpen = !AppState.isTListFilterOpen)'
+                                        Size='Size.Small' Icon="@Icons.Material.Filled.Tune" Color='@(AppState.isTListFilterOpen ? Color.Info : Color.Default)' />
+                                </MudTooltip>
+                                <MudPopover Class='popover-custom1' Open='AppState.isTListFilterOpen' Fixed='false' AnchorOrigin='Origin.BottomRight' TransformOrigin='Origin.TopRight' OverflowBehavior='OverflowBehavior.FlipAlways'>
+                                    <TicketListFilterComp FilterApplyClick='(() => ReloadData(true))' isGenerateReport='false' />
+                                </MudPopover>
+                            </div>
+                        </div>
+                        <div class='accmp-body'>
+                            @if(ShowLoadingOverlay)
+                            {
+                                <MudProgressCircular Color="Color.Primary" Indeterminate Size='Size.Large' />
+                            }
+                            else
+                            {
+                                @if (!string.IsNullOrWhiteSpace(pdfContent))
+                                {
+                                    <iframe src="@pdfContent" />
+                                }
+                                else
+                                {
+                                    <MudImage Class='img-enlarge-1' Src='images/pdf.png' Alt='pdf' ObjectFit='ObjectFit.ScaleDown' 
+                                        Width='150'/>
+                                }
+                            }
+                        </div>
+                        <div class='accmp-footer'>
+                            <p class='accmp-report__title'>File Size: </p>
+                            @if(sizeInKb == 0)
+                            {
+                                <p class='accmp-report__lbl'>No report generated</p>
+                            }
+                            else
+                            {
+                                <p class='accmp-report__lbl'>
+                                    @Convert.ToString(Math.Round(sizeInKb,2, MidpointRounding.AwayFromZero)) Kilobytes ~approximate
+                                </p>
+                            }
+                        </div>
+                    </div>
+                </MudPaper>
+                </div>
+            </MudContainer>
         }
-    }
-
-    async Task LoadReport()
-    {
-        try
-        {
-            filterParameter.Token = await localStorage.GetItemAsync<string>("token");
-            filterParameter.PreparedBy = GlobalClass.CurrentUserAccount.EmployeeName;
-            filterParameter.PreparedByDesignation = GlobalClass.CurrentUserAccount.Designation;
-            var response = await client.PostAsJsonAsync("api/getticketlistreport", filterParameter);
-
-            pdfContent = "data:application/pdf;base64,";
-            pdfContent += Convert.ToBase64String(await response.Content.ReadAsByteArrayAsync());
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-            // return null;
-        }
-    }
-
-    void CompletedFetch()
-    {
-        dataFetched = true;
-        ShowLoadingOverlay = false;
-        StateHasChanged();
-    }
-
-    #region FilterDialog
-    private async Task SearchFilterParameterDialog()
-    {
-        ShowLoadingOverlay = true;
-        var parameters = new DialogParameters();
-        parameters.Add("ContentText", "Search Filter");
-        parameters.Add("ButtonText", "Search");
-        parameters.Add("Color", Color.Success);
-        parameters.Add("isvisible", false);
-        parameters.Add("isReport", true);
-
-        var options = new DialogOptions()
-        {
-            CloseButton = true,
-            MaxWidth = MaxWidth.Medium,
-            FullWidth = true,
-            NoHeader = true,
-            DisableBackdropClick = true
-        };
-
-        var resultDialog = await DialogService.Show<Shared.Dialogs.TicketListFilterDialog>("Search Filter", parameters,
-        options).Result;
-        if (!resultDialog.Cancelled)
-        {
-            ShowLoadingOverlay = false;
-            filterParameter = (FilterParameter)resultDialog.Data;
-            filterParameter.PageSize = 0;
-            Task t = Task.WhenAll(LoadReport());
-            await t;
-            if (t.Status == TaskStatus.RanToCompletion)
-            {
-                StateHasChanged();
-            }
-        }
-    }
-    #endregion
-}
+    </MudPaper>
+</div>

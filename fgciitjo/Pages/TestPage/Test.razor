@@ -1,89 +1,22 @@
 @page "/test"
 
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject IJSRuntime JSRuntime
-@inject ITicketCategoryService ticketCategoryService
-@inject ITicketListService ticketListService
-@inject IGlobalService GlobalService
+@inherits TestBase
 
 
-
-<MudButton OnClick='LoadTickets'>Generate</MudButton>
-
-    @* <table>
-        <thead>
-            <tr>Ticket Id</tr>
-        </thead>
-        <tbody>
-            <Virtualize ItemsProvider='LoadTicketVirts' Context='ticket'>
-                <ItemContent>
-                    <tr>
-                        <td><MudText>@ticket.TicketNumber</MudText></td>
-                        <td><MudText>@ticket.TicketStatusName</MudText></td>
-                    </tr>
-                </ItemContent>
-                <Placeholder>
-                     <p>Loading tickets...</p>
-                </Placeholder>
-            </Virtualize>
-        </tbody>
-    </table> *@
-    <MudSimpleTable Style='overflow-x: auto;'>
-        <thead>
-            <tr>
-                Ticket Id
-            </tr>
-            <tr>
-                Ticket Status
-            </tr>
-        </thead>
-        <tbody>
-            <Virtualize ItemsProvider='LoadTicketVirts' Context='ticket' ItemSize='20'>
-                <ItemContent>
-                    <tr>
-                        <td>@ticket.TicketNumber</td>
-                        <td>@ticket.TicketStatusName</td>
-                    </tr>
-                </ItemContent>
-                 <Placeholder>
-                     <p>Loading tickets...</p>
-                </Placeholder>
-            </Virtualize>
-        </tbody>
-    </MudSimpleTable>
-    
-
-
-
-@code {
-
-    FilterParameter filterParameter = new FilterParameter();
-    private List<TicketModel> ticketList = new List<TicketModel>();
-    private List<TicketCategoryModel> ticketCategoryList = new List<TicketCategoryModel>();
-    private string Token = default!;
-    private string cookieToken = default!;
-    float itemHeight = 50;
-    int itemCount;
-
-    protected override async Task OnInitializedAsync()
-    {
-        Token = await localStorage.GetItemAsync<string>("token");
-        cookieToken = await JSRuntime.InvokeAsync<string>("getCookie", "token");
-        TableState tableState = new TableState();
-        filterParameter.TicketAccessLevel = Enums.AccessLevel.Administrator;
-    }   
-   private async Task LoadTickets()
-   {
-        filterParameter.TicketAccessLevel = Enums.AccessLevel.Administrator;
-        ticketList = await ticketListService.LoadTicket(filterParameter, cookieToken);
-        StateHasChanged();
-   }
-
-   private async ValueTask<ItemsProviderResult<TicketModel>> LoadTicketVirts(ItemsProviderRequest request)
-    {
-        var tickets = await ticketListService.LoadTicketv2(filterParameter, await localStorage.GetItemAsync<string>("token"));
-        @* tickets = tickets.Where(x=>x.TicketStatusId != 6).ToList(); *@
-        @* tickets = tickets.Where(x=>x.TicketStatusId == 3 || x.TicketStatusId == 4 || x.TicketStatusId == 5).OrderByDescending(x=>x.TicketDate).ToList(); *@
-        return new ItemsProviderResult<TicketModel>(tickets.Skip(request.StartIndex).Take(request.Count), tickets.Count());
-    }
-}
+<MudContainer MaxWidth='MaxWidth.Medium' Fixed>
+    <MudCard>
+        <MudCardHeader>
+            Testing page
+        </MudCardHeader>
+        <MudCardContent>
+            @foreach (var item in NotificationList)
+            {
+                <p>@item.UserAccountName</p>
+            }
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton OnClick='Test'>Test Set</MudButton>
+            <MudButton OnClick='GetList'>Test Get</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudContainer>

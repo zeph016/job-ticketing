@@ -1,0 +1,268 @@
+.visibility-animation-hide {
+  display: none;
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s linear 0.2s, opacity 0.2s linear;
+}
+.visibility-animation-show {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+  transition-delay: 0s;
+}
+
+.transition-05s-ease {
+  transition: all 0.5s;
+  transition-timing-function: ease;
+  -webkit-transition: all 0.5s ease; /** Chrome & Safari **/
+  -moz-transition: all 0.5s ease; /** Firefox **/
+  -o-transition: all 0.5s ease; /** Opera **/
+}
+.transition-025s-ease {
+  transition: all 0.25s;
+  transition-timing-function: ease;
+  -webkit-transition: all 0.25s ease; /** Chrome & Safari **/
+  -moz-transition: all 0.25s ease; /** Firefox **/
+  -o-transition: all 0.25s ease; /** Opera **/
+}
+
+.menu-grow-anim {
+  transition: all 0.15s ease-in-out !important;
+  &:hover {
+    transform: scale(1.025) !important;
+  }
+}
+
+.row-popup-anim-2px {
+  tr {
+    transition: all 0.2s ease-in-out;
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+.fade-in {
+  animation: fadein 1s;
+  visibility: visible;
+}
+.fade-out {
+  animation: fadeout 1s;
+  visibility: hidden;
+}
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes fadeout {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.icon-rotate180 {
+  .mud-button-icon-end {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+  }
+}
+
+.mudico-rotate180 {
+  .mud-icon-root {
+    // transition: all 0.25s ease;
+    transform: rotate(180deg);
+  }
+}
+
+.mudico-move-right-10px {
+  .mud-icon-root {
+    transform: translate(10px, 0);
+    transition: all 0.5s ease;
+    -webkit-transition: all 0.5s ease; /** Chrome & Safari **/
+    -moz-transition: all 0.5s ease; /** Firefox **/
+    -o-transition: all 0.5s ease; /** Opera **/
+  }
+}
+
+.mudico-move-default-loc {
+  .mud-icon-root {
+    transform: translate(0px, 0);
+    transition: all 0.5s ease;
+    -webkit-transition: all 0.5s ease; /** Chrome & Safari **/
+    -moz-transition: all 0.5s ease; /** Firefox **/
+    -o-transition: all 0.5s ease; /** Opera **/
+  }
+}
+
+.refresh-anim {
+  .mud-icon-button-label {
+    color: #2196f3ff !important;
+    transition: all 0.5s ease;
+    transform: rotate(360deg);
+    -webkit-transition: all 0.5s ease; /** Chrome & Safari **/
+    -moz-transition: all 0.5s ease; /** Firefox **/
+    -o-transition: all 0.5s ease; /** Opera **/
+  }
+}
+
+.mudbtnico-rotate {
+  -webkit-animation: mudbtnico-rotate 0.5s linear infinite;
+  -moz-animation: mudbtnico-rotate 0.5s linear infinite;
+  -ms-animation: mudbtnico-rotate 0.5s linear infinite;
+  -o-animation: mudbtnico-rotate 0.5s linear infinite;
+  animation: mudbtnico-rotate 0.5s linear infinite;
+}
+
+@keyframes mudbtnico-rotate {
+  0% {
+    transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+  }
+}
+
+.img-enlarge-1 {
+  transition-timing-function: cubic-bezier(0.1, 0.7, 1, 0.1);
+  transition: all 0.5s ease;
+  -webkit-transition: all 0.5s ease; /** Chrome & Safari **/
+  -moz-transition: all 0.5s ease; /** Firefox **/
+  -o-transition: all 0.5s ease; /** Opera **/
+}
+
+.img-enlarge-1:hover {
+  width: 200px;
+}
+
+.btn-transition-05s-ease {
+  transition: all 0.5s ease !important;
+  -webkit-transition: all 0.5s ease !important; /** Chrome & Safari **/
+  -moz-transition: all 0.5s ease !important; /** Firefox **/
+  -o-transition: all 0.5s ease !important; /** Opera **/
+}
+
+.btn-transition-05s-ease:hover {
+  transform: scale(1.125);
+}
+
+.mudbtnico-rotate-90 {
+  .mud-icon-root {
+    transform: rotate(0deg);
+    transition: all 0.5s ease;
+    -webkit-transition: all 0.5s ease; /** Chrome & Safari **/
+    -moz-transition: all 0.5s ease; /** Firefox **/
+    -o-transition: all 0.5s ease; /** Opera **/
+  }
+}
+.mudbtnico-rotate-90:hover {
+  .mud-button-root {
+    color: #2196f3ff !important;
+  }
+  .mud-icon-root {
+    transform: rotate(90deg);
+    transition: all 0.5s ease;
+    -webkit-transition: all 0.5s ease; /** Chrome & Safari **/
+    -moz-transition: all 0.5s ease; /** Firefox **/
+    -o-transition: all 0.5s ease; /** Opera **/
+  }
+}
+
+.zoom-in {
+  animation: zoom-in-dialog 0.5s;
+  visibility: visible;
+}
+
+.zoom-out {
+  animation: zoom-out-dialog 0.5s;
+  visibility: hidden;
+}
+
+
+@keyframes zoom-in-dialog {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes zoom-out-dialog {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+.bounce-anim-sm {
+  animation: bounce 2s infinite;
+	-webkit-animation: bounce 2s infinite;
+	-moz-animation: bounce 2s infinite;
+	-o-animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+	0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+	40% {transform: translateY(-20px);}
+	60% {transform: translateY(-15px);}
+}
+
+.wiggle-anim-sm {
+  animation: wiggle 2s linear infinite;
+}
+.wiggle-anim-sm-once {
+  animation: wiggle 0.5s linear infinite;
+}
+
+@keyframes wiggle {
+  0%, 7% {
+    transform: rotateZ(0);
+  }
+  15% {
+    transform: rotateZ(-20deg);
+  }
+  20% {
+    transform: rotateZ(15deg);
+  }
+  25% {
+    transform: rotateZ(-15deg);
+  }
+  30% {
+    transform: rotateZ(11deg);
+  }
+  35% {
+    transform: rotateZ(-9deg);
+  }
+  40%, 100% {
+    transform: rotateZ(0);
+  }
+}

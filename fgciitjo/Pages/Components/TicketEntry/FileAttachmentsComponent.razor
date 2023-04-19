@@ -1,0 +1,119 @@
+@inject ISnackbar SnackbarService
+@inject IJSRuntime JSRuntime
+
+<MudPaper Elevation='0' Width='400px'>
+    <MudCardHeader Class='py-2'>
+        <MudSpacer />
+        <MudText Typo='Typo.caption'>
+            @(FilesAttached.Count() > 1 ? "Files attached: " : "File attached: ")
+            @FilesAttached.Count()
+        </MudText>
+    </MudCardHeader>
+    <MudDivider />
+    <MudCardContent>
+        <div class='transition-05s-ease overflow-hidden' style='@((FilesAttached.Count() > 0) ? "max-height:150px" : "min-height:15px")'>
+            <MudPaper Class='d-flex flex-column overflow-y-auto' Square Elevation='0' MinHeight='30px' MaxHeight='150px'>
+                 @if (FilesAttached.Count() > 0)
+                 {
+                    <MudGrid Spacing='1'>
+                        @foreach (var item in FilesAttached)
+                        {
+                            <MudItem Class='d-flex align-center justify-center' xs=1>
+                                <MudIcon Icon='@(Extensions.DetermineFileIcon(item.FileName))' Size='Size.Medium' Style='@(Extensions.DetermineFileColor(item.FileName))' />
+                            </MudItem>
+                            <MudItem Class='d-flex align-center' xs=9>
+                                <MudText Class='txt-oflow-elipsis' Typo='Typo.body2'>@item.FileName</MudText>
+                            </MudItem>
+                            <MudItem Class='d-flex align-center justify-end' xs=2>
+                                <MudTooltip Text='Download file' Arrow>
+                                    <MudIconButton OnClick='(() => DownloadFile(item))' Icon='@Icons.Material.Filled.DownloadForOffline' Size='Size.Small' />
+                                </MudTooltip>
+                                <MudTooltip Text='Remove file' Arrow>
+                                    <MudIconButton Class='mr-1' OnClick='(() => RemoveFile(item))' Icon='@Icons.Material.Filled.DeleteForever' Size='Size.Small' Disabled='@(item.TicketId > 0 ? true : false)' />
+                                </MudTooltip>
+                            </MudItem>
+                            <MudDivider />
+                        }
+                    </MudGrid>
+                 }
+                 else
+                {
+                    <div class='d-flex flex-1 align-center justify-center'>
+                        <MudText Typo='Typo.body2'>No files attached.</MudText>
+                    </div>
+                }
+            </MudPaper>
+        </div>
+    </MudCardContent>
+    @if (isUploading)
+    {
+        <MudProgressLinear Color="Color.Primary" Value='progressValue' />
+    }
+    <MudDivider />
+    <MudCardActions>
+        <div class='d-flex flex-1 align-center gap-2'>
+            <MudSpacer />
+            <MudButton OnClick='Cancel' Size='Size.Small'>Close</MudButton>
+        </div>
+    </MudCardActions>
+</MudPaper>
+
+@code {
+    [Parameter] public EventCallback CloseAttachmentPopOver { get; set; }
+    [Parameter] public bool _isPopUpOpen { get; set; }
+    [Parameter] public List<TicketFileAttachmentModel> FilesAttached { get; set; } = new List<TicketFileAttachmentModel>();
+    public List<TicketFileAttachmentModel> removeFilesAttached { get; set; } = new List<TicketFileAttachmentModel>();
+    private bool isUploading;
+    private int progressValue;
+    private Enums.CrudeMode _action = new Enums.CrudeMode();
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        await base.SetParametersAsync(parameters);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine(FilesAttached.Count());
+    }
+    protected async Task Cancel()
+    {
+        await CloseAttachmentPopOver.InvokeAsync();
+    }
+
+    private async void DownloadFile(TicketFileAttachmentModel file)
+    {
+        string jpg = "data:image/jpeg;base64,",
+        png = "data:image/png;base64,",
+        pdf = "data:application/pdf;base64,",
+        doc = "data:application/msword;base64,",
+        docx = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,",
+        xls = "data:application/vnd.ms-excel;base64,",
+        xlsx = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,",
+        contentType = "", fileName = file.FileName;
+        if (file.FileName.Contains(".jpg", StringComparison.OrdinalIgnoreCase) || file.FileName.Contains(".jpeg", StringComparison.OrdinalIgnoreCase))
+            contentType = jpg + Convert.ToBase64String(file.FileAttachment);
+        if (file.FileName.Contains(".png", StringComparison.OrdinalIgnoreCase))
+            contentType = png + Convert.ToBase64String(file.FileAttachment);
+        if (file.FileName.Contains(".pdf", StringComparison.OrdinalIgnoreCase))
+            contentType = pdf + Convert.ToBase64String(file.FileAttachment);
+        if (file.FileName.Contains(".doc", StringComparison.OrdinalIgnoreCase))
+            contentType = doc + Convert.ToBase64String(file.FileAttachment);
+        if (file.FileName.Contains(".docx", StringComparison.OrdinalIgnoreCase))
+             contentType = docx + Convert.ToBase64String(file.FileAttachment);
+        if (file.FileName.Contains(".xls", StringComparison.OrdinalIgnoreCase) || file.FileName.Contains(".csv", StringComparison.OrdinalIgnoreCase))
+            contentType = xls + Convert.ToBase64String(file.FileAttachment);
+        if (file.FileName.Contains(".xlsx", StringComparison.OrdinalIgnoreCase))
+            contentType = xlsx + Convert.ToBase64String(file.FileAttachment);
+        await JSRuntime.InvokeAsync<object>("saveFile", fileName, contentType);
+    }
+
+    private void RemoveFile(TicketFileAttachmentModel file)
+    {
+        FilesAttached.Remove(file);
+
+        //remove existing file
+        if (_action == Enums.CrudeMode.Edit)
+            removeFilesAttached.Add(file);
+        Extensions.ShowAlert("File " + file.FileName + " removed", Variant.Filled, SnackbarService, Severity.Normal, string.Empty);
+    }
+}

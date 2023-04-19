@@ -1,0 +1,81 @@
+<MudPaper Elevation='0' Width='350px'>
+    <MudCardContent>
+        <MudGrid Spacing='1'>
+            <MudItem xs=12>
+                <MudField Label='Date Range' Margin='Margin.Dense' DisableUnderLine>
+                    <MudDateRangePicker Class='font-date14px' @bind-DateRange="dateRange" IconSize='Size.Small' PickerVariant='PickerVariant.Dialog'
+                        DisableUnderline Variant='Variant.Outlined' Margin='Margin.Dense' DisableToolbar @ref='_dateRangePicker'>
+                        <PickerActions>
+                            <MudButton Class='btn-ios-d font12' OnClick='Today' Size='Size.Small' DisableElevation Variant='Variant.Filled' Color='Color.Surface'>
+                                Today
+                            </MudButton>
+                            <MudSpacer />
+                            <MudButton Class='btn-ios-d font12' OnClick='CancelDatePicker' Size='Size.Small' DisableElevation>
+                                Cancel
+                            </MudButton>
+                            <MudButton Class='btn-ios-d font12' OnClick='SubmitDatePicker' Variant='Variant.Filled' Size='Size.Small' DisableElevation Color='Color.Tertiary'>
+                                Submit
+                            </MudButton>
+                        </PickerActions>
+                    </MudDateRangePicker>
+                </MudField>
+            </MudItem>
+        </MudGrid>
+    </MudCardContent>
+    <MudCardActions>
+        <MudSpacer />
+        <MudButton Class='btn-ios-d font12' OnClick="CancelFilter" Variant='Variant.Text' Color='Color.Default' Size='Size.Small' DisableElevation>Cancel</MudButton>
+        <MudButton Class='btn-ios-d font12' OnClick="Submit" Color='Color.Secondary' Variant="Variant.Filled" Size='Size.Small' DisableElevation>
+            Apply
+        </MudButton>
+    </MudCardActions>
+</MudPaper>
+
+@code {
+    [Parameter] public EventCallback FilterApplyClick { get; set; }
+    [Parameter] public EventCallback CancelFilterClick { get; set; }
+    [Parameter] public DateRange dateRange { get; set; } = new DateRange(DateTime.Now.AddDays(-10).Date, DateTime.Now.Date);
+    MudDateRangePicker _dateRangePicker = new MudDateRangePicker();
+    
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        await base.SetParametersAsync(parameters);
+    }
+
+    private async Task Submit()
+    {
+        MapProperties();
+        await ApplyFilter();
+    }
+
+    private void MapProperties()
+    {
+        GlobalClass.filterParameter.IsActivityDate = true;
+        GlobalClass.filterParameter.ActivityDateFrom = dateRange.Start;
+        GlobalClass.filterParameter.ActivityDateTo = dateRange.End;
+        
+    }
+
+    protected async Task ApplyFilter()
+    {
+        await FilterApplyClick.InvokeAsync();
+    }
+
+    protected async Task CancelFilter()
+    {
+        await CancelFilterClick.InvokeAsync();
+    }
+
+    private void SubmitDatePicker()
+    {
+        _dateRangePicker.Close(true);
+    }
+    private void CancelDatePicker()
+    {
+       _dateRangePicker.Close(false);
+    }
+    private void Today()
+    {
+        dateRange = new DateRange(DateTime.Now.AddDays(-1), DateTime.Now);
+    }
+}

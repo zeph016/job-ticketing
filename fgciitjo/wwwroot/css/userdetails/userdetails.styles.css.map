@@ -1,9 +1,1 @@
-{
-    "version": 3,
-    "mappings": "AAEA,AAAA,qBAAqB,CAAC;EAClB,OAAO,EAAE,cAAc;CAwB1B;;AAzBD,AAEI,qBAFiB,CAEjB,YAAY,CAAC;EACT,OAAO,EAAE,cAAc;EACvB,gBAAgB,EAAE,KAAK;CAC1B;;AALL,AAOI,qBAPiB,CAOjB,UAAU,CAAC;EACP,KAAK,EAAE,IAAI;EACX,WAAW,EAAE,eAAe;EAC5B,YAAY,EAAE,eAAe;CAChC;;AAXL,AAcQ,qBAda,CAajB,WAAW,CACP,eAAe,CAAC;EACZ,KAAK,EAAE,kBAAkB;EACzB,WAAW,EAAE,sBAAsB;EACnC,SAAS,EAAE,MAAM;EACjB,WAAW,EAAE,IAAI;CACpB;;AAnBT,AAsBI,qBAtBiB,CAsBjB,gBAAgB,CAAC;EACb,KAAK,EAAE,IAAI;CACd",
-    "sources": [
-        "userdetails.styles.scss"
-    ],
-    "names": [],
-    "file": "userdetails.styles.css"
-}
+{"version":3,"sources":["userdetails.styles.scss","userdetails.styles.css"],"names":[],"mappings":"AAEA;EACI,uBAAA;ACDJ;ADEI;EACI,uBAAA;EACA,uBAAA;ACAR;ADGI;EACI,WAAA;EACA,4BAAA;EACA,6BAAA;ACDR;ADKQ;EACI,yBAAA;EACA,mCAAA;EACA,iBAAA;EACA,iBAAA;ACHZ;ADOI;EACI,WAAA;ACLR","file":"userdetails.styles.css"}

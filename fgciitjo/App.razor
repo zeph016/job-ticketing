@@ -1,19 +1,38 @@
 ﻿@inject NavigationManager NavigationManager
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 
-<Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-    </Found>
-    <NotFound>
-        <LayoutView Layout="@typeof(MainLayout)">
-            @* <p>Sorry, there's nothing at this address.</p> *@
-        <MudContainer class='errorpagecontainer' MaxWidth='MaxWidth.Small' Fixed='true'>
-            <img class='errorpagecontainer__img' src="images/pagenotfound404.png" asp-append-version="true" />
-            <MudButton class='errorpagecontainer__btn' OnClick='BackToDashboard' Variant='Variant.Filled'>Back to Dashboard</MudButton>
-        </MudContainer>
-        </LayoutView>
-    </NotFound>
-</Router>
+<PreLoader>
+    <CascadingAuthenticationState>
+        <Router AppAssembly="@typeof(Program).Assembly">
+            <Found Context="routeData">
+                <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                    <Authorizing>
+                        @* Your spinner goes here *@
+                        <div class="fgloader-1">
+                            <img class="fgloader-1__img" src="images/loaders/fgloader-1.gif" />
+                        </div>
+                    </Authorizing>
+                    <NotAuthorized>
+                        <MudContainer Class='d-flex align-center justify-center height100 errorpagecontainer bgc-transparent' Fixed='false' MaxWidth='MaxWidth.Large'>
+                            <img class='errorpagecontainer__img' src="images/pageforbidden403.png" asp-append-version="true" />
+                        </MudContainer>
+                </NotAuthorized>
+                </AuthorizeRouteView>
+                <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+            </Found>
+            <NotFound>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    @* <p>Sorry, there's nothing at this address.</p> *@
+                    <MudContainer Class='d-flex errorpagecontainer' Fixed='true' MaxWidth='MaxWidth.Small'>
+                            <img class='errorpagecontainer__img' src="images/pagenotfound404.png" asp-append-version="true" />
+                            <MudButton class='errorpagecontainer__btn' OnClick='BackToDashboard' Variant='Variant.Filled' Color='Color.Primary'>Back to Dashboard</MudButton>
+                    </MudContainer>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </CascadingAuthenticationState>
+</PreLoader>
 
 @code {
     private void BackToDashboard()

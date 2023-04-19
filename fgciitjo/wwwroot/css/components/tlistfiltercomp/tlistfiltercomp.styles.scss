@@ -1,0 +1,7 @@
+.adjust-height-oflow {
+  .adjust-height {
+    @media only screen and (height: 800px) {
+      overflow: auto !important;
+    }
+  }
+}

@@ -1,0 +1,43 @@
+@inject ILocalStorageService localStorageService
+@inject IUserAccountService UserAccountServices
+@inject IJSRuntime jsRuntimeService
+@inject AuthenticationStateProvider authenticationStateProvider
+
+@if (isLoaded)
+{
+    @ChildContent
+}
+else
+{
+    <div class="fgloader-1">
+        <img class="fgloader-1__img" src="images/loaders/fgloader-1.gif" />
+    </div>
+}
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    bool isLoaded;
+
+    protected override async Task OnInitializedAsync()
+    {
+        bool checkAuthToken = await Extensions.ValidateToken(UserAccountServices, localStorageService, jsRuntimeService);
+        if (checkAuthToken) {
+            await authenticationStateProvider.GetAuthenticationStateAsync();
+            GlobalClass.AccountAuthorized = true;
+        }
+        else if (!checkAuthToken) {
+            GlobalClass.CurrentUserAccount = default!;
+            await localStorageService.RemoveItemAsync("token");
+            await jsRuntimeService.InvokeVoidAsync("DeleteCookie");
+            await authenticationStateProvider.GetAuthenticationStateAsync();
+        }
+        Console.WriteLine("Initialized Preloader");
+        CompletedFetch();
+    }
+
+    void CompletedFetch()
+    {
+        isLoaded = true;
+        StateHasChanged();
+    }
+}

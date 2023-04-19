@@ -14,7 +14,7 @@
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudTable Items="@mrList" Height="280px" FixedHeader="true" FixedFooter="true" Dense="true" >
+        <MudTable Items="@mrList" Height="280px" FixedHeader FixedFooter Dense LoadingProgressColor='Color.Primary' >
             <ToolBarContent>
                 <MudSpacer />
                 <MudTextField @onkeyup="LoadMRITem" @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>

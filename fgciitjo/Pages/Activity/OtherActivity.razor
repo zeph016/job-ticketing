@@ -1,0 +1,139 @@
+﻿@page "/createactivity"
+@page "/create/other-activity"
+
+@inherits OtherActivityBase
+@attribute [Authorize]
+
+<div class='page-cont'>
+    <MudPaper Class='page-cont__background' Square Elevation='0'>
+        @if (!dataFetched)
+        {
+            <SkeletonDefaultList />
+        }
+        else
+        {
+            <div class='ticket-activity'>
+                <MudPaper Class='ticket-activity__grid-other-act'>
+                    <div class='activity-header'>
+                        @if (GlobalList.TicketStatusList.Count() != 0)
+                        {
+                            @* <MudChip Class='color-white' OnClick='(() => FilterTableByChip("In Progress"))'
+                                Size='Size.Small' Style='@(Extensions.GetColor(2))'>
+                                <MudText Class='font12'>In Progress</MudText>
+                                <MudDivider Class='ml-1' Vertical />
+                                <div class='ml-1 custombadge'>
+                                    <MudText Class='custombadge__content'>@chip2</MudText>
+                                </div>
+                            </MudChip> *@
+                            <MudChip Class='color-white' OnClick='(() => FilterTableByChip("Assigned"))'
+                                Size='Size.Small' Style='@(Extensions.GetColor(8))'>
+                                <MudText Class='font12'>Assigned</MudText>
+                                <MudDivider Class='ml-1' Vertical />
+                                <div class='ml-1 custombadge'>
+                                    <MudText Class='custombadge__content'>@chip3</MudText>
+                                </div>
+                            </MudChip>
+                            <MudChip Class='color-white' OnClick='(() => FilterTableByChip("Pending"))'
+                                Size='Size.Small' Style='@(Extensions.GetColor(5))'>
+                                <MudText Class='font12'>Pending</MudText>
+                                <MudDivider Class='ml-1' Vertical />
+                                <div class='ml-1 custombadge'>
+                                    <MudText Class='custombadge__content'>@chip4</MudText>
+                                </div>
+                            </MudChip>
+                            <MudChip Class='color-white' OnClick='(() => FilterTableByChip("Done"))'
+                                Size='Size.Small' Style='@(Extensions.GetColor(6))'>
+                                <MudText Class='font12'>Done</MudText>
+                                <MudDivider Class='ml-1' Vertical />
+                                <div class='ml-1 custombadge'>
+                                    <MudText Class='custombadge__content'>@chip5</MudText>
+                                </div>
+                            </MudChip>
+                            <MudTooltip Text='Click status for quick filter' Arrow Placement='Placement.Top' IsVisible='filterChipsVisible'>
+                                <MudIconButton Class='wiggle-anim-sm' OnClick='(() => filterChipsVisible = !filterChipsVisible)'
+                                    Icon='@Icons.Material.Filled.Info' Size='Size.Small' Color='Color.Info' />
+                            </MudTooltip>
+                        }
+                        <MudSpacer />
+                        <MudTooltip Text='Refresh activity list' Arrow>
+                            <MudIconButton Class='@(isTableLoading ? "mudbtnico-rotate":"")' OnClick='(() => ReloadActivity(true))' Variant="Variant.Text" Icon="@Icons.Material.Filled.Refresh" Size='Size.Small' Color='@(isTableLoading ? Color.Info:Color.Default)' />
+                        </MudTooltip>
+                        <MudDivider Class='ml-1 mr-1' Vertical />
+                        <MudTooltip Text='Add activity' Arrow>
+                            <MudButton OnClick='(() => AddTicketActivity(Enums.CrudeMode.Add))' Variant="Variant.Text"
+                                StartIcon="@Icons.Material.Filled.Add" Size='Size.Small' Disabled="@readOnly">Add Activity</MudButton>
+                        </MudTooltip>
+                    </div>
+                    <div class='activity-content'>
+                        <MudTable Class='activity-list-table' ServerData='new Func<TableState, Task<TableData<TicketActivityModel>>>(LoadOtherActivities)' Virtualize
+                            Hover Dense FixedHeader FixedFooter Breakpoint='Breakpoint.Xs' Elevation='1' Height='calc(100vh - 185px)' @ref='tableVariable'>
+                            <ColGroup>
+                                <col style='width:150px'/>
+                                <col />
+                                <col />
+                                <col style='width:40px'/>
+                            </ColGroup>
+                            <HeaderContent>
+                                <MudTh>
+                                    <MudTableSortLabel SortLabel='SortDate' T='TicketActivityModel'
+                                        InitialDirection='SortDirection.Descending'>
+                                        <small class='txt-uppercase'>Activity Date</small>
+                                    </MudTableSortLabel>
+                                </MudTh>
+                                <MudTh>
+                                    <small class='txt-uppercase'>Activity</small>
+                                </MudTh>
+                                <MudTh>
+                                    <small class='txt-uppercase'>Remarks</small>
+                                </MudTh>
+                                <MudTh>
+                                    <small class='txt-uppercase'>Actions</small>
+                                </MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>
+                                    <div class='d-flex flex-column align-center justify-center'>
+                                        <small>@Convert.ToDateTime(context.ActivityDate).ToShortDateString()</small>
+                                        <MudChip Class='color-white rounded' Style='@(Extensions.GetColor(context.StatusId))' Size='Size.Small'>
+                                            @context.StatusName
+                                        </MudChip>
+                                    </div>
+                                </MudTd>
+                                <MudTd>
+                                    <small>@context.ActivityName</small>
+                                </MudTd>
+                                <MudTd>
+                                    <small>@context.Remarks</small>
+                                </MudTd>
+                                <MudTd Class='text-center'>
+                                    <MudMenu Class='mudbtnico-rotate-90' Icon='@Icons.Material.Filled.MoreVert' AnchorOrigin='Origin.BottomLeft' TransformOrigin='Origin.TopRight' Dense ActivationEvent='MouseEvent.MouseOver'
+                                        Size='Size.Small'>
+                                        <MudMenuItem OnClick='(() => UpdateTicketActivity(context.Id))'>
+                                            <div class='d-flex align-center gap-2'>
+                                                <MudIcon Icon='@Icons.Material.Filled.Edit' Size='Size.Small' />
+                                                <MudText Typo='Typo.body2'>
+                                                    Modify
+                                                </MudText>
+                                            </div>
+                                        </MudMenuItem>
+                                        <MudMenuItem OnClick='(() => RemoveTicketActivity(context.Id, context.StatusId, context.ActivityName, context.Remarks))'>
+                                            <div class='d-flex align-center gap-2'>
+                                                <MudIcon Icon='@Icons.Material.Filled.DeleteSweep' Size='Size.Small' />
+                                                <MudText Typo='Typo.body2' >
+                                                    Remove
+                                                </MudText>
+                                            </div>
+                                        </MudMenuItem>
+                                    </MudMenu>
+                                </MudTd>
+                            </RowTemplate>
+                            <PagerContent>
+                                <MudTablePager />
+                            </PagerContent>
+                        </MudTable>
+                    </div>
+                </MudPaper>
+            </div>
+        }
+    </MudPaper>
+</div>

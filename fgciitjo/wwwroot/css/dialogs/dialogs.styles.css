@@ -1,25 +1,17 @@
 .ticketStatusDialog .mud-grid .mud-grid-item:nth-child(2),
 .ticketCategoryDialog .mud-grid .mud-grid-item:nth-child(2) {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: end;
-      -ms-flex-align: end;
-          align-items: end;
+  align-items: end;
 }
-
 .ticketStatusDialog .mud-grid .mud-grid-item:nth-child(2) .mud-input-slot,
 .ticketCategoryDialog .mud-grid .mud-grid-item:nth-child(2) .mud-input-slot {
   font-size: 12px;
 }
-
 .ticketStatusDialog .mud-grid .mud-grid-item:nth-child(4),
 .ticketCategoryDialog .mud-grid .mud-grid-item:nth-child(4) {
-  -ms-flex-item-align: end;
-      align-self: flex-end;
+  align-self: flex-end;
   text-align: center;
 }
-
 .ticketStatusDialog .smallColorBox,
 .ticketCategoryDialog .smallColorBox {
   float: left;
@@ -39,17 +31,12 @@
 .pAttachFiles,
 .pSubTicket,
 .pUpdateTicketStatus {
-  font-family: 'Theramin';
+  font-family: "Theramin";
   font-size: 20px;
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
   color: rgba(0, 0, 0, 0.6);
 }
-
 .pTicketStatus .mud-icon-root,
 .pAddTicketCategory .mud-icon-root,
 .pMasterListSearch .mud-icon-root,
@@ -66,7 +53,6 @@
 .dialogFileAttachments .tbarFileAttachment {
   background-color: whitesmoke;
 }
-
 .dialogFileAttachments .attachedListContainer {
   overflow: auto;
   background-color: whitesmoke;
@@ -74,25 +60,17 @@
   max-height: 300px;
   margin-top: 10px;
 }
-
 .dialogFileAttachments .attachedListContainer .mud-grid {
   padding-top: 15px;
 }
-
 .dialogFileAttachments .attachedListContainer .mud-grid .mud-typography {
   word-break: break-all;
   padding-left: 5px;
 }
-
 .dialogFileAttachments .attachedListContainer .mud-grid-item {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  align-items: center;
 }
-
 .dialogFileAttachments .attachedListContainer .mud-grid-item code {
   text-align: left;
   font-weight: bold;
@@ -100,124 +78,46 @@
 }
 
 .dialog-container {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
-}
-
-.dfields {
-  display: -ms-inline-grid;
-  display: inline-grid;
-}
-
-.dfields span {
-  border-bottom: 1px dotted;
-  margin: 10px 10px 0px 10px;
-  font-family: 'Roboto';
-  font-weight: bold;
-  font-size: 12px;
-  width: 220px;
-}
-
-.dfields small {
-  margin: 0px 15px 15px 11px;
-}
-
-.dreq-name {
-  display: -ms-inline-grid;
-  display: inline-grid;
-}
-
-.dreq-name span {
-  border-bottom: 1px dotted;
-  margin: 10px 10px 0px 10px;
-  font-family: 'Roboto';
-  font-weight: bold;
-  font-size: 12px;
-  width: 220px;
-}
-
-.dreq-name small {
-  margin: 0px 15px 15px 11px;
-}
-
-.desc-name {
-  display: -ms-inline-grid;
-  display: inline-grid;
-}
-
-.desc-name span {
-  border-bottom: 1px dotted;
-  margin: 10px 10px 0px 10px;
-  font-family: 'Roboto';
-  font-weight: bold;
-  font-size: 12px;
-  width: 450px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.desc-name small {
-  margin: 0px 15px 15px 11px;
-}
-
-.dissue-summary {
-  display: -ms-inline-grid;
-  display: inline-grid;
-}
-
-.dissue-summary span {
-  border-bottom: 1px dotted;
-  margin: 10px 10px 0px 10px;
-  font-family: 'Roboto';
-  font-weight: bold;
-  font-size: 12px;
-  width: 220px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.dissue-summary small {
-  margin: 0px 15px 15px 11px;
-}
-
-.dpriority-field {
-  display: -ms-inline-grid;
-  display: inline-grid;
-  height: 18px;
-  width: 247px;
-}
-
-.dpriority-field .mud-chip-filled {
-  height: 18px;
-}
-
-.dpriority-field small {
-  border-top: 1px dotted;
-  margin: 0px 15px 15px 15px;
-}
-
-.dpriority-field .mud-chip {
-  border-bottom: 1px dotted;
-  margin: 10px 10px 0px 10px;
-  font-family: 'Roboto';
-  font-weight: bold;
-  font-size: 10px;
-  width: 100px;
-}
-
-#dgrid-container {
-  margin-top: 20px;
-  border-top: 1.5px dotted #525252;
+  justify-content: center;
 }
 
 .releaseImage {
   width: 140px;
   height: 40px;
 }
-/*# sourceMappingURL=dialogs.styles.css.map */
+
+.custom-dialog1 .mud-dialog-title {
+  background-color: #012340 !important;
+}
+.custom-dialog1__title {
+  color: white !important;
+}
+.custom-dialog1__title .mud-typography {
+  font-family: "Theramin" !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase;
+}
+.custom-dialog1__info {
+  background-color: rgba(128, 128, 128, 0.1294117647);
+  padding: 8px;
+}
+.small-dotted-field {
+  display: flex;
+  flex-direction: column;
+}
+.small-dotted-field span {
+  border-bottom: dotted thin black;
+  font-weight: bold;
+  height: 24px;
+  text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.small-dotted-field .mud-chip {
+  bottom: 2px;
+  height: 18px !important;
+  position: relative;
+  width: 85px;
+}/*# sourceMappingURL=dialogs.styles.css.map */

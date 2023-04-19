@@ -1,0 +1,59 @@
+
+
+<div class='custom-dialog'>
+    <div class='custom-dialog__title'>
+        <MudIcon Icon='@IconString' Size='Size.Medium' />
+        <p class='custom-dialog__title-txt'>@DialogTitle</p>
+    </div>
+    <div class='custom-dialog__content'>
+        @if (DialogAction == Enums.CrudeMode.Edit && !IsForm)
+        {
+            <p>@ContentText <strong>@Ticket.TicketNumber</strong> will overwrite the previous details.</p>
+            <p>Previous values will not be retained.</p>
+            <p class='custom-dialog__warning-txt'>Warning: This action cannot be undone.</p>
+        }
+        else if (IsForm)
+        {
+            
+        }
+        else
+        {
+            @ContentText
+        }
+    </div>
+    <div class='custom-dialog__actions'>
+        <MudSpacer />
+        <MudButton OnClick="Cancel" Size='Size.Small' Variant='Variant.Text' DisableElevation>
+            @CancelText
+        </MudButton>
+        <MudButton OnClick="Submit" Class='@buttonBG' Size='Size.Small' Variant='Variant.Filled' DisableElevation>
+            @SubmitText
+        </MudButton>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = new();
+    [Parameter] public TicketModel Ticket { get; set; } = new();
+    [Parameter] public Enums.CrudeMode DialogAction { get; set; } = new();
+    [Parameter] public string DialogTitle { get; set; } = string.Empty;
+    [Parameter] public string CancelText { get; set; } = string.Empty;
+    [Parameter] public string SubmitText { get; set; } = string.Empty;
+    [Parameter] public string ContentText { get; set; } = string.Empty;
+    [Parameter] public string IconString { get; set; } = string.Empty;
+    [Parameter] public bool IsForm { get; set; }
+    private string buttonBG = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        if (DialogAction == Enums.CrudeMode.Add)
+            buttonBG = "bg-material-success";
+        else if (DialogAction == Enums.CrudeMode.Edit)
+            buttonBG = "bg-material-info";
+        else if (DialogAction == Enums.CrudeMode.Delete)
+            buttonBG = "bg-material-error";
+    }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog.Cancel();
+}

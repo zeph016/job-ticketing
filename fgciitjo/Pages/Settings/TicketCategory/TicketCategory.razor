@@ -1,0 +1,103 @@
+@page "/settings/ticket/category"
+
+@inherits TicketCategoryBase
+@attribute [Authorize]
+
+
+<div class='page-cont'>
+    <MudPaper Class='page-cont__background' Square Elevation='0'>
+        @if (!dataFetched)
+        {
+            <SkeletonDefaultList />
+        }
+        else
+        {
+            <MudContainer Class='pa-2' Fixed MaxWidth='MaxWidth.ExtraExtraLarge'>
+                <MudTable Class='table-sm-type' ServerData='new Func<TableState, Task<TableData<TicketCategoryModel>>>(LoadTicketCategories)' Hover
+                    FixedHeader FixedFooter RowsPerPage='15' Breakpoint='Breakpoint.Xs' Bordered Dense LoadingProgressColor='Color.Primary' Height='calc(100vh - 195px)'
+                    @ref='tableVariable'>
+                    <ToolBarContent>
+                        <MudGrid Spacing='1'>
+                            <MudItem xs=4>
+                                <MudTextField Class='mb-2' T='string' Placeholder='Search' Adornment='Adornment.Start' AdornmentIcon='@Icons.Material.Filled.Search' IconSize='Size.Small'
+                                    Clearable Margin='Margin.Dense' ValueChanged='(text => OnSearch(text))'/>
+                            </MudItem>
+                            <MudItem Class='d-flex align-center justify-end' xs=8>
+                                <MudTooltip Text='Refresh table' Arrow>
+                                    <MudIconButton Class='@(isTableLoading ? "mudbtnico-rotate":"")' OnClick='(() => ReloadTable())' Size='Size.Small' Icon="@Icons.Material.Filled.Refresh" Color='@(isTableLoading ? Color.Info : Color.Default)'
+                                        aria-label="Refresh" />
+                                </MudTooltip>
+                                <MudMenu Class='mudbtnico-rotate-90' Label='More' StartIcon="@Icons.Material.Filled.MoreVert" Dense AnchorOrigin='Origin.BottomCenter' TransformOrigin='Origin.TopRight' ActivationEvent='MouseEvent.MouseOver'>
+                                    <MudMenuItem OnClick='(() => AddTicketCategory())'>
+                                        <div class='d-flex align-center gap-2'>
+                                            <MudIcon Icon='@Icons.Material.Filled.Add' Size='Size.Small' />
+                                            <MudText Typo='Typo.body2' >Add Category</MudText>
+                                        </div>
+                                    </MudMenuItem>
+                                </MudMenu>
+                            </MudItem>
+                        </MudGrid>
+                    </ToolBarContent>
+                    <ColGroup>
+                        <col />
+                        <col />
+                        <col style="width:50px"/>
+                        <col style="width:50px"/>
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortLabel='SortCategoryType' T='TicketCategoryModel'
+                                InitialDirection='SortDirection.Ascending'>
+                                <small class='txt-uppercase'>Category Type</small>
+                            </MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortLabel='SortCategoryName' T='TicketCategoryModel'
+                                InitialDirection='SortDirection.None'>
+                                <small class='txt-uppercase'>Category</small>
+                            </MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <small class='txt-uppercase'>Active</small>
+                        </MudTh>
+                        <MudTh>
+                            <small class='txt-uppercase'>Actions</small>
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel='CategoryType'>
+                            <div class='d-flex align-center gap-2'>
+                                <MudIcon Icon='@(context.CategoryTypeId == Enums.TicketCategoryType.Hardware ? Icons.Material.Filled.Computer :
+                                    (context.CategoryTypeId == Enums.TicketCategoryType.Software ? Icons.Material.Filled.Code :
+                                    (context.CategoryTypeId == Enums.TicketCategoryType.Admin ? Icons.Material.Filled.AdminPanelSettings : Icons.Material.Filled.BugReport)))' Title='Category icon' />
+                                <small>@context.CategoryTypeId</small>
+                            </div>
+                        </MudTd>
+                        <MudTd DataLabel='CategoryName'>
+                            <small>@context.CategoryName</small>
+                        </MudTd>
+                        <MudTd Class='text-center' DataLabel='IsActive'>
+                            <div class='d-flex align-center justify-center gap-2'>
+                                <MudCheckBox @bind-Checked='@context.IsActive' Dense ReadOnly Size='Size.Small' />
+                            </div>
+                        </MudTd>
+                        <MudTd Class='text-center' DataLabel='Actions'>
+                            <MudMenu Class='mudbtnico-rotate-90' Icon="@Icons.Material.Filled.MoreVert" Dense AnchorOrigin='Origin.BottomCenter' TransformOrigin='Origin.TopRight' ActivationEvent='MouseEvent.MouseOver'
+                                Size='Size.Small'>
+                                <MudMenuItem OnClick='(() => EditTicketCategory(context))'>
+                                    <div class='d-flex align-center gap-2'>
+                                        <MudIcon Icon='@Icons.Material.Filled.Edit' Size='Size.Small' />
+                                        <MudText Typo='Typo.body2'>Modify Category</MudText>
+                                    </div>
+                                </MudMenuItem>
+                            </MudMenu>
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions='new int[]{15,30,45,60,75,90,100}' />
+                    </PagerContent>
+                </MudTable>
+            </MudContainer>
+        }
+     </MudPaper>
+</div>

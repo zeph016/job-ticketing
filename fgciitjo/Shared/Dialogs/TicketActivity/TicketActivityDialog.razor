@@ -1,0 +1,75 @@
+@inherits TicketActivityDialogBase
+
+<EditForm Model='ticketActivity' OnValidSubmit='Submit'>
+<DataAnnotationsValidator />
+<ValidationSummary />
+    <div class="native-dialog-freewidth">
+        <div class='native-dialog__grid'>
+            <div class="dialog-header">
+                <MudIcon Icon='@IconString' Size='Size.Medium' />
+                <p class='dialog-header__title'>@DialogTitle</p>
+                <MudSpacer />
+                <MudChip OnClick='(() => CopyTextToClipboard(TicketNumber))'
+                    Variant='Variant.Filled' Size='Size.Medium' Label>
+                    <p class='dialog-header__lblticket'># @TicketNumber</p>
+                </MudChip>
+            </div>
+            <div class="dialog-content">
+                <div class="activity-dialog-form">
+                    <div class='activity-dialog-form__grid'>
+                        <div class="act-date">
+                            <MudDatePicker @bind-Date="selectedDate" Label='Date' PickerVariant="PickerVariant.Inline" Variant='Variant.Filled'
+                                Margin="Margin.Dense" MinDate='minDate'  MaxDate='DateTime.Now' IconSize='Size.Small' 
+                                DisableToolbar/>
+                        </div>
+                        <div class="act-status">
+                            <MudSelect @bind-Value='@ticketActivity.StatusId' Label='Status' 
+                                Placeholder='Select Status' Text='@ticketActivity.StatusName' Margin='Margin.Dense' Variant='Variant.Filled'>
+                                @foreach (var item in GlobalList.TicketStatusList)
+                                {
+                                    <MudSelectItem Value="@item.Id">@item.StatusName</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </div>
+                        <div class="act-activity">
+                            <MudTextField T="string" @bind-Value='@ticketActivity.ActivityName' Label='Activity' Variant='Variant.Filled' 
+                                Lines='4' Margin='Margin.Dense' />
+                        </div>
+                        <div class="act-remarks">
+                            <MudTextField @bind-Value='@ticketActivity.Remarks' Label='Remarks' Variant='Variant.Filled' 
+                                Lines='4' Margin='Margin.Dense' />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-footer">
+                <div class='dialog-footer__footer-notes'>
+                    <MudIcon Class='wiggle-anim-sm' Icon='@Icons.Material.Filled.Info' Size='Size.Small' Color='Color.Info' />
+                    <p>Note: Please be clear & concise on your activity and remarks. </p>
+                </div>
+                <MudSpacer />
+                <div class='dialog-action'>
+                    <MudButton OnClick='Cancel' Variant='Variant.Text' Size='Size.Small' DisableElevation>Cancel</MudButton>
+                    <MudButton ButtonType='ButtonType.Submit' Variant='Variant.Filled' Color='@Color' Size='Size.Small' DisableElevation>
+                        @if (isSaving)
+                        { 
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate />
+                           if(ActionMode == Enums.CrudeMode.Edit)
+                           {
+                                <p class='wspace-nowrap ms-2'>Saving</p>
+                           }
+                           else  if(ActionMode == Enums.CrudeMode.Add) 
+                           {
+                                <p class='wspace-nowrap ms-2'>Adding</p>
+                           }
+                        }
+                        else
+                        {
+                            @ButtonText
+                        }
+                    </MudButton>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>

@@ -1,3 +1,5 @@
+@use "../components/flexgridmods/flexgridmods.styles.css";
+
 .comment-cont {
   display: grid;
   grid-template-columns: 1fr;
@@ -13,32 +15,34 @@
     // display: flex;
     // flex-direction: column;
     // font-size: 1.25rem;
-    height: calc(60vh - 160px);
+    // height: calc(60vh - 160px);
     // margin: 0 auto 1rem;
     max-width: 600px;
     // padding: 0.5rem 1.5rem;
     padding: 0.5rem 0.5rem;
-    overflow: auto;
-    .mud-table-container {
-      overflow: hidden;
-    }
+    // overflow: auto;
+    // .mud-table-container {
+    //   overflow: hidden;
+    // }
   }
   &__chat-submit {
     align-items: center;
     display: grid;
-    grid-template-columns: 1fr 0.3fr;
+    grid-template-columns: 1fr 0.1fr;
     grid-template-rows: auto;
-    gap: 1rem;
+    gap: 4px;
+    grid-template-areas: 
+    "chat-message chat-submit";
+    .chat-message { grid-area: chat-message; }
+    .chat-submit { grid-area: chat-submit; }
   }
 
-
   ////
-  &__count{
+  &__count {
     display: flex;
     margin-top: 10px;
     justify-content: center;
   }
-
 
   &__tablecont {
     // max-height: 210px;
@@ -53,10 +57,10 @@
     padding: 10px;
     border-radius: 22px;
     float: right;
-    p{
+    p {
       margin: 13px 10px 10px 5px !important;
     }
-    h4{
+    h4 {
       margin: auto;
       margin-right: 13px;
       font-family: sans-serif;
@@ -71,10 +75,10 @@
     padding: 10px;
     border-radius: 22px;
     float: left;
-    p{
+    p {
       margin: 13px 5px 10px 10px !important;
     }
-    h4{
+    h4 {
       margin: auto;
       margin-left: 13px;
       font-family: sans-serif;
@@ -86,19 +90,21 @@
     display: flex !important;
     justify-content: flex-end;
   }
-  &__receiver-image{
+  &__receiver-image {
     display: flex !important;
     justify-content: flex-start;
   }
-  &__time-right{
+  &__time-right {
     font-size: 9px;
     float: right !important;
   }
-  &__time-left{
+  &__time-left {
     font-size: 9px;
   }
-  
-  &__chat-submit-btn {
-    align-self: center;
-  }
 }
+
+.ticketmessage-container {
+  width: 350px;
+}
+
+

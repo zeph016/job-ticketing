@@ -2,7 +2,8 @@
   body * {
     visibility: hidden;
   }
-  #PrintDiv, #PrintDiv * {
+  #PrintDiv,
+  #PrintDiv * {
     visibility: visible;
   }
   #PrintDiv {
@@ -10,44 +11,49 @@
     left: 0;
     top: 0;
   }
-  body{
+  body {
     -webkit-print-color-adjust: exact !important;
   }
-  @page { margin: none; }
-  body { margin: none; }
+  @page {
+    margin: none;
+  }
+  body {
+    margin: none;
+  }
 }
-.ticket-details{
+.ticket-details {
   width: 785px;
   height: 384px;
   border: 1px solid black;
   border-top: none;
-  background: url(http://10.0.0.9:4001/images/FGCIWatermark.png); 
+  // background: url(http://10.0.0.9:4001/images/FGCIWatermark.png);
+  background-image: url(./ticketreport-images/FGCIWatermark.png);
   background-repeat: no-repeat;
   background-size: 255px 255px;
   background-position-x: 528px;
   background-position-y: 129px;
-  span{
+  span {
     text-transform: uppercase;
   }
-  h4{
+  h4 {
     font-size: 11px;
     font-family: sans-serif;
     font-weight: bolder;
     text-transform: uppercase;
   }
 }
-.header{
+.header {
   width: 785px;
   border: 1px solid;
   padding: 5px 5px 0px 3px;
 }
-.header{
-  .title{
+.header {
+  .title {
     float: left;
     clear: none;
     display: flex;
     padding-bottom: 4px;
-    h4{
+    h4 {
       font-family: Orbitron;
       font-size: 21px;
       font-weight: bolder;
@@ -55,95 +61,95 @@
       padding-top: 1px;
       padding-bottom: 2px;
     }
-    #ticket-icon{
+    #ticket-icon {
       width: 35px;
       height: 35px;
     }
   }
-  .fg-logo{
+  .fg-logo {
     display: flex;
     justify-content: flex-end;
     margin-bottom: 4px;
   }
 }
-.fg-logo{
-  img{
+.fg-logo {
+  img {
     object-fit: contain;
     width: 250px;
     height: 30px;
   }
 }
-.subtitle{
+.subtitle {
   width: inherit;
   border-bottom: 1px solid;
   display: flex;
   justify-content: center;
   font-weight: bold;
 }
-.ticket-info-title{
+.ticket-info-title {
   width: inherit;
   border-bottom: 1px solid;
   display: flex;
   justify-content: center;
   font-weight: bold;
 }
-.task-title{
+.task-title {
   width: inherit;
   border-bottom: 1px solid black;
   display: flex;
   justify-content: center;
   font-weight: bold;
 }
-.field-name{
+.field-name {
   display: inline-grid;
   width: 250px;
-  span{
+  span {
     border-bottom: 1px dotted;
     margin: 15px 15px 0px 15px;
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-weight: bold;
     width: 230px;
   }
-  small{
+  small {
     margin: 0px 15px 15px 15px;
   }
 }
-.field-name-resize{
+.field-name-resize {
   display: inline-grid;
   width: 250px;
-  span{
+  span {
     border-bottom: 1px dotted;
     margin: 15px 15px 0px 15px;
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-weight: bold;
     font-size: 9px !important;
     width: 230px;
   }
-  small{
+  small {
     margin: 0px 15px 15px 15px;
   }
 }
-.field-name-ticket{
+.field-name-ticket {
   display: inline-grid;
   width: 250px;
-  span{
+  span {
     border-bottom: 1px dotted black;
     margin: 15px 15px 0px 15px;
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-weight: bolder;
     color: red;
   }
-  small{
+  small {
     margin: 0px 15px 15px 15px;
   }
 }
-.requestor-details{
+.requestor-details {
   border-bottom: 1px solid black;
 }
-.ticket-information{
+.ticket-information {
   border-bottom: 1px solid black;
 }
-.date{
+.date {
   box-sizing: content-box;
   border: 1px solid;
   display: inline-block;
@@ -163,174 +169,175 @@
   // span:first-of-type {
   //   margin-right: 1.3rem;
   // }
-  span{
+  span {
     font-size: 14px;
-    font-family: 'Roboto';
+    font-family: "Roboto";
     font-weight: bolder;
-  };
+  }
 }
-.date-container{
+.date-container {
   display: inline-flex;
 }
-.timeDay{
+.timeDay {
   display: inline-block;
 }
-.task-description-container{
-  width: 540px;
+.task-description-container {
+  width: 547px;
   border: 1px solid;
   border-top: 0px;
   border-right: 0px;
   border-bottom: 0px;
   margin-left: 8px;
-
 }
-.assignee{
+.assignee {
   display: flex;
-  justify-content: start;
-  .assignee-contain{
-   display: flex;
-   justify-content: start;
-   border-right: 0px;
-   border-top: 1px solid black;
-   border-bottom: 0px;
-   border-left: 0px solid black;
-   width: 540px;
+  justify-content: center;
+  .assignee-contain {
+    display: flex;
+    flex: 1 1 0%;
+    align-items: center;
+    justify-content: center;
+    // justify-content: start;
+    // border-right: 0px;
+    border-top: 1px solid black;
+    // border-bottom: 0px;
+    border-left: 0px solid black;
+    // width: 540px;
   }
 }
-.description{
-  p{
+.description {
+  p {
     font-size: 12px;
     font-weight: bold;
     font-family: sans-serif;
     padding: 10px;
   }
 }
-.ticket-details{
-  span{
+.ticket-details {
+  span {
     font-size: 11.3px;
-    
   }
-  small{
+  small {
     font: 11px;
   }
-  .subtitle{
+  .subtitle {
     background-color: #383838;
     width: 783px;
     color: white;
   }
-  .ticket-info-title{
+  .ticket-info-title {
     background-color: #383838;
     width: 783px;
     color: white;
   }
-  .task-title{
+  .task-title {
     background-color: #383838;
     color: white;
   }
 }
-.date-details{
-  span{
+.date-details {
+  span {
     font-size: 14px;
     font-weight: bolder;
   }
 }
-.date-details{
+.date-details {
   display: inline-block;
 }
-.date{
+.date {
   text-align: center;
- 
-  .day{
+
+  .day {
     // float: right;
     // clear: none;
     // padding-right: 16px;
-    small{
+    small {
       font-size: 13px;
     }
   }
 }
-.completed-title{
-    display: flex;
-    justify-content: center;
-    background-color: #383838;
-    margin-left: 5px;
-    color: white;
-    margin-bottom: 8px;
+.completed-title {
+  display: flex;
+  justify-content: center;
+  background-color: #383838;
+  margin-left: 5px;
+  color: white;
+  margin-bottom: 8px;
 }
-.req-date{
+.req-date {
   display: flex;
   justify-content: center;
   background-color: #383838;
   margin-left: 5px;
   color: white;
 }
-.footer-container{
+.footer-container {
   border-top: 1px solid black;
-  .control-number{
+  .control-number {
     float: left;
-   small{
-    display: block;
-    padding-left: 5px;
-   }
+    small {
+      display: block;
+      padding-left: 5px;
+    }
   }
-  .eff{
+  .eff {
     display: flex;
     justify-content: right;
     padding: 0px 5px 0px 0px;
     text-align: center;
   }
 }
-.date{
-  #empty-field{
+.date {
+  #empty-field {
     display: flex;
     justify-content: center;
     padding-top: 10px;
   }
 }
-.border-line{
+.border-line {
   border-top: 1px dashed black;
   width: 785px;
   margin-top: 15px;
 }
-.release-container{
+.release-container {
   width: 785px;
   margin-top: 10px;
   border: 1px solid black;
 }
-.release-header{
+.release-header {
   padding: 10px;
   width: 785px;
   border-bottom: 1px solid black;
-  .release-date{
+  .release-date {
     display: flex;
     justify-content: flex-end;
-    h4{
+    h4 {
       text-transform: uppercase;
     }
   }
-  .release-subtitle{
+  .release-subtitle {
     float: left;
     clear: none;
     display: flex;
   }
 }
-.release-details{
+.release-details {
   width: 785px;
   height: 120px;
   border-top: none;
-  .release-doc-ref{
+  .release-doc-ref {
     width: 240px;
     height: 96px;
     margin: 5px 0px 0px 5px;
     border: 1px solid black;
     padding: 15px 15px 15px 30px;
     overflow-wrap: break-word;
-    li{
+    li {
       list-style: circle;
       color: black;
     }
   }
-  .it-assets{
+  .it-assets {
     width: 240px;
     margin: 0px 0px 0px 5px;
     float: left;
@@ -339,29 +346,29 @@
     text-align: center;
   }
 }
-.released-to{
+.released-to {
   width: 500px;
   display: flex;
   float: right;
   margin-right: 20px;
-  img{
+  img {
     width: 30px;
     height: 30px;
     display: inline;
   }
-  .check-img{
-  background: url(http://10.0.0.9:4001/images/releaseby.png); 
-  background-repeat: no-repeat;
-  background-size: 70px 68px;
-  background-position-x: 75px;
+  .check-img {
+    background-image: url(./ticketreport-images/releaseby.png);
+    background-repeat: no-repeat;
+    background-size: 70px 68px;
+    background-position-x: 75px;
   }
 }
-.terms{
+.terms {
   width: 520px;
   display: flex;
   float: right;
   padding: 0px 0px 0px 5px;
-  p{
+  p {
     text-align: left;
     font-size: 7.5px;
     font-weight: bold;

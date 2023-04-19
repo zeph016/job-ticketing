@@ -1,31 +1,83 @@
+@use "./components/animations/animations.styles.css";
 @import url("open-iconic/font/css/open-iconic-bootstrap.min.css");
-// @import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap");
-@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap");
 
-@import url('./createticket/ticket.styles.css');
-@import url('./useraccounts/useraccounts.styles.css');
-@import url('./userdetails/userdetails.styles.css');
-@import url('./tables/tables.styles.css');
-@import url('./dialogs/dialogs.styles.css');
-@import url('./skeleton/skeleton.styles.css');
-@import url('./ticketreport/TicketReport.styles.css');
-@import url('./accomplishmentreport/accomplishmentreport.styles.css');
-@import url('./audittrail/audittrail.styles.css');
-@import url('./ticketactivity/ticketactivity.styles.css');
-@import url('./activityreport/activityreport.styles.css');
-@import url('./otheractivity/otheractivity.styles.css');
-@import url('./filterdialog/filterdialog.styles.css');
-@import url('./dashboard/dashboard.styles.css');
-@import url('./subtask/subtask.styles.css');
-@import url('./error/errorpage.styles.css');
-@import url('./ticketcomment/ticketcomment.css');
-@import url('./dialogs/ticketpeekdialog.styles.css');
-@import url('./dialogs/dashboarddialog.styles.css');
-@import url('./speechbubble/speechbubble.styles.css');
+@import url("../assets/fontawesome/css/all.min.css");
+
+@import url("./createticket/ticket.styles.css");
+@import url("./useraccounts/useraccounts.styles.css");
+@import url("./userdetails/userdetails.styles.css");
+@import url("./tables/tables.styles.css");
+@import url("./dialogs/dialogs.styles.css");
+@import url("./skeleton/skeleton.styles.css");
+@import url("./accomplishmentreport/accomplishmentreport.styles.css");
+@import url("./audittrail/audittrail.styles.css");
+@import url("./ticketactivity/ticketactivity.styles.css");
+@import url("./otheractivity/otheractivity.styles.css");
+@import url("./filterdialog/filterdialog.styles.css");
+@import url("./dashboard/dashboard.styles.css");
+@import url("./subtask/subtask.styles.css");
+@import url("./error/errorpage.styles.css");
+@import url("./ticketcomment/ticketcomment.css");
+@import url("./dialogs/ticketpeekdialog.styles.css");
+@import url("./dialogs/dashboarddialog.styles.css");
+@import url("./speechbubble/speechbubble.styles.css");
+@import url("./mainlayout/mainlayout.styles.css");
+@import url("./components/userpanel/userpanel.styles.css");
+@import url("./components/dimensions/dimensions.styles.css");
+@import url("./components/textmods/textmods.styles.css");
+@import url("./components/buttonmods/buttonmods.styles.css");
+@import url("./components/typeahead/typeahead.styles.css");
+@import url("./components/overflows/overflows.styles.css");
+@import url("./components/mudchips/mudchips.styles.css");
+@import url("./components/colors/colors.styles.css");
+@import url("./components/borders/borders.styles.css");
+@import url("./components/popovers/popovers.styles.css");
+@import url("./components/badges/badges.styles.css");
+@import url("./components/blazortypeaheadmods/blazortypeaheadmods.styles.css");
+@import url("./components/flexgridmods/flexgridmods.styles.css");
+@import url("./components/dialog/dialog.styles.css");
+@import url("./components/progress/progress.styles.css");
+@import url("./components/icons-sizes/icon-sizes.styles.css");
+@import url("./components/font-calls/font-calls.style.css");
+@import url("./components/messages/messages.styles.css");
+@import url("./components/notification/notification.styles.css");
+@import url("./components/mudtabmods/mudtabmods.style.css");
+@import url("./updatenotification/updatenotification.styles.css");
+@import url("./ticketlist/ticketlist.styles.css");
+@import url("./ticketreport/ticketreport.styles.css");
 
 @font-face {
   font-family: "Theramin";
-  src: url("../fonts/agency/theramin.woff2") format("woff2");
+  src: url("../fonts/theramin/theramin.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Agency";
+  src: url("../fonts/agency/agencyfbv2.woff2") format("woff2");
+}
+@font-face {
+  font-family: "R-Flex Regular";
+  src: url("../fonts/rflex/RFlexRegular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "R-Flex Bold";
+  src: url("../fonts/rflex/RFlex-Bold.woff2") format("woff2");
+}
+@font-face {
+  font-family: "SF-Pro";
+  src: url("../fonts/sfpro/SF-Pro.woff2") format("woff2");
+}
+@font-face {
+  font-family: "SF-Pro-Display Regular";
+  src: url("../fonts/sfpro/SF-Pro-Display-Regular.woff2") format("woff2");
+}
+@font-face {
+  font-family: "SF-Pro-Display Semibold-Italic";
+  src: url("../fonts/sfpro/SF-Pro-Display-SemiboldItalic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "SF-Pro-Display-Bold";
+  src: url("../fonts/sfpro/SF-Pro-Display-Bold.woff2") format("woff2");
 }
 
 html,
@@ -64,6 +116,20 @@ body {
   top: 0.5rem;
 }
 
+.blazor-error-boundary {
+  background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=)
+      no-repeat 1rem/1.8rem,
+    #b32121;
+  padding: 1rem 1rem 1rem 3.7rem;
+  color: white;
+}
+
+.blazor-error-boundary::after {
+  content: "An error has occurred.";
+}
+
+//start here
+
 .loader {
   animation: spin 500ms linear infinite;
   border: 10px solid silver;
@@ -75,7 +141,6 @@ body {
   top: 40%;
   width: 120px;
   -webkit-animation: spin 500ms linear infinite; /* Safari */
- 
 }
 
 .loader-2 {
@@ -84,299 +149,40 @@ body {
   width: 120px !important;
 }
 
-/* Safari */
-@-webkit-keyframes spin {
-  0% {
-    -webkit-transform: rotate(0deg);
-  }
-  100% {
-    -webkit-transform: rotate(360deg);
-  }
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.mainBodyContainer {
-  height: calc(100vh - 80px);
-  padding: 7px 0px 0px 0px !important;
-}
-
-.mainLayoutDrawer {
-  .mud-drawer-content {
-    background-color: #012340;
-    color: white;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-top: 12px;
-
-    .mud-nav-link-text {
-      font-size: 13px;
-    }
-
-    .mud-navmenu {
-      height: 100%;
-    }
-
-    .drawerFooterIcon {
-      text-align: center;
-    }
-  }
-
-  .mainnavmenu {
-    display: none;
-    .mud-icon-root {
-      color: white !important;
-    }
-  }
-
-  .mud-nav-group a {
-    padding-left: 16px !important;
-  }
-
-  .mud-nav-group {
-    .mud-collapse-container {
-      background-color: #012;
-    }
-  }
-
-  .TopContainer {
-    display: flex !important;
-    min-width: 200px;
-    padding: 0px 5px !important;
-    margin: 2px 0px !important;
-    color: white !important;
-
-    .mud-button-root {
-      padding-top: 2px !important;
-    }
-
-    .mud-icon-root {
-      color: white !important;
-    }
-
-    .mud-typography {
-      font-size: 13px;
-      padding-left: 4px !important;
-      padding-top: 4px;
-    }
-  }
-
-  .mud-nav-link-expand-icon.mud-transform {
-    fill: white !important;
-  }
-}
-
-.top-appbar {
-  .HeaderIcon {
-    color: rgba(0, 0, 0, 0.6);
-  }
-
-  .mud-toolbar {
-    color: gray;
-    height: 55px;
-    padding: 0px 16px 0px 16px;
-  }
-  
-  &__content-title {
-    font-family: "Theramin", sans-serif !important;
-    font-size: 1.5rem !important;
-    color: #7d7d7d;
-  }
-
-  &__popover {
-    width: 350px !important;
-    max-height: 80vh;
-    margin-top: 38px;
-  }
-
-  &__popovercontent {
-    padding: 0px !important;
-  }
-  &__tableheader {
-    align-items: center;
-    display: flex !important;
-    height: 50px;
-  }
-
-  &__tabledata {
-    border: 0 !important;
-  }
-
-  &__avatar {
-    margin-right: 10px;
-  }
-
-  &__notifcontainer {
-    align-items: center;
-    cursor: pointer;
-    display: flex !important;
-    height: 100px;
-    padding: 0px !important;
-  }
-
-  &__notiflist {
-    padding: 0px !important;
-  }
-
-  &__lblUserAcc, &__lblActivity,
-  &__lblTimeDiff {
-    max-width: 250px !important;
-    overflow: hidden;
-    // text-overflow: ellipsis;
-    word-break: break-all;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    display: -webkit-box;
-  }
-
-  &__lblUserAcc, &__lblActivity {
-    font-size: 14px !important;
-  }
-
-  &__lblUserAcc, &__lblTimeDiff {
-    -webkit-line-clamp: 1;
-    font-weight: 400 !important;
-  }
-
-  &__lblActivity {
-    -webkit-line-clamp: 2;
-    // max-height: 40px !important;
-    font-weight: 500 !important;
-  }
-
-  &__lblTimeDiff {
-    font-size: 10px !important;
-  }
-
-  .mud-grid{
-    margin-bottom: 5px !important;
-    margin-top: 3px !important;
-  }
-
-  .empticket{
-    margin-top: 100px !important;
-    text-align: center !important;
-  }
-
-}
-
-
-
-#SystemHeader {
-  height: 56px !important;
-  overflow: hidden;
-}
-
-.footerAppbar {
-  background-color: #f7f7f8 !important;
-  height: 32px;
-
-  .mud-typography {
-    color: black;
-    font-size: 12px;
-  }
-
-  .mud-button-root {
-    margin: 0px 0px 0px 5px;
-    padding: 0px;
-  }
-
-  .mud-toolbar {
-    padding: 0px 16px 0px 16px;
-  }
-}
-
-.mud-toolbar {
-  background-color: #f7f7f8;
-  color: black;
-  height: 55px !important;
-}
-
-.user-panel {
-  height: 55px !important;
-  .mud-expand-panel-header {
-    max-width: 320px;
-    min-width: 320px;
-    padding: 0px 24px !important;
-    margin: 3px 0px !important;
-  }
-
-  .mud-nav-item {
-    margin: 10px 0px;
-  }
-
-  &__txtname {
-    font-size: 15px !important;
-  }
-  &__txtdesignation {
-    font-size: 12px !important;
-  }
-  .mud-avatar {
-    margin-right: 10px;
-  }
-  &__btncontainer {
-    display: flex !important;
-    padding: 0px 16px !important;
-    .mud-svg-icon {
-      color: black !important;
-    }
-  }
-  &__btncontainer-btn {
-    font-size: 14px !important;
-    text-transform: none !important;
-  }
-  &__logout-btn {
-    width: 100%;
-  }
-}
-
-.lineHorizContainer {
-  height: 20px;
-  padding: 10px 0px !important;
-  margin-bottom: 5px;
-
-  hr {
-    background-color: rgba(0,0,0,.12);
-    border: none;
-    color: rgba(0,0,0,.12);
-    height: 1px;
-    margin: 0px;
-    opacity: 1;
-  }
-}
-
-.navToolBar {
-  background-color: white;
-  height: 15px !important;
-  .mud-button {
-    height: 15px;
-  }
-}
-
-.mud-nav-link.active:not(.mud-nav-link-disabled) {
-  color: orange !important;
-  .mud-icon-root {
-    color: orange !important;
-  }
-}
-
-.mud-badge-wrapper {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-.mud-badge-wrapper {
-  .mud-badge-badge {
-    font-size: 11px !important;
-  }
-}
-
 :root {
   --mud-palette-primary: #012340 !important;
+}
+
+.fgloader-1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  &__img {
+    position: relative;
+    width: 40%;
+  }
+}
+
+.page-cont {
+  @extend .fade-in;
+  &__background {
+    background-color: #607d8b21 !important;
+    background-image: url(../images/fgbgimg.png);
+    // background-image: url(../images/fgbgimg.png),
+    //   linear-gradient(#4d43522d, #ffffff);
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    background-size: contain;
+    height: 100%; 
+  }
+}
+
+.mud-table-pagination {
+  .mud-toolbar { border-radius: 0px !important; }
+}
+
+.font-reminders-sm {
+  font-family: "SF-Pro-Display Regular";
+  font-size: 12px;
 }

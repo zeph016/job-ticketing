@@ -1,0 +1,29 @@
+@inherits EmployeeCardComponentBase
+
+@if (!dataFetched)
+{
+    <div class='d-flex align-center gap-2'>
+        <MudSkeleton SkeletonType="SkeletonType.Circle" Width="28px" Height="28px" />
+        <div class='d-flex flex-column overflow-hidden gap-1'>
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100px" Height="10px" />
+            <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="50px" Height="10px" />
+        </div>
+    </div>
+}
+else
+{
+    <div class='d-flex align-center gap-2'>
+        @if (employeeDetails.Picture.Count() == 0) 
+        {
+            <MudAvatar Class='mb-1 mt-1' Image='images/fglogo/fgci1-gs.png' Size='Size.Small' />
+        }
+        else 
+        {
+            <MudAvatar Class='mb-1 mt-1' Image='@($"data:image/png;base64, {Convert.ToBase64String(employeeDetails.Picture)}")' Size='Size.Small' />
+        }
+        <div class='d-flex flex-column overflow-hidden'>
+            <MudText Class='font12 font-bold txt-oflow-elipsis'>@employeeDetails.EmployeeName</MudText>
+            <MudText Class='font10 txt-oflow-elipsis'>@employeeDetails.Designation</MudText>
+        </div>
+    </div>
+}

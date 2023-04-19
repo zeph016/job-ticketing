@@ -1,0 +1,65 @@
+@use '../textmods/textmods.styles.css';
+
+.tlist-popover-custom1 {
+  transform: scale(0.88);
+  top: 70px !important;
+}
+
+.tlist-popover-custom2 {
+  transform: scale(0.9);
+  top: 140px !important;
+  left: calc(100vw - 470px) !important;
+}
+
+.popover-custom1 {
+  transform: scale(0.88);
+  left: calc(100vw - 520px) !important;
+  top: 90px !important;
+}
+
+.popover-custom2 {
+  transform: scale(0.88);
+  top: 50.5px !important;
+}
+// .po-offset-top-95px {
+//   top: 95px !important;
+// }
+
+
+.datepicker-popover-adjright20 {
+  @extend .font-date14px;
+  .mud-overlay-content {
+    right: 20%;
+  }
+}
+
+.popover-custom-zindex-102 {
+  z-index: calc(var(--mud-zindex-popover) + 102) !important;
+  .mud-popover { z-index: calc(var(--mud-zindex-popover) + 102) !important; }
+  .mud-popover-open { z-index: calc(var(--mud-zindex-popover) + 102) !important; }
+}
+
+.native-popover {
+  position: absolute;
+  width: 200px;
+	height: 100px;
+	background-color: #ffffff;
+	border-radius: 4px;
+  top: 50px;
+  left: 50%;
+  box-shadow: 0 3px 1px -2px rgba(0,0,0,.2),0 2px 2px 0 rgba(0,0,0,.14),0 1px 5px 0 rgba(0,0,0,.12);
+  z-index: 1;
+}
+
+.native-popover-arrow {
+	position: absolute;
+	top: -18px;
+	left: 150px;
+	border-left: 20px solid transparent;
+	border-right: 20px solid transparent;
+	border-bottom: 20px solid rgb(233, 212, 222);
+  width: 0;
+  height: 0;
+  
+  // -webkit-filter: drop-shadow(0 -2px 2px #AAA);
+}

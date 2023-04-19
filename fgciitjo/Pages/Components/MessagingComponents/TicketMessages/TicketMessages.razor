@@ -1,0 +1,124 @@
+@inherits TicketMessagesBase
+
+
+<MudPaper class="msg-container">
+    <div class='msg-container__grid'>
+        <div class="msg-header"></div>
+        <div class="msg-content">
+            <div id='msg-content-container-id' class='msg-content__container'>
+                @foreach (var item in TicketMessages)
+                {
+                    @if (item.UserId == SenderId)
+                    {
+                        <div class="sender-container">
+                            <div class="sender-message">
+                                <div class='msg-bubble-from-me'>
+                                    <MudTooltip Text='@Convert.ToDateTime(item.DateTimeLog).ToString("MM/dd/yyyy h:mm tt")'
+                                        Arrow Placement='Placement.Left' >
+                                        <p class='msg-container__message-text'>@item.Comment</p>
+                                    </MudTooltip>
+                                </div>
+                            </div>
+                            <div class="sender-avatar">
+                                <MudTooltip Text='@item.EmployeeName' Delay='1000' Arrow Placement='Placement.Left'>
+                                    @if (item.Picture.Count() > 0)
+                                    {
+                                        <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(item.Picture)}")' Size='Size.Medium' />
+                                    }
+                                </MudTooltip>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="receiver-container">
+                            <div class="receiver-avatar">
+                                <MudTooltip Text='@item.EmployeeName' Delay='1000' Arrow Placement='Placement.Left'>
+                                    @if (item.Picture.Count() > 0)
+                                    {
+                                        <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(item.Picture)}")' Size='Size.Medium' />
+                                    }
+                                </MudTooltip>
+                            </div>
+                            <div class="receiver-message">
+                                <div class='msg-bubble-from-them'>
+                                    <MudTooltip Text='@Convert.ToDateTime(item.DateTimeLog).ToString("MM/dd/yyyy h:mm tt")'
+                                        Arrow Placement='Placement.Left'>
+                                        <p class='msg-container__message-text'>@item.Comment</p>
+                                    </MudTooltip>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <div class="msg-footer">
+            <div class="chat-message-container">
+                <div class="chat-message">
+                    <MudTextField @bind-Value="@MessageToSend" Variant='Variant.Outlined'
+                        Placeholder='Message' Margin='Margin.Dense' />
+                </div>
+                <div class="chat-send">
+                    <MudTooltip Text='@(!IsSendingMessage ? "Send":"Sending")' Arrow Placement='Placement.Top'>
+                        @if (!IsSendingMessage)
+                        {
+                            <MudIconButton OnClick="SendComment" Icon='@Icons.Material.Filled.Send' Size='Size.Medium' 
+                                Color='Color.Info' />   
+                        }
+                        else
+                        {
+                            <MudProgressCircular Indeterminate Size='Size.Small' Color="Color.Dark" />
+                        }
+                    </MudTooltip>
+                </div>
+            </div>
+        </div>
+    </div>
+</MudPaper>
+
+
+@* <div id='comment-table' class='comment-cont__conversation-cont speech-bubble ticketmessage-container' hidden>
+    @foreach (var item in ApplicationState.TicketComments)
+    {
+        @if (item.UserId == SenderId)
+        {
+            <div class='d-flex align-end speech-bubble__bubble-cont speech-bubble__from-them'>
+                <MudTooltip Text='@item.EmployeeName' Delay='1000'>
+                    <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(item.Picture)}")' Size='Size.Medium' />
+                </MudTooltip>
+                <p class="from-them">
+                    <MudTooltip Text='@Convert.ToDateTime(item.DateTimeLog).ToString("MM/dd/yyyy h:mmtt")'
+                    Delay='1000'>
+                    @item.Comment
+                    </MudTooltip>
+                </p>
+            </div>
+        }
+        else
+        {
+            <div class='d-flex align-end speech-bubble__bubble-cont speech-bubble__from-me'>
+                <p class="from-me">
+                    <MudTooltip Text='@Convert.ToDateTime(item.DateTimeLog).ToString("MM/dd/yyyy h:mmtt")'
+                    Delay='1000'>
+                        @item.Comment
+                    </MudTooltip>
+                </p>
+                <MudTooltip Text='@item.EmployeeName' Delay='1000'>
+                    <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(item.Picture)}")' Size='Size.Medium' />
+                </MudTooltip>
+            </div>
+        }
+    }
+    <div class='comment-cont__chat-submit'>
+        <div class='commentcont__chat-submit-message'>
+            <MudTextField @bind-Value="@message" Variant='Variant.Outlined'
+                Placeholder='Message' Margin='Margin.Dense' />
+        </div>
+        <div class='commentcont__chat-submit-btn'>
+            <MudButton Class='btn-ios-d font12' OnClick="SendComment" Variant='Variant.Filled'
+                EndIcon='@Icons.Material.Filled.Send' Color='Color.Primary' Size='Size.Small' DisableElevation>SEND
+            </MudButton>
+        </div>
+    </div>
+</div> *@

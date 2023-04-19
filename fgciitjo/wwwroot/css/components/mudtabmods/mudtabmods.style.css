@@ -1,0 +1,10 @@
+.mudtab-sm-type .mud-tab {
+  font-family: "SF-Pro-Display Regular" !important;
+  font-size: 12px !important;
+  text-transform: capitalize !important;
+  min-height: unset !important;
+  min-width: 80px !important;
+}
+.mudtab-sm-type .mud-tabs-toolbar .mud-tabs-toolbar-inner {
+  min-height: unset !important;
+}/*# sourceMappingURL=mudtabmods.style.css.map */

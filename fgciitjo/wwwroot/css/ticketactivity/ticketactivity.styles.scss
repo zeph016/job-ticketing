@@ -1,140 +1,137 @@
-.activitycontainer {
-    background-color: #e0e0e0;
-    display: grid !important;
-    gap: 2px;
-    grid-template-columns: 1fr 0.3fr;
-    grid-template-rows: 50px 1fr;
+@use "../components//flexgridmods/flexgridmods.styles.css";
+
+.activity-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 300px;
+  grid-template-rows: 35px 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "act-content act-content act-content act-sidebar"
+    "act-content act-content act-content act-sidebar"
+    "act-content act-content act-content act-sidebar"
+    "act-content act-content act-content act-sidebar";
+    height: calc(100vh - 125px);
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 2560px;
+
+  .act-content {
+    grid-area: act-content;
+  }
+
+  .act-sidebar {
+    grid-area: act-sidebar;
+  }
+  .activity-table {
+    margin: 8px;
+    .mud-toolbar {
+      background-color: white;
+      border-radius: 5px;
+      height: 40px !important;
+      .mud-button-label {
+        font-size: 12px;
+      }
+      .mud-input-root-text {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+.ticket-activity {
+  padding: 8px;
+  &__grid {
+    display: grid; 
+    grid-template-columns: 1fr 1fr 1fr minmax(150px,300px); 
+    grid-template-rows: auto 1fr 1fr 1fr; 
+    gap: 0px; 
     grid-template-areas: 
-    'topcontainer topcontainer'
-    'centercontainer rightcontainer';
-    height: 100%;
-    padding-left: 0px !important;
-    padding-right: 0px !important;
+      "activity-header activity-header activity-header activity-header"
+      "activity-content activity-content activity-content activity-info"
+      "activity-content activity-content activity-content activity-info"
+      "activity-content activity-content activity-content activity-info";
+    .activity-header { grid-area: activity-header; }
+    .activity-content { grid-area: activity-content; }
+    .activity-info { grid-area: activity-info; }
 
-    &__subcontainer {
-        padding: 0px !important;
+    .activity-header {
+      @extend .dflex-row;
+      border-bottom: solid thin var(--mud-palette-table-lines);
+      padding: 4px;
     }
-    &__subcontainer:nth-child(1) {
-        background-color: white;
-        grid-area: topcontainer;
+    .activity-info {
+      border-left: solid thin var(--mud-palette-table-lines);
+      padding: 8px 16px;
     }
-    &__subcontainer:nth-child(2) {
-        grid-area: centercontainer;
+  }
+  &__grid-other-act {
+    display: grid; 
+    grid-template-columns: 1fr 1fr 1fr minmax(150px,300px); 
+    grid-template-rows: auto 1fr 1fr 1fr; 
+    gap: 0px; 
+    grid-template-areas: 
+      "activity-header activity-header activity-header activity-header"
+      "activity-content activity-content activity-content activity-content"
+      "activity-content activity-content activity-content activity-content"
+      "activity-content activity-content activity-content activity-content";
+    .activity-header { grid-area: activity-header; }
+    .activity-content { grid-area: activity-content; }
+    .activity-header {
+      @extend .dflex-row;
+      border-bottom: solid thin var(--mud-palette-table-lines);
+      padding: 4px;
     }
-    &__subcontainer:nth-child(3) {
-        background-color: white;
-        grid-area: rightcontainer;
-    }
+  }
+}
 
-    .activitytable {
-        height: calc(100vh - 165px);
-        .mud-toolbar {
-            background-color: white;
-            border-radius: 5px;
-            height: 40px !important;
-            .mud-button-label {
-                font-size: 12px;
-            }
-            .mud-input-root-text {
-                font-size: 12px;
-            }
-        }
-        .mud-table-container {
-            height: calc(100vh - 245px);
-            width: 100% !important;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-        &__txtsearch {
-            margin-top: 0px !important;
-            margin-left: 5px !important;
-            margin-bottom: 15px !important;
-            .mud-input-control-input-container {
-                width: calc(20vw - 30px);
-              }
-        }
-        .mud-table-cell {
-            font-size: 13px;
-        }
-        .mud-table-pagination-information {
-            font-size: 12px;
-        }
-        .mud-table-pagination-caption {
-            font-size: 12px;
-        }
+.ticket-info-card {
+  &__grid {
+    display: grid; 
+    grid-template-columns: 1fr 1fr 1fr 1fr; 
+    grid-template-rows: auto; 
+    gap: 4px; 
+    grid-template-areas: 
+      "tinfo-header tinfo-header tinfo-header tinfo-header"
+      "tinfo-req tinfo-req tinfo-req tinfo-req"
+      "tinfo-assigned tinfo-assigned tinfo-assigned tinfo-assigned"
+      "tinfo-ticketnum tinfo-ticketnum tinfo-ticketdate tinfo-ticketdate"
+      "tinfo-task-title tinfo-task-title tinfo-task-title tinfo-task-title"
+      "tinfo-task-desc tinfo-task-desc tinfo-task-desc tinfo-task-desc"
+      "tinfo-priority tinfo-priority tinfo-status tinfo-status"; 
+    .tinfo-header { grid-area: tinfo-header; }
+    .tinfo-req { grid-area: tinfo-req; }
+    .tinfo-assigned { grid-area: tinfo-assigned; }
+    .tinfo-ticketnum { grid-area: tinfo-ticketnum; }
+    .tinfo-ticketdate { grid-area: tinfo-ticketdate; }
+    .tinfo-task-title { grid-area: tinfo-task-title; }
+    .tinfo-task-desc { grid-area: tinfo-task-desc; }
+    .tinfo-priority { grid-area: tinfo-priority; }
+    .tinfo-status { grid-area: tinfo-status; }
 
-        &__tableheader {
-            text-align: center;
-        }
-        &__tableheader:nth-child(1) {
-            width: 15vw
-        }
-        &__tableheader:nth-child(2) {
-            width: 45vw;
-        }
-        &__tableheader:nth-child(3) {
-            width: 40vw
-        }
-        &__tableheader:nth-child(4) {
-            width: 70px;
-        }
-        
-        &__rowcontainer {
-            padding-left: 8px !important;
-            padding-right: 8px !important;
-            .mud-typography {
-                font-size: 12px;
-            }
-        }
-        &__rowcontainer:nth-child(1) {
-            align-content: center;
-            display: grid;
-            text-align: center;
-        }
+    .tinfo-header {
+      font-family: "SF-Pro-Display Regular";
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .tinfo-req, .tinfo-assigned { border-bottom: solid thin var(--mud-palette-table-lines); }
+    .tinfo-task-desc { padding-top: 8px; }
+  }
 
-
-        &__itemchip {
-            color: white;
-            font-weight: bold;
-            border-radius: 2px !important;
-            width: 100%;
-        }
-    }
-    .ticketinfo {
-        &__container {
-            padding: 16px;
-        }
-        &__title {
-            text-align: center;
-        }
-        .mud-input-control {
-            .mud-input {
-                font-size: 12px;
-                font-weight: bold;
-            }
-        }
-        &__txtchip {
-            align-items: center;
-            display: flex;
-            font-size: 13px;
-            .mud-chip-content {
-                color: white;
-            }
-        }
-    }
-    &__toolbar {
-        align-items: center !important;
-        display: flex !important;
-        padding-left: 5px !important;
-        padding-right: 5px !important;
-
-    }
-    &__itemchipset {
-        align-items: center;
-        display: flex;
-        .mud-chip {
-            border-radius: 2px !important;
-            color: white;
-        }
-    }
+  &__txt {
+    font-family: "SF-Pro-Display Regular";
+    font-size: 12px
+  }
+  &__txt-description {
+    @extend .line-clamp-8;
+    font-family: "SF-Pro-Display Regular";
+    font-size: 12px;
+    max-height: calc(100vh - 600px);
+    min-height: 100px;
+  }
+  &__txt-issue {
+    @extend .line-clamp-3;
+    font-family: "SF-Pro-Display Regular";
+    font-size: 14px;
+  }
 }

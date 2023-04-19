@@ -1,26 +1,21 @@
 .userDetailsContainer {
   padding: 0px !important;
 }
-
 .userDetailsContainer .mud-toolbar {
   padding: 0px !important;
   background-color: white;
 }
-
 .userDetailsContainer .mud-paper {
   width: 40vw;
   margin-left: auto !important;
   margin-right: auto !important;
 }
-
 .userDetailsContainer .subToolBar .mud-typography {
   color: rgba(0, 0, 0, 0.6);
-  font-family: 'Theramin', sans-serif;
+  font-family: "Theramin", sans-serif;
   font-size: 1.5rem;
   margin-left: 20px;
 }
-
 .userDetailsContainer .mud-button-root {
   width: 75px;
-}
-/*# sourceMappingURL=userdetails.styles.css.map */
+}/*# sourceMappingURL=userdetails.styles.css.map */

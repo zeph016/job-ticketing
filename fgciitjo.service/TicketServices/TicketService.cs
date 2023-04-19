@@ -69,7 +69,7 @@ namespace fgciitjo.service.TicketServices
             else
                throw new ApplicationException($"{"Please add Ticket Activity to update status of this ticket."}");
 
-                return ticket;
+                return new TicketModel();
           }
           catch (System.Exception ex)
           {

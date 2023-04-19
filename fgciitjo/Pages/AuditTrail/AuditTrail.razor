@@ -1,4 +1,4 @@
-@page "/audittrail/{ticketId:long}"
+@page "/audit/trail/{ticketId:long}"
 
 @inject ITicketListService ticketListService
 @inject ITicketService ticketService
@@ -43,7 +43,7 @@ else
         <MudTimeline TimelinePosition="TimelinePosition.Left">
             @foreach (var item in ticketAuditTrails)
             {
-                @if(item.Activity.Contains("Created ticket") || item.Activity.Contains("Create ticket"))
+                @if(item.Activity.Contains("Create ticket", StringComparison.InvariantCultureIgnoreCase))
                 {
                     <MudTimelineItem Color='Color.Success' Variant='Variant.Filled'>
                         <MudAlert Severity='Severity.Success' Icon='@Icons.Material.Filled.NoteAdd'>
@@ -53,7 +53,7 @@ else
                         </MudAlert>
                     </MudTimelineItem>
                 }
-                @if(item.Activity.Contains("Add Sub Task"))
+                @if(item.Activity.Contains("Add Sub Task", StringComparison.InvariantCultureIgnoreCase))
                 {
                     <MudTimelineItem class='auditAddSubClass' Variant='Variant.Filled'>
                         <MudAlert Severity='Severity.Success' Icon='@Icons.Material.Filled.NoteAdd'>
@@ -63,7 +63,7 @@ else
                         </MudAlert>
                     </MudTimelineItem>
                 }
-                @if (item.Activity.Contains("Assigned") )
+                @if (item.Activity.Contains("Assigned", StringComparison.InvariantCultureIgnoreCase) )
                 {
                     <MudTimelineItem Color='Color.Info' Variant='Variant.Filled'>
                         <MudAlert Severity='Severity.Info' Icon='@Icons.Material.Filled.AssignmentInd'>
@@ -73,7 +73,7 @@ else
                         </MudAlert>
                     </MudTimelineItem>
                 }
-                @if (item.Activity.Contains("Update ticket") || item.Activity.Contains("Update Ticket Activity"))
+                @if (item.Activity.Contains("Update ticket", StringComparison.InvariantCultureIgnoreCase))
                 {
                     <MudTimelineItem class='auditUpdateColor' Variant='Variant.Filled'>
                         <MudAlert Severity='Severity.Info' Icon='@Icons.Material.Filled.Update'>
@@ -93,7 +93,7 @@ else
                         </MudAlert>
                     </MudTimelineItem>
                 }
-                @if (item.Activity.Contains("Approval"))
+                @if (item.Activity.Contains("Approval", StringComparison.InvariantCultureIgnoreCase))
                 {
                     <MudTimelineItem class='auditApprovedColor' Color='Color.Info' Variant='Variant.Filled'>
                         <MudAlert Severity='Severity.Success' Icon='@Icons.Material.Filled.Recommend'>
@@ -103,7 +103,7 @@ else
                         </MudAlert>
                     </MudTimelineItem>
                 }
-                @if (item.Activity.Contains("Cancelled"))
+                @if (item.Activity.Contains("Cancelled", StringComparison.InvariantCultureIgnoreCase))
                 {
                     <MudTimelineItem Color='Color.Error' Variant='Variant.Filled'>
                         <MudAlert Severity='Severity.Error' Icon='@Icons.Material.Filled.Cancel'>
@@ -123,7 +123,7 @@ else
                         </MudAlert>
                     </MudTimelineItem>
                 }
-                @if (item.Activity.Contains("Changed Status") && item.Activity.Contains("To Do"))
+                @if (item.Activity.Contains("Changed Status", StringComparison.InvariantCultureIgnoreCase) && item.Activity.Contains("To Do", StringComparison.InvariantCultureIgnoreCase))
                 {
                     <MudTimelineItem Color='Color.Info' Variant='Variant.Filled'>
                         <MudAlert Severity='Severity.Info' Icon='@Icons.Material.Filled.PublishedWithChanges'>
@@ -133,7 +133,7 @@ else
                         </MudAlert>
                     </MudTimelineItem>
                 }
-                @if (item.Activity.Contains("In Progress"))
+                @if (item.Activity.Contains("In Progress", StringComparison.InvariantCultureIgnoreCase))
                 {
                     <MudTimelineItem class='auditInProgressColor' Color='Color.Info' Variant='Variant.Filled'>
                         <MudAlert Severity='Severity.Success' Icon='@Icons.Material.Filled.Moving'>
@@ -143,7 +143,7 @@ else
                         </MudAlert>
                     </MudTimelineItem>
                 }
-                @if (item.Activity.Contains("Add Ticket Activity"))
+                @if (item.Activity.Contains("Add Ticket Activity", StringComparison.InvariantCultureIgnoreCase))
                 {
                     <MudTimelineItem class='auditApprovedColor' Color='Color.Info' Variant='Variant.Filled'>
                         <MudAlert Severity='Severity.Success' Icon='@Icons.Material.Filled.AddTask'>
@@ -153,7 +153,7 @@ else
                         </MudAlert>
                     </MudTimelineItem>
                 }
-                @if (item.Activity.Contains("Remove Ticket Activity"))
+                @if (item.Activity.Contains("Remove Ticket Activity", StringComparison.InvariantCultureIgnoreCase))
                 {
                     <MudTimelineItem Color='Color.Warning' Variant='Variant.Filled'>
                         <MudAlert Severity='Severity.Warning' Icon='@Icons.Material.Filled.RemoveCircle'>
@@ -305,6 +305,6 @@ else
 
     void Back()
     {
-        NavigationManager.NavigateTo($"/ticketlist");
+        NavigationManager.NavigateTo($"/ticket/list");
     }
 }

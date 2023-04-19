@@ -1,0 +1,33 @@
+.height100 {
+  height: 100%;
+}
+.width100 {
+  width: 100%;
+}
+.width45 {
+  width: 45%;
+}
+
+.menu-list-pad0 {
+  .mud-list {
+    padding: 0px !important;
+  }
+}
+
+.width220px {
+  width: 220px;
+}
+
+.max-width500 { max-width: 500px; }
+.max-width-zero { max-width: 0px; }
+
+.min-width500 { max-width: 500px; }
+.min-width300 { max-width: 300px; }
+.min-width-zero { max-width: 0px; }
+.min-width85 { min-width: 85px !important; }
+.min-width105 { min-width: 105px !important; }
+
+.mchip-min-105 {
+  .mud-chip { @extend .min-width105; }
+}
+.zindex-1 { z-index: 1; }

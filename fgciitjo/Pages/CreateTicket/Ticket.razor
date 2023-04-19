@@ -2,1285 +2,413 @@
 @page "/ticket/{ticketId:long}"
 @page "/subtask/create/{parentId:long}"
 
-@inject IUserAccountService UserAccountService
-@inject ITicketCategoryService ticketCategoryService
-@inject ITicketBranchService ticketBranchService
-@inject ITicketStatusService ticketStatusService
-@inject IGlobalService globalService
-@inject ITicketService ticketService
-@inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject NavigationManager NavigationManager
-@inject IDialogService DialogService
-@inject ISnackbar Snackbar
-@inject IJSRuntime JSRuntime
-@inject IConfiguration config
+@inherits TicketBase
+@attribute [Authorize]
 
-<MudContainer class='ticketcontainer' Fixed='false' MaxWidth='MaxWidth.ExtraExtraLarge' @onmouseenter='TriggerDomRefresh' >
-@if (!dataFetched)
-{   
-    <MudContainer class='ticketcontainer__subcontainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
-        <MudContainer class='skeletoncontainer'>
-            <MudContainer class='skeletoncontainer__flex'>
-                <MudSkeleton class='skeletoncontainer__headerbox' SkeletonType='SkeletonType.Text' Animation='Animation.Wave' Width='170px' />
+<div class='page-cont'>
+    <MudPaper Class='page-cont__background' Square Elevation='0'>
+        @if (!dataFetched)
+        {
+            <SkeletonTicket />
+        }
+        else
+        {
+            <MudPaper Class='mainlayout-subheader' Square Elevation='0'>
+                <MudChip id='ticketid-chip' Class='font-bold' Label Size='Size.Small'
+                    Color='@(_action == Enums.CrudeMode.Add ? Color.Error : 
+                            (_action == Enums.CrudeMode.Edit ? Color.Info : 
+                            (_action == Enums.CrudeMode.View ? Color.Success : Color.Primary)))'>
+                    Ticket Number - @(!string.IsNullOrWhiteSpace(currTicket.TicketNumber) ? currTicket.TicketNumber : "Auto")
+                </MudChip>
+                <MudTooltip Text='@(currTicket.TicketNumber.Contains("auto", StringComparison.InvariantCultureIgnoreCase) ? "Nothing to copy" : "copy")' Arrow>
+                <MudIconButton OnClick='(() => CopyTextToClipboard(currTicket.TicketNumber))' Icon="@Icons.Material.Filled.ContentCopy"  Size='Size.Small'
+                    Disabled='@(currTicket.TicketNumber.Contains("auto", StringComparison.InvariantCultureIgnoreCase) ? true : false)'/>
+                </MudTooltip>
                 <MudSpacer />
-                <MudSkeleton class='skeletoncontainer__headerbox' SkeletonType='SkeletonType.Text' Animation='Animation.Wave' Width='100px' />
-            </MudContainer>
-        </MudContainer>
-    </MudContainer>
-    <MudContainer class='ticketcontainer__subcontainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
-        <MudPaper Class='ma-4 pa-4' Elevation='1'>
-        <MudContainer class='skeletoncontainer'>
-            <MudContainer class='skeletoncontainer__grid'>
-                <MudSkeleton class='skeletoncontainer__headerbox' SkeletonType='SkeletonType.Text' Animation='Animation.Wave' Width='80%' />
-                <MudSkeleton class='skeletoncontainer__textbox' SkeletonType='SkeletonType.Text' Animation='Animation.Wave' Width='50%' />
-                <MudSkeleton class='skeletoncontainer__textbox' SkeletonType='SkeletonType.Text' Animation='Animation.Wave' Width='25%' />
-                <MudSkeleton class='skeletoncontainer__contentbox' SkeletonType='SkeletonType.Rectangle' Animation='Animation.Wave' Width='100%' />
-                <MudSkeleton class='skeletoncontainer__textbox' SkeletonType='SkeletonType.Text' Animation='Animation.Wave' Width='60%' />
-            </MudContainer>
-            <MudContainer class='skeletoncontainer__flex'>
-                <MudSpacer />
-                <MudSkeleton class='skeletoncontainer__skelbtn' SkeletonType='SkeletonType.Text' Animation='Animation.Wave'/>
-                <MudSkeleton class='skeletoncontainer__skelbtn' SkeletonType='SkeletonType.Text' Animation='Animation.Wave'/>
-            </MudContainer>
-        </MudContainer>
-        </MudPaper>
-    </MudContainer>
-    <MudContainer class='ticketcontainer__subcontainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
-        <MudContainer class='skeletoncontainer'> 
-            <MudContainer class='skeletoncontainer__grid'>
-                <MudSkeleton class='skeletoncontainer__headerbox' SkeletonType='SkeletonType.Text' Animation='Animation.Wave' Width='80%' />
-                <MudSkeleton class='skeletoncontainer__contentbox' SkeletonType='SkeletonType.Rectangle' Animation='Animation.Wave' Width='100%' />
-                <MudSkeleton class='skeletoncontainer__headerbox' SkeletonType='SkeletonType.Text' Animation='Animation.Wave' Width='80%' />
-                <MudSkeleton class='skeletoncontainer__contentbox' SkeletonType='SkeletonType.Rectangle' Animation='Animation.Wave' Width='100%' />
-            </MudContainer>
-        </MudContainer>
-    </MudContainer>  
-    @* <MudOverlay Visible='isVisible' DarkBackground='true' Absolute='true'>
-        <MudProgressCircular Color='Color.Primary' Size='Size.Large' Indeterminate="true" />
-    </MudOverlay> *@
-}
-else
-{
-     @* //// *@
-    <MudContainer class='ticketcontainer__subcontainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
-        <MudToolBar class='toolbartop'> 
-            <MudGrid class='toolbartop__grid' Spacing='0'>
-                <MudItem>
-                    @if (_action == Enums.CrudeMode.Add)
-                    {
-                        <MudChip Label="true" Color="Color.Success" Size='Size.Small'>@headerTitle Ticket #</MudChip>
-                    }
-                    @if (currTicket.TicketStatusId == 1 && _action == Enums.CrudeMode.Edit)
-                    {
-                        <MudChip Label="true" Color="Color.Warning" Size='Size.Small'>@headerTitle Ticket #</MudChip>
-                    }
-                    @if (currTicket.TicketStatusId > 1 && _action == Enums.CrudeMode.Edit)
-                    {
-                        <MudChip Label="true" Color="Color.Info" Size='Size.Small'>@headerTitle Ticket #</MudChip>
-                    }
-                </MudItem>
-                <MudItem>
-                    <MudChip Label="true" Color="Color.Error" Size='Size.Small'>@currTicket.TicketNumber</MudChip>
-                </MudItem>
-            </MudGrid>
-            <MudSpacer />
-            <MudButton OnClick='ToTicketList' Variant='Variant.Filled' DisableElevation='true' EndIcon='@Icons.Material.Filled.ArrowForward' Size='Size.Small'>
-                TICKET LIST
-            </MudButton>
-        </MudToolBar>
-    </MudContainer>
-    @* //// *@
-
-     @* //// *@
-    <MudContainer class='ticketcontainer__subcontainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
-        <MudPaper Class='ma-4 pa-4' Elevation='1'>
-        <MudToolBar class='toolbarcenter'>
-            <MudIcon class='toolbarcenter__titleicon' Size='Size.Large' Icon='@Icons.Material.Filled.BugReport'/>
-            <MudText class='toolbarcenter__title'>@issueTitleHeader</MudText>
-            <MudSpacer />
-            <MudMenu class='ticketmenu' Icon='@Icons.Material.Filled.Attachment' Direction='Direction.End' Dense='true' OffsetY='true'>
-                <MudMenuItem>
-                    <p style='display: flex;'>
-                        <MudSpacer />
-                        <MudButton HtmlTag='label' for='fileInput' Variant="Variant.Text" Elevation='0' StartIcon="@Icons.Material.Filled.AttachFile" Disabled='isBtnDisabled'>Attach Files</MudButton>
-                        <MudSpacer />
-                    </p>
-                </MudMenuItem>
-                <MudMenuItem Disabled='true'>
-                    Attached Files
-                </MudMenuItem>
-                <MudMenuItem>
-                    @if (_action == Enums.CrudeMode.Add)
-                    {
-                        @foreach (var file in filesAttachedList)
-                        {
-                            <p style='display: flex;'>
-                                <MudIconButton OnClick='e => DownloadFile(file)' Icon='@Icons.Material.Filled.DownloadForOffline' Size='Size.Small' />
-                                <MudText class='ticketfileattachment__filename' @key='@file'>
-                                    @file.FileName
-                                </MudText>
-                                <MudIconButton OnClick='e => RemoveUploadedItem(file)' Icon='@Icons.Material.Filled.Remove' Size='Size.Small' aria-label="delete" Disabled='isBtnDisabled'/>
-                           </p>
-                        }
-                    }
-                    @if (_action == Enums.CrudeMode.Edit)
-                    {
-                        @foreach (var file in filesAttachedList)
-                        {
-                            if (file.IsActive == true)
-                            {
-                                <p style='display: flex;'>
-                                    <MudIconButton OnClick='e => DownloadFile(file)' Icon='@Icons.Material.Filled.FileDownload' Size='Size.Small' />
-                                    <MudText class='ticketfileattachment__filename' @key='@file'>
-                                        @file.FileName
-                                    </MudText>
-                                    <MudIconButton OnClick='e => RemoveUploadedItem(file)' Icon='@Icons.Material.Filled.Remove' Size='Size.Small' aria-label="delete" Disabled='isBtnDisabled'/>
-                                </p>
-                            }
-                        }
-                    }
-                </MudMenuItem>
-            </MudMenu>
-            <MudMenu class='ticketmenu' Icon="@Icons.Material.Filled.MoreVert" Direction='Direction.End' Dense='true' OffsetY='true' > 
-                <MudMenuItem>
-                    <p style='display: flex;'>
-                        <MudIcon Icon='@Icons.Material.Filled.RestartAlt' />
-                        <MudText style='padding: 2px 0px 0px 4px; font-size: 14px; text-align: center;'>Reset</MudText>
-                    </p>
-                </MudMenuItem>
-                <MudMenuItem>
-                    <p style='display: flex;'>
-                        <MudIcon Icon='@Icons.Material.Filled.ClearAll' />
-                        <MudText style='padding: 2px 0px 0px 4px; font-size: 14px; text-align: center;'>Clear</MudText>
-                    </p>
-                </MudMenuItem>
-            </MudMenu>
-        </MudToolBar>
-        <MudGrid class='ticketgrid' Spacing='1'>
-            <MudItem xs='12'>
-                <MudTextField @bind-Value='@currTicket.IssueSummary' Label='ISSUE :' Variant='Variant.Text' Placeholder='What is your issue?(Keep it brief/short)' Clearable='isClearable'
-                    Error='isTitleError' ReadOnly='isTitleReadOnly' OnBlur='@(() => ConverToUpperStr(currTicket.IssueSummary,1))' OnChange='' />
-            </MudItem>
-            <MudItem xs='12'>
-                <MudField class='ticketcontainer__txtcategorylist' Label='CATEGORY :' DisableUnderLine='true'>
-                     <BlazoredTypeahead SearchMethod='SearchCategoryList' @bind-Value='selectedTicketCategory' DisableClear='false'>
-                        <SelectedTemplate>
-                            @context.CategoryName
-                        </SelectedTemplate>
-                        <ResultTemplate>
-                            @context.CategoryName
-                        </ResultTemplate>
-                    </BlazoredTypeahead>
-                </MudField>
-            </MudItem>
-            <MudItem xs='12'>
-                <MudTextField Id='tg_tdesc' @bind-Value='@currTicket.TaskDescription' Label='DESCRIPTION :' Variant='Variant.Outlined' Placeholder='Describe your issue here (Minimum 20 characters)'
-                Lines='6' ReadOnly='isDescriptionReadOnly' Error='isDescriptionError' OnBlur='@(() => { ConverToUpperStr(currTicket.TaskDescription,2); CheckCharLimit("tg_tdesc"); })'/>
-            </MudItem>
-            <MudItem xs='4'>
-                 @if (_action == Enums.CrudeMode.Add)
-                    {
-                        <MudSelect @bind-Value='selectedTicketBranch' Label='BRANCH' Error='isBranchError' Placeholder='Select your Branch'
-                            ReadOnly='isBranchReadOnly'>
-                                @foreach (TicketBranchModel item in ticketBranchList)
+                <MudTooltip Text='Create new ticket' Arrow>
+                    <MudButton Class='btn-ios-d font12' OnClick='CreateNew' Color='Color.Info' 
+                        Variant='Variant.Filled' Size='Size.Small' DisableElevation>
+                        Create New
+                    </MudButton>
+                </MudTooltip>
+            </MudPaper>
+            <div class='ticket-container overflow-auto'>
+                <div class="ticket-content">
+                    <MudPaper>
+                        <MudCardHeader Class='py-2'>
+                            <MudIcon Icon='fa-solid fa-circle-info' Size='Size.Medium' />
+                            <MudText Class='ml-2 ff-theramin ltr-spc-1px wspace-nowrap' Typo='Typo.h6'>@issueTitleHeader</MudText>
+                            <MudSpacer />
+                            <MudBadge Content="@(currTicket.TicketFileAttachmentModels.Count())" Color="Color.Error" Overlap Visible='@(currTicket.TicketFileAttachmentModels.Count() > 0 ? true : false)'>
+                                <MudButton Class='btn-ios-d font12 wspace-nowrap' OnClick='(() => _isPopUpOpen = !_isPopUpOpen)' EndIcon='@Icons.Material.Filled.AttachFile' Size='Size.Small' 
+                                    Variant='Variant.Text' DisableElevation>
+                                    Attach File
+                                </MudButton>
+                            </MudBadge>
+                            <MudPopover Open='_isPopUpOpen' Fixed AnchorOrigin='Origin.BottomRight' TransformOrigin='Origin.TopRight'>
+                                <MudPaper Elevation='0' Width='400px'>
+                                    <MudCardHeader Class='py-2'>
+                                        <MudSpacer />
+                                        <MudText Typo='Typo.caption'>
+                                            @(currTicket.TicketFileAttachmentModels.Count() > 1 ? "Files attached: " : "File attached: ")
+                                            @currTicket.TicketFileAttachmentModels.Count()
+                                        </MudText>
+                                    </MudCardHeader>
+                                    <MudDivider />
+                                    <MudCardContent>
+                                    <div class='transition-05s-ease overflow-hidden' style='@((currTicket.TicketFileAttachmentModels.Count() > 0) ? "max-height:150px" : "min-height:15px")'>
+                                        <MudPaper Class='d-flex flex-column overflow-y-auto' Square Elevation='0' MinHeight='30px' MaxHeight='150px'>
+                                            @if (currTicket.TicketFileAttachmentModels.Count() > 0)
+                                            {
+                                                <MudGrid Spacing='1'>
+                                                    @foreach (var item in currTicket.TicketFileAttachmentModels)
+                                                    {
+                                                        <MudItem Class='d-flex align-center justify-center' xs=1>
+                                                            <MudIcon Icon='@(Extensions.DetermineFileIcon(item.FileName))' Size='Size.Medium' Style='@(Extensions.DetermineFileColor(item.FileName))' />
+                                                        </MudItem>
+                                                        <MudItem Class='d-flex align-center' xs=9>
+                                                            <MudText Class='txt-oflow-elipsis' Typo='Typo.body2'>@item.FileName</MudText>
+                                                        </MudItem>
+                                                        <MudItem Class='d-flex align-center justify-end' xs=2>
+                                                            <MudTooltip Text='Download file' Arrow>
+                                                                <MudIconButton OnClick='(() => DownloadFile(item))' Icon='@Icons.Material.Filled.DownloadForOffline' Size='Size.Small' Color='Color.Dark' />
+                                                            </MudTooltip>
+                                                            <MudTooltip Text='Remove file' Arrow>
+                                                                <MudIconButton Class='mr-1' OnClick='(() => RemoveFile(item))' Icon='@Icons.Material.Filled.DeleteForever' Size='Size.Small' Color='Color.Dark' Disabled='@(item.TicketId > 0 ? true : false)' />
+                                                            </MudTooltip>
+                                                        </MudItem>
+                                                        <MudDivider />
+                                                    }
+                                                </MudGrid>
+                                            }
+                                            else
+                                            {
+                                                <div class='d-flex flex-1 align-center justify-center'>
+                                                    <MudText Typo='Typo.body2'>No files attached.</MudText>
+                                                </div>
+                                            }
+                                        </MudPaper>
+                                    </div>
+                                    </MudCardContent>
+                                    @if (isUploading)
+                                    {
+                                        <MudProgressLinear Color="Color.Primary" Value='progressValue' />
+                                    }
+                                    <MudDivider />
+                                    <MudCardActions>
+                                        <div class='d-flex flex-1 align-center gap-2'>
+                                            <MudButton OnClick='ResetFileAttachments' Size='Size.Small' Color='Color.Error' 
+                                                Disabled='@(currTicket.TicketFileAttachmentModels.Count() == 0 || !string.IsNullOrWhiteSpace(currTicket.TicketNumber) ? true : false)'>
+                                                Clear
+                                            </MudButton>
+                                            <MudSpacer />
+                                            <MudButton OnClick='(() => _isPopUpOpen = !_isPopUpOpen)' Size='Size.Small'>Close</MudButton>
+                                            <MudButton Class='btn-ios-d font12' HtmlTag='label' for='fileinput' EndIcon='@Icons.Material.Filled.CloudUpload' 
+                                                Variant='Variant.Filled' Size='Size.Small' Color='Color.Info'>
+                                                Browse
+                                            </MudButton>
+                                            <InputFile id="fileinput" OnChange="UploadFiles" hidden multiple accept='@acceptedFileFormat' />
+                                        </div>
+                                    </MudCardActions>
+                                </MudPaper>
+                            </MudPopover>
+                        </MudCardHeader>
+                        <MudDivider />
+                        <EditForm Model='@currTicket' OnValidSubmit='OpenDialog'>
+                            <DataAnnotationsValidator />
+                            <MudCardContent>
+                                <MudGrid Spacing='1'>
+                                    <MudItem xs=12>
+                                        <MudTextField Class='minput-lbl-1' @bind-Value='@currTicket.IssueSummary' Label='ISSUE :' Variant='Variant.Text' Placeholder='What is your issue?(Keep it brief/short)' Clearable
+                                            ReadOnly='isTitleReadOnly' OnBlur='@(() => currTicket.IssueSummary = ConverToUpperCase(currTicket.IssueSummary))' 
+                                            HelperText='Required*' For='@(() => @currTicket.IssueSummary)' />
+                                    </MudItem>
+                                    <MudItem xs=12>
+                                        <MudField Class='minput-lbl-1 blzrthead-maxheight-1' Label='CATEGORY :' DisableUnderLine>
+                                            <BlazoredTypeahead SearchMethod='SearchCategoryList' Context='ticketCategoryContext' Value='selectedTicketCategory' MaximumSuggestions='99' DisableClear EnableDropDown
+                                                ValueExpression='(() => selectedTicketCategory)'
+                                                ValueChanged='((TicketCategoryModel ticketCategory) =>
+                                                {
+                                                    currTicket.TicketCategoryId = ticketCategory.Id;
+                                                    currTicket.TicketCategoryName = ticketCategory.CategoryName;
+                                                    currTicket.TicketCategoryTypeId = ticketCategory.CategoryTypeId;
+                                                })'>
+                                                <SelectedTemplate>
+                                                    @currTicket.TicketCategoryName
+                                                </SelectedTemplate>
+                                                <ResultTemplate>
+                                                    @ticketCategoryContext.CategoryName    
+                                                </ResultTemplate>
+                                            </BlazoredTypeahead>
+                                            <div class='d-flex align-center val-msg-12px'>
+                                                <ValidationMessage For="@(() => @currTicket.TicketCategoryId)"/>
+                                            </div>
+                                        </MudField>
+                                    </MudItem>
+                                    <MudItem xs=12>
+                                        <MudTextField Id='tg_tdesc' Class='minput-lbl-1' @bind-Value='@currTicket.TaskDescription' Label='DESCRIPTION :' Variant='Variant.Outlined' Placeholder='Describe your issue here (Minimum 15 characters)'
+                                            Lines='6' ReadOnly='isDescriptionReadOnly' OnBlur='@(() => currTicket.TaskDescription = ConverToUpperCase(currTicket.TaskDescription))'
+                                            HelperText='Required*' For='@(() => @currTicket.TaskDescription)'/>
+                                    </MudItem>
+                                    <MudItem xs=4>
+                                        <MudSelect Class='minput-lbl-1' @bind-Value='@currTicket.TicketBranchId' Label='BRANCH' Placeholder='Select your Branch' Text='@currTicket.TicketBranchName'
+                                            ReadOnly='isBranchReadOnly' HelperText='Required*' For='@(() => currTicket.TicketBranchId)'>
+                                            @foreach (TicketBranchModel item in GlobalList.TicketBranchList)
+                                            {
+                                                <MudSelectItem Value="@item.Id">@item.BranchName</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+                                    <MudItem xs=8>
+                                        <MudTextField Class='minput-lbl-1' @bind-Value='@currTicket.Location' Label='LOCATION' Placeholder='Your current location(e.g. Accounting, Warehouse, etc.,)' Clearable='isClearable'
+                                            ReadOnly='isLocationReadOnly' HelperText='Required*' OnBlur='@(() => currTicket.Location = ConverToUpperCase(currTicket.Location))'
+                                            For='@(() => @currTicket.Location)'/>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudCardContent>
+                            <MudDivider />
+                            <MudCardActions Class='gap-2'>
+                                @if (_action != Enums.CrudeMode.View)
                                 {
-                                    <MudSelectItem Value="@item">@item.BranchName</MudSelectItem>
+                                    <MudButton Class='btn-ios-d pa-1 font12' OnClick='MapDefaults' Color='Color.Error' Variant='Variant.Text' DisableElevation >Reset</MudButton>
+                                    <MudSpacer />
+                                    <MudButton Class='btn-ios-d font12' OnClick='Cancel' Variant='Variant.Text' Disabled='isBtnDisabled' Size='Size.Small' DisableElevation>Cancel</MudButton>
+                                    <MudButton Class='btn-ios-d font12' ButtonType='ButtonType.Submit' Variant='Variant.Filled' Color='@(_action == Enums.CrudeMode.Edit ? Color.Info:Color.Success)' Disabled='isBtnDisabled' Size='Size.Small' DisableElevation>
+                                        @if (_processing)
+                                        {
+                                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                                            <MudText Class="ms-2" Typo='Typo.button'>Saving</MudText>
+                                        }
+                                        else
+                                        {
+                                            <MudText Typo='Typo.button'>@btnSubmitLabel</MudText>
+                                        }
+                                    </MudButton>
                                 }
-                        </MudSelect>
-                    }
-                    else
-                    {
-                        <MudSelect @bind-Value='selectedTicketBranch.BranchName' Label='BRANCH' Error='isBranchError'
-                            ReadOnly='isBranchReadOnly'>
-                                @foreach (TicketBranchModel item in ticketBranchList)
-                                {
-                                    <MudSelectItem Value="@item.BranchName">@item.BranchName</MudSelectItem>
-                                }
-                        </MudSelect>
-                    }
-            </MudItem>
-            <MudItem xs='6'>
-                <MudTextField class='ticketcontainer__txt' @bind-Value='currTicket.Location' Label='LOCATION' Placeholder='Your current location(e.g. Accounting, Warehouse, etc.,)' Clearable='isClearable'
-                ReadOnly='isLocationReadOnly' Error='isLocationError' OnBlur='@(() => ConverToUpperStr(currTicket.Location,3))'/>
-            </MudItem>
-            <MudItem xs='2'>
-                @* EMPTY GRID *@
-            </MudItem>
-            <MudItem class='ticketgrid__btnitem' xs='12'>
-                <MudButton OnClick='Cancel' Variant='Variant.Text' Color='Color.Error' Disabled='isBtnDisabled' >Cancel</MudButton>
-                <MudButton OnClick="SubmitTicket" Variant='Variant.Filled' Color='Color.Success' StartIcon='@Icons.Filled.Send' Disabled='isBtnDisabled' >@btnSubmitLabel</MudButton>
-            </MudItem>
-        </MudGrid>
-        </MudPaper>
-    </MudContainer>
-        @* //// *@
-    
-     @* //// *@
-    <MudContainer class='ticketcontainer__subcontainer' MaxWidth='MaxWidth.ExtraExtraLarge'>
-        <MudExpansionPanels class='ticketexpandpanel' DisableBorders='true' Elevation='0' Dense='false'>
-            <MudExpansionPanel IsInitiallyExpanded='false' Dense='false' IsExpandedChanged='@AccessLevelPrompt'>
-                <TitleContent>
-                    <div class='d-flex'>
-                        <MudIcon Icon='@Icons.Material.Filled.WarningAmber' Size='Size.Small' />
-                        <MudSpacer />
-                        <MudText class='smalltypog'>PRIORITY</MudText>
-                        <MudSpacer />
+                            </MudCardActions>
+                        </EditForm>
+                    </MudPaper>
+                    <div class='d-flex align-center gap-2 mt-4'>
+                        <MudIcon Class='bounce-anim-sm' Icon='@Icons.Material.Filled.PriorityHigh' Size='Size.Small' Color='Color.Error' />
+                        <p class='font-reminders-sm'>Reminders: Please kindly wait for the IT to check your Ticket. IT personnel may be busy or catering other issues. Thank you.</p>
                     </div>
-                </TitleContent>
-                <ChildContent>
-                        <MudSelect class='ticketselectpanel' @bind-Value='priorityLevelValue' ReadOnly='isPriorityReadOnly' Dense='true' PopoverClass='ticketselectpanel__popover'>
-                        @foreach (Enums.PriorityLevel item in Enum.GetValues(typeof(Enums.PriorityLevel)))
-                        {
-                            if (item == Enums.PriorityLevel.Low)
-                            {
-                                <MudSelectItem Value="@item"><MudChip Color='Color.Info' Size='Size.Small'>@item</MudChip> </MudSelectItem>
-                            }
-                            if (item == Enums.PriorityLevel.Medium)
-                            {
-                                <MudSelectItem Value="@item"><MudChip Color='Color.Warning' Size='Size.Small'>@item</MudChip> </MudSelectItem>
-                            }
-                            if (item == Enums.PriorityLevel.High)
-                            {
-                                <MudSelectItem Value="@item"><MudChip Color='Color.Error' Size='Size.Small'>@item</MudChip> </MudSelectItem>
-                            }
-                        }
-                    </MudSelect>
-                </ChildContent>
-            </MudExpansionPanel>
-        </MudExpansionPanels>
-        <MudExpansionPanels class='ticketexpandpanel' DisableBorders='true' Elevation='0' Dense='false'>
-            <MudExpansionPanel IsInitiallyExpanded='false' Dense='false'>
-                <TitleContent>
-                    <div class='d-flex'>
-                        <MudIcon Icon='@Icons.Material.Filled.FactCheck' Size='Size.Small' />
-                        <MudSpacer />
-                        <MudText class='smalltypog'>TICKET TYPE</MudText>
-                        <MudSpacer />
-                    </div>
-                </TitleContent>
-                <ChildContent>
-                    <MudRadioGroup class='ticketradiogroup' @bind-SelectedOption='selectedTicketCategory.CategoryTypeId' @onclick='GetTicketCategoryByType'>
-                        @foreach (Enums.TicketCategoryType item in Enum.GetValues(typeof(Enums.TicketCategoryType)))
-                        {
-                            <MudRadio class='ticketradiogroup__option' Size='Size.Small' Color="Color.Primary" Option='@item' Disabled='isRadioDisabled'>
-                                @if (item == Enums.TicketCategoryType.Hardware)
-                                {
-                                    <MudIcon Size='Size.Small' Icon='@Icons.Material.Filled.Computer'/>
-                                }
-                                @if (item == Enums.TicketCategoryType.Software)
-                                {
-                                    <MudIcon Size='Size.Small' Icon='@Icons.Material.Filled.Wysiwyg'/>
-                                }
-                                @if (item == Enums.TicketCategoryType.Admin)
-                                {
-                                    <MudIcon Size='Size.Small' Icon='@Icons.Material.Filled.SupervisorAccount'/>
-                                }
-                                @item
-                            </MudRadio>
-                        }
-                    </MudRadioGroup>
-                </ChildContent>
-            </MudExpansionPanel>
-        </MudExpansionPanels>
-        <MudExpansionPanels class='ticketexpandpanel' DisableBorders='true' Elevation='0' Dense='false'>
-            <MudExpansionPanel IsInitiallyExpanded='true' Dense='false'>
-                <TitleContent>
-                    <div class='d-flex'>
-                        <MudIcon Icon='@Icons.Material.Filled.ContactMail' Size='Size.Small' />
-                        <MudSpacer />
-                        <MudText class='smalltypog'>INFORMATION</MudText>
-                        <MudSpacer />
-                    </div>
-                </TitleContent>
-                <ChildContent>
-                    <MudTextField class='ticketcontainer__txtinfo' T='string' Label='Ticket # :' ReadOnly='true' @bind-Value="currTicket.TicketNumber"
-                        style='color: red;' />
-                    <MudDatePicker class='ticketcontainer__txtinfo' PickerVariant='PickerVariant.Dialog' Label='Ticket Date :' @bind-Date='dateTimeToday' ReadOnly='isDateReadOnly' PickerClosed='() => dateConcat()' DateFormat='MM/dd/yyyy'/>
-                    <MudField class='ticketcontainer__txtrequestorname' Label='Requestor :' DisableUnderLine='true'>
-                        <BlazoredTypeahead SearchMethod='@GetAllEmployees' @bind-Value='@employee' DisableClear='true'>
-                            <SelectedTemplate>
-                                @context.EmployeeName
-                            </SelectedTemplate>
-                            <ResultTemplate>
-                                @context.EmployeeName
-                            </ResultTemplate>
-                        </BlazoredTypeahead>
-                    </MudField>
-
-                    <MudTextField class='ticketcontainer__txtinfo' @bind-Value='employee.DepartmentName' Label='Department :' ReadOnly='readOnly' />
-                    <MudTextField class='ticketcontainer__txtinfo' T='string' @bind-Value='currTicket.ContactInformation' Label='Contact Info :' ReadOnly='isEmailReadOnly' Placeholder='(If applicable)' />
-                    <MudText class='ticketcontainer__lbl'>
-                        <MudText>
-                            Status :
-                            <MudChip Size='Size.Small' style='@($"background-color:{selectedTicketStatus.StatusColor};")'>@selectedTicketStatus.StatusName</MudChip>
-                        </MudText>
-                    </MudText>
-                </ChildContent>
-            </MudExpansionPanel>
-        </MudExpansionPanels>
-    </MudContainer>
-    @* //// *@
-    <InputFile id="fileInput" OnChange="UploadFiles" hidden multiple accept='@acceptedFileFormat' />
-}
-</MudContainer>
-
-@code {
-    #region Properties
-    [Parameter] public long ticketId { get; set; }
-    [Parameter] public long parentId { get; set; }
-    private HubConnection hubConnection;
-    private DateTime? dateTimeToday; //for view only mapping is different
-    private List<TicketCategoryModel> ticketCategoryList = new List<TicketCategoryModel>();
-    private List<TicketBranchModel> ticketBranchList = new List<TicketBranchModel>();
-    private List<TicketStatusModel> ticketStatusList = new List<TicketStatusModel>();
-    private List<UserAccount> employees = new List<UserAccount>();
-    private List<TicketFileAttachmentModel> filesAttachedList = new List<TicketFileAttachmentModel>();
-    private List<TicketFileAttachmentModel> removedFileList = new List<TicketFileAttachmentModel>();
-    private IList<IBrowserFile> files = new List<IBrowserFile>();
-    private TicketModel currTicket { get; set; } = new TicketModel();
-    private TicketCategoryModel selectedTicketCategory = new TicketCategoryModel();
-    private TicketBranchModel selectedTicketBranch = new TicketBranchModel();
-    private TicketStatusModel selectedTicketStatus { get; set; } = new TicketStatusModel();
-    private Enums.PriorityLevel priorityLevelValue { get; set; }
-    private Enums.TicketCategoryType catTypeId { get; set; }
-    private UserAccount employee = new UserAccount();
-    private TicketFileAttachmentModel currFile = new TicketFileAttachmentModel();
-    private Enums.CrudeMode _action { get; set; }
-    private string currentUrl, Token, btnSubmitLabel, acceptedFileFormat = ".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.csv,.doc,.docx",
-    currFileHashStr, fileHashCompare, headerTitle, stringDateTime, issueTitleHeader;
-    private bool readOnly = true, isVisible = true, dataFetched, isValid, isTitleError, isCategoryError, isBranchError, isDescriptionError,
-    isLocationError, isEmployeeReadOnly, isTitleReadOnly, isCategoryReadOnly, isBranchReadOnly, isDescriptionReadOnly, isEmailReadOnly,
-    isPriorityReadOnly, isLocationReadOnly, isCategoryTypeReadOnly, isDateReadOnly, _resetValue = true, isBtnDisabled, isClearable, isRadioDisabled;
-    private long maxAllowedSize = 5242880;
-    private TimeSpan? time = new TimeSpan(13, 37, 00);
-    ElementReference taskDescription;
-
-    #endregion
-
-
-    #region Methods
-
-    #region Initialize
-    protected override async Task OnInitializedAsync()
-    {
-
-        await MapGlobalTime();
-        await LoadConnection();
-        GlobalContentTitle.contentTitle = "TICKET";
-        await GlobalClassValidation();
-        CheckUrl();
-        Token = await localStorage.GetItemAsync<string>("token");
-        if (_action == Enums.CrudeMode.Add)
-        {
-            @* stringDateTime = GlobalContentTitle.contentServerTime.ToShortDateString(); *@
-            dateTimeToday =  GlobalContentTitle.contentServerTime;
-            Task t = Task.WhenAll(GetFromGlobalClass(), GetTicketCategory(), GetBranch(), GetTicketStatus());         
-            await t;
-            if (t.Status == TaskStatus.RanToCompletion)
-            {
-                currentUrl = NavigationManager.Uri;
-                string toCheck = "subtask";
-                if (currentUrl.Contains(toCheck))
-                {
-                    await GetSubTicketValues();
-                }
-                currTicket.TicketNumber = "Auto";
-                CheckActionsMode();
-                CompletedFetch();
-            }
+                </div>
+                <div class="ticket-sidebar">
+                    <MudGrid Spacing='1'>
+                        <MudItem xs=12>
+                            <MudPaper>
+                                <MudExpansionPanels Elevation='0' Dense>
+                                    <MudExpansionPanel Dense>
+                                        <TitleContent>
+                                            <div class='d-flex'>
+                                                <MudIcon Icon='@Icons.Material.Filled.WarningAmber' Size='Size.Small' />
+                                                <MudSpacer />
+                                                <MudText Typo='Typo.button'>PRIORITY</MudText>
+                                                <MudSpacer />
+                                            </div>
+                                        </TitleContent>
+                                        <ChildContent>
+                                            <MudDivider />
+                                            <div class='d-flex align-center justify-center pa-2 '>
+                                                <MudMenu Class='menu-lbl-1' Label='@Extensions.GetEnumDescription(currTicket.PriorityLevelId)' Dense Size='Size.Small' EndIcon='@Icons.Material.Filled.KeyboardArrowDown' Variant='Variant.Filled'
+                                                    Color='@(currTicket.PriorityLevelId == Enums.PriorityLevel.Low ? Color.Info : 
+                                                    (currTicket.PriorityLevelId == Enums.PriorityLevel.Medium ? Color.Warning : 
+                                                    (currTicket.PriorityLevelId == Enums.PriorityLevel.High ? Color.Error : Color.Primary)))' FullWidth
+                                                    AnchorOrigin='Origin.BottomCenter' TransformOrigin='Origin.TopCenter' ActivationEvent='MouseEvent.MouseOver' DisableElevation >
+                                                    @foreach (Enums.PriorityLevel item in Enum.GetValues(typeof(Enums.PriorityLevel)))
+                                                    {
+                                                        <MudMenuItem OnClick='(() => SelectedPriority(item))'>
+                                                            <MudChip Class='rounded-0' Size='Size.Small'
+                                                                Color='@(item == Enums.PriorityLevel.Low ? Color.Info : 
+                                                                    (item == Enums.PriorityLevel.Medium ? Color.Warning : 
+                                                                    (item == Enums.PriorityLevel.High ? Color.Error : Color.Primary)))'>
+                                                                    @Extensions.GetEnumDescription(item)
+                                                            </MudChip>
+                                                        </MudMenuItem>
+                                                    }
+                                                </MudMenu>
+                                            </div>
+                                        </ChildContent>
+                                    </MudExpansionPanel>
+                                </MudExpansionPanels>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs=12>
+                            <MudPaper>
+                                <MudExpansionPanels Elevation='0' Dense>
+                                    <MudExpansionPanel Dense>
+                                        <TitleContent>
+                                            <div class='d-flex'>
+                                                <MudIcon Icon='@Icons.Material.Filled.FactCheck' Size='Size.Small' />
+                                                <MudSpacer />
+                                                <MudText Typo='Typo.button'>TICKET TYPE</MudText>
+                                                <MudSpacer />
+                                            </div>
+                                        </TitleContent>
+                                        <ChildContent>
+                                            <MudDivider />
+                                            <MudRadioGroup Class='d-flex align-center gap-2 pa-2' @bind-SelectedOption='currTicket.TicketCategoryTypeId' For='@(() => currTicket.TicketCategoryTypeId)' 
+                                                @onclick='GetTicketCategoryByType'>
+                                                @foreach (Enums.TicketCategoryType item in Enum.GetValues(typeof(Enums.TicketCategoryType)))
+                                                {
+                                                    <MudRadio  Class='rdb-font12px' Option='@item' Dense Color='Color.Dark'>
+                                                        @Extensions.GetEnumDescription(item)
+                                                    </MudRadio>
+                                                }
+                                            </MudRadioGroup>
+                                            <div class='d-flex align-center justify-center'>
+                                                <MudTooltip Text='Reset Categories' Arrow Placement='Placement.Left'>
+                                                    <MudButton OnClick='ResetTicketCategoryList' StartIcon='@Icons.Material.Filled.Refresh' Size='Size.Small'>Reset</MudButton>
+                                                </MudTooltip>
+                                            </div>
+                                        </ChildContent>
+                                    </MudExpansionPanel>
+                                </MudExpansionPanels>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs=12>
+                            <MudPaper>
+                                <MudExpansionPanels Elevation='0' Dense>
+                                    <MudExpansionPanel IsInitiallyExpanded Dense>
+                                        <TitleContent>
+                                            <div class='d-flex'>
+                                                <MudIcon Icon='@Icons.Material.Filled.ContactMail' Size='Size.Small' />
+                                                <MudSpacer />
+                                                <MudText Typo='Typo.button'>INFORMATION</MudText>
+                                                <MudSpacer />
+                                            </div>
+                                        </TitleContent>
+                                        <ChildContent>
+                                            <MudPaper Elevation='0' Square Height='315px'>
+                                                <MudDivider />
+                                                <MudGrid Spacing='2'>
+                                                    <MudItem xs=6>
+                                                        <MudText Class='font-bold font12 mt-1'>Status:</MudText>
+                                                        <MudChip Class='rounded color-white ma-0' Size='Size.Small' Style='@(Extensions.GetColor(currTicket.TicketStatusId))'>
+                                                            <small>@currTicket.TicketStatusName</small>
+                                                        </MudChip>
+                                                    </MudItem>
+                                                    <MudItem xs=6>
+                                                        <MudText Class='font-bold font12 mt-1'>Ticket Date:</MudText>
+                                                        <MudDatePicker Class='minput-lbl-1 inputs-12px txt-mdense' @bind-Date='dateTimeToday' DisableUnderline DisableToolbar MaxDate='DateTime.Now'
+                                                            PickerClosed='GetServerTime' DateFormat='MM/dd/yyyy' Margin='Margin.Dense' IconSize='Size.Small' />
+                                                    </MudItem>
+                                                    <MudItem xs=12>
+                                                        <MudField Class='minput-lbl-1' Label='Requestor:' DisableUnderLine>
+                                                            <BlazoredTypeahead SearchMethod='@GetAllEmployees' @bind-Value='@requestorEmployee' DisableClear MinimumLength='3' 
+                                                                Disabled='@(!currTicket.TicketStatusName.Contains("Approval", StringComparison.InvariantCultureIgnoreCase) ? true : false)'>
+                                                                <SelectedTemplate>
+                                                                    @if (context.Picture.Count() != 0 )
+                                                                    {
+                                                                        <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(@context.Picture)}")' Size='Size.Small'/>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <MudAvatar Class='mb-1' Image='images/fglogo/fgci1-gs.png' Size='Size.Small' />
+                                                                    }
+                                                                    <MudText Class='ml-2' Typo='Typo.body2'>
+                                                                        @context.EmployeeName
+                                                                    </MudText>
+                                                                </SelectedTemplate>
+                                                                <ResultTemplate>
+                                                                    <div class='d-flex align-center gap-2'>
+                                                                        @if (context.Picture.Count() != 0 )
+                                                                        {
+                                                                            <MudAvatar Image='@($"data:image/png;base64, {Convert.ToBase64String(@context.Picture)}")' Size='Size.Medium'/>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <MudAvatar Class='mb-1' Image='images/fglogo/fgci1-gs.png' Size='Size.Medium' />
+                                                                        }
+                                                                        <div class='d-flex flex-column'>
+                                                                            <MudText Class='font-bold' Typo='Typo.body2'>
+                                                                                @context.EmployeeName
+                                                                            </MudText>
+                                                                            <MudText Typo='Typo.body2'>
+                                                                                @context.Designation
+                                                                            </MudText>
+                                                                        </div>
+                                                                    </div>
+                                                                </ResultTemplate>
+                                                            </BlazoredTypeahead>
+                                                        </MudField>
+                                                    </MudItem>
+                                                    <MudItem xs=12>
+                                                        <MudField Class='minput-lbl-1' Label='Department:' InnerPadding='false'>
+                                                            <MudText Class='font12'>
+                                                                @requestorEmployee.DepartmentName
+                                                            </MudText>
+                                                        </MudField>
+                                                    </MudItem>
+                                                    <MudItem xs=12>
+                                                        <MudTextField Class='minput-lbl-1 inputs-12px' @bind-Value='@currTicket.ContactInformation' Label='Contact Information:' Variant='Variant.Text' Margin='Margin.Dense' />
+                                                    </MudItem>
+                                                </MudGrid>
+                                            </MudPaper>
+                                        </ChildContent>
+                                    </MudExpansionPanel>
+                                </MudExpansionPanels>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs=12>
+                            <MudPaper>
+                                <MudExpansionPanels Elevation='0' Dense>
+                                    <MudExpansionPanel Dense>
+                                        <TitleContent>
+                                            <div class='d-flex'>
+                                                <MudIcon Icon='@Icons.Material.Filled.HelpCenter' Size='Size.Small' />
+                                                <MudSpacer />
+                                                <MudText Typo='Typo.button'>Guide</MudText>
+                                                <MudSpacer />
+                                            </div>
+                                        </TitleContent>
+                                        <ChildContent>
+                                            <MudDivider />
+                                            <div class='pa-2'>
+                                                <MudGrid Spacing='1'>
+                                                    <MudItem Class='d-flex align-center gap-2' xs=12>
+                                                        <small class='font-bold'>Having trouble categorizing your issue?</small>
+                                                    </MudItem>
+                                                    <MudItem Class='d-flex align-start justify-center flex-wrap gap-2' xs=12>
+                                                        <MudTooltip Text='See Hardware Guide' Arrow Placement='Placement.Top'>
+                                                            <MudButton Class='btnlbl-column bgc-lblue btn-transition-05s-ease' Href="https://www.google.com/search?q=computer+hardware" Target='_blank' Size='Size.Small' Variant='Variant.Filled'
+                                                                DisableElevation>
+                                                                <MudIcon Icon="fa-solid fa-computer" Title="Hardware" Size='Size.Small' />
+                                                                <MudText Typo='Typo.caption'>Hardware</MudText> 
+                                                            </MudButton>
+                                                        </MudTooltip>
+                                                        <MudTooltip Text='See Software Guide' Arrow Placement='Placement.Top'>
+                                                            <MudButton Class='btnlbl-column bgc-lred btn-transition-05s-ease' Href="https://www.google.com/search?q=computer+software" Target='_blank' Size='Size.Small' Variant='Variant.Filled'
+                                                                DisableElevation>
+                                                                <MudIcon Icon="fa-solid fa-code" Title="Software" Size='Size.Small' />
+                                                                <MudText Typo='Typo.caption'>Software</MudText>
+                                                            </MudButton>
+                                                        </MudTooltip>
+                                                        <MudTooltip Text='See Admin Guide' Arrow Placement='Placement.Top'>
+                                                            <MudButton Class='btnlbl-column bgc-lgreen btn-transition-05s-ease' Href="https://www.google.com/search?q=computer+admin" Target='_blank' Size='Size.Small' Variant='Variant.Filled'
+                                                                DisableElevation>
+                                                                <MudIcon Icon="fa-solid fa-folder-open" Title="Administration" Size='Size.Small' />
+                                                                <MudText Typo='Typo.caption'>Administration</MudText>
+                                                            </MudButton>
+                                                        </MudTooltip>
+                                                        <MudTooltip Text='Go to FGCI Dashboard' Arrow Placement='Placement.Top'>
+                                                            <MudButton Class='btnlbl-column bgc-ldash btn-transition-05s-ease' Href="http://10.0.0.9:8080/" Target='_blank' Size='Size.Small' Variant='Variant.Filled'
+                                                                DisableElevation>
+                                                                <MudIcon Icon="fa-solid fa-grip" Title="FGCI Dashboard" Size='Size.Small' />
+                                                                <MudText Typo='Typo.caption'>FGCI Dashboard</MudText>
+                                                            </MudButton>
+                                                        </MudTooltip>
+                                                    </MudItem>
+                                                </MudGrid>
+                                            </div>
+                                        </ChildContent>
+                                    </MudExpansionPanel>
+                                </MudExpansionPanels>
+                            </MudPaper>
+                        </MudItem>
+                    </MudGrid>
+                </div>
+            </div>
         }
-        else
-        {
-            Task t = Task.WhenAll(GetTicketCategory(), GetBranch(), GetTicketStatus());
-            @* Task t = Task.WhenAll(GetTicketCategory(),GetBranch()); *@
-            await t;
-            if (t.Status == TaskStatus.RanToCompletion)
-            {
-                Task u = Task.WhenAll(GetTicketId());
-                await u;
-                if (currTicket == null)
-                    return;
-                else
-                {
-                    CheckActionsMode();
-                    CompletedFetch();
-                }
-            }
-        }
-    }
-
-    #endregion
-
-    #region Load SinalR Connection
-     async Task LoadConnection()
-     {
-          hubConnection = new HubConnectionBuilder()
-            .WithUrl(config["SignalRConnection"] + "ticketlisthub")
-            .WithAutomaticReconnect()
-            .Build();
-
-          
-          await hubConnection.StartAsync();
-     }
-    #endregion
-
-    #region Inovke SignalR 
-    async Task InvokeSignalR()
-    {
-       var filterParameter = new FilterParameter()
-      {
-          Token = await localStorage.GetItemAsync<string>("token"),
-          PageSize = GlobalClass.PageSize
-      };
-      await hubConnection.InvokeAsync("GetTickets", filterParameter);
-      await hubConnection.InvokeAsync("GetTicketAuditTrail", filterParameter);
-    }
-    #endregion
-
-    #region Get Current User
-
-    private async Task GetFromGlobalClass()
-    {
-        await Task.Run(() => {
-            currentUrl = NavigationManager.Uri;
-            string toCheck = "subtask";
-            if (!currentUrl.Contains(toCheck))
-            {
-                employee = GlobalClass.CurrentUserAccount;
-            }
-        });
-    }
-
-    #endregion
-
-    #region Get All Employees
-
-    async Task<IEnumerable<UserAccount>> GetAllEmployees(string employeeName)
-    {
-        if (employeeName.Length < 4)
-            return null;
-        else
-        {
-
-            var filterParameter = new FilterParameter()
-            {
-                IsName = true,
-                Name = employeeName,
-                IsLookUp = true
-            };
-            return employees = await globalService.GetAllEmployees(filterParameter, await localStorage.GetItemAsync<string>("token"));
-        }
-
-    }
-    #endregion
-
-    #region Get Ticket Category
-
-    private async Task GetTicketCategory()
-    {
-        ticketCategoryList = await ticketCategoryService.LoadTicketCategory(Token);
-        @* ticketCategoryList = await ticketCategoryService.LoadTicketCategoryByTypeId(filterParameter, Token); *@
-    }
-
-    private async Task GetTicketCategoryByType()
-    {
-        var filterParameter = new FilterParameter()
-        {
-            IsTicketCategoryType = true,
-            TicketCategoryType = selectedTicketCategory.CategoryTypeId
-        };
-        ticketCategoryList = await ticketCategoryService.LoadTicketCategoryByTypeId(filterParameter, Token);
-    }
-    private async Task<IEnumerable<TicketCategoryModel>> CategoryFilter(string CategoryName)
-    {
-        @* await Task.Delay(10); *@
-        @* if (string.IsNullOrEmpty(CategoryName))
-            return ticketCategoryList; *@
-        return await Task.FromResult(ticketCategoryList.Where(x => x.CategoryName.Contains(CategoryName, StringComparison.InvariantCultureIgnoreCase)).ToList());
-    }
-
-    private async Task<IEnumerable<TicketCategoryModel>> SearchCategoryList(string searchText)
-    {
-        return await Task.FromResult(ticketCategoryList.Where(x => x.CategoryName.Contains(searchText, StringComparison.InvariantCultureIgnoreCase)).ToList());
-    }
-    #endregion
-
-    #region Get Ticket Branch
-    async Task GetBranch()
-    {
-        if (_action == Enums.CrudeMode.Add) { 
-            selectedTicketBranch = null;
-        }
-        var filterParameter = new FilterParameter();
-        ticketBranchList = await ticketBranchService.GetBranch(filterParameter, Token);
-        ticketBranchList = ticketBranchList.OrderBy(x => x.BranchName).ToList();
-    }
-
-    async Task GetTicketStatus()
-    {
-        @* selectedTicketStatus = new TicketStatusModel(); *@
-        var filterParameter = new FilterParameter();
-        ticketStatusList = await ticketStatusService.GetTicketStatus(filterParameter, Token);
-
-        if (_action == Enums.CrudeMode.Add)
-        {
-            foreach (TicketStatusModel item in ticketStatusList)
-            { //default selection
-                if (item.Id == 1)
-                {
-                    selectedTicketStatus.Id = item.Id;
-                    selectedTicketStatus.StatusName = item.StatusName;
-                    selectedTicketStatus.StatusColor = item.StatusColor;
-                }
-            }
-        }
-        else
-        {
-            foreach (TicketStatusModel item in ticketStatusList)
-            {
-                if (item.Id == currTicket.TicketStatusId)
-                {
-                    selectedTicketStatus.Id = item.Id;
-                    selectedTicketStatus.StatusName = item.StatusName;
-                    selectedTicketStatus.StatusColor = item.StatusColor;
-                }
-            }
-        }
-    }
-
-    #endregion
-
-    #region Get Sub ticket Values
-    async Task GetSubTicketValues()
-    {
-        await GetBranch();
-        @* await GetTicketCategory(); *@
-        var sub = new TicketModel();
-        sub = await ticketService.GetTicketById(parentId, Token);
-        if (currTicket == null)
-        {
-            Console.WriteLine("I am null");
-            NavigationManager.NavigateTo($"/error");
-            return;
-        }
-        //Map to viewing and for updating;
-        employee.EmployeeId = sub.RequestorId;
-        employee.FirstName = sub.RequestorName;
-        employee.DepartmentName = sub.RequestorDepartment;
-        selectedTicketCategory = new TicketCategoryModel();
-        selectedTicketBranch = new TicketBranchModel();
-        selectedTicketBranch = ticketBranchList.FirstOrDefault(x => x.Id == sub.TicketBranchId);
-        selectedTicketCategory = ticketCategoryList.FirstOrDefault(x => x.Id == sub.TicketCategoryId);
-        currTicket.Location = sub.Location;
-
-
-
-        selectedTicketCategory.Id = sub.TicketCategoryId;
-        selectedTicketCategory.CategoryName = sub.TicketCategoryName;
-    }
-
-    #endregion
-
-    #region Get Ticket Id
-    async Task GetTicketId()
-    {
-        currTicket = await ticketService.GetTicketById(ticketId, Token);
-
-
-        if (currTicket == null)
-        {
-            Console.WriteLine("I am null");
-            NavigationManager.NavigateTo($"/error");
-            return;
-        }
-
-        //Map to viewing and for updating;
-        employee.EmployeeId = currTicket.RequestorId;
-        employee.FirstName = currTicket.RequestorName;
-        employee.DepartmentName = currTicket.RequestorDepartment;
-        selectedTicketCategory = new TicketCategoryModel();
-        selectedTicketBranch = new TicketBranchModel();
-
-        selectedTicketBranch.Id = currTicket.TicketBranchId;
-        selectedTicketBranch.BranchName = currTicket.TicketBranchName;
-
-        selectedTicketCategory.Id = currTicket.TicketCategoryId;
-        selectedTicketCategory.CategoryName = currTicket.TicketCategoryName;
-        selectedTicketCategory.CategoryTypeId = currTicket.TicketCategoryTypeId;
-        
-        catTypeId = currTicket.TicketCategoryTypeId;
-
-        selectedTicketStatus.Id = currTicket.TicketStatusId;
-        selectedTicketStatus.StatusName = currTicket.TicketStatusName;
-        foreach (var item in ticketStatusList)
-        {
-            if (item.Id == currTicket.TicketStatusId)
-            {
-                selectedTicketStatus.StatusColor = item.StatusColor;
-                break;
-            }
-        }
-        
-        priorityLevelValue = currTicket.PriorityLevelId;
-        dateTimeToday = currTicket.TicketDate;
-
-        //File Attachments
-        @* filesAttachedList = currTicket.TicketFileAttachmentModels; *@
-        string filesToHash = "";
-        foreach (TicketFileAttachmentModel items in currTicket.TicketFileAttachmentModels)
-        {
-            filesToHash += items.FileName;
-            if (items.IsActive)
-            {
-                filesAttachedList.Add(items);
-            }
-        }
-        using (SHA512 sha512Hash = SHA512.Create())
-        {
-            byte[] sourceBytes = Encoding.UTF8.GetBytes(filesToHash);
-            byte[] hashBytes = sha512Hash.ComputeHash(sourceBytes);
-            currFileHashStr = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
-        }
-        //
-
-        if (currTicket.TicketStatusId != 1)
-        {
-            DisableControls();
-        }
-    }
-    #endregion
-
-    #region Others
-    void CompletedFetch()
-    {
-        isVisible = false;
-        dataFetched = true;
-        StateHasChanged();
-    }
-
-    void ValidationEnd()
-    {
-        isVisible = false;
-        StateHasChanged();
-    }
-
-    void DisableControls()
-    {
-        isTitleReadOnly = true;
-        isCategoryReadOnly = true;
-        isBranchReadOnly = true;
-        isDescriptionReadOnly = true;
-        isEmailReadOnly = true;
-        isPriorityReadOnly = true;
-        isLocationReadOnly = true;
-        isCategoryTypeReadOnly = true;
-        isDateReadOnly = true;
-    }
-    #endregion
-
-    #region Map Properties
-
-    TicketModel MapProperties()
-    {
-        if (_action == Enums.CrudeMode.Add)
-        {
-            currTicket.TicketNumber = "";
-            currTicket.RequestorId = employee.EmployeeId;
-            currTicket.RequestorName = employee.EmployeeName;
-
-            currTicket.TicketDate = dateTimeToday ?? DateTime.Now;  
-            currTicket.IsActive = true;
-            currTicket.DocumentReference = "";
-
-            @* currTicket.IssueSummary = currTicket.IssueSummary; *@
-            currTicket.PriorityLevelId = priorityLevelValue;
-
-            currTicket.TicketCategoryId = selectedTicketCategory.Id;
-            currTicket.TicketCategoryName = selectedTicketCategory.CategoryName;
-
-            currTicket.TicketBranchId = selectedTicketBranch.Id;
-            currTicket.TicketBranchName = selectedTicketBranch.BranchName;
-
-            //remap the items from TicketStatusModel
-            foreach (TicketStatusModel items in ticketStatusList)
-            {
-                if (items.Id == selectedTicketStatus.Id)
-                {
-                    selectedTicketStatus.Id = items.Id;
-                    selectedTicketStatus.StatusName = items.StatusName;
-                    selectedTicketStatus.StatusColor = items.StatusColor;
-                }
-            }
-
-            currTicket.TicketStatusId = selectedTicketStatus.Id;
-            currTicket.TicketStatusName = selectedTicketStatus.StatusName;
-
-            currTicket.TaskDescription = currTicket.TaskDescription;
-            currTicket.TicketFileAttachmentModels = filesAttachedList;
-
-            if (parentId != 0 && _action == Enums.CrudeMode.Add)
-            {
-                currTicket.TicketParentId = parentId;
-                currTicket.IsTicketLinkActive = true;
-                currTicket.Activity = "Add Sub Task";
-            }
-            else
-            {
-                currTicket.Activity = "Create ticket"; currTicket.Activity = "Create ticket";
-            }
-        }
-        else if (_action == Enums.CrudeMode.Edit)
-        {
-            currTicket.RequestorId = employee.EmployeeId;
-            currTicket.RequestorName = employee.FirstName;
-
-            currTicket.TicketBranchId = selectedTicketBranch.Id;
-            currTicket.TicketBranchName = selectedTicketBranch.BranchName;
-
-            currTicket.TicketCategoryId = selectedTicketCategory.Id;
-            currTicket.TicketCategoryName = selectedTicketCategory.CategoryName;
-            currTicket.TicketCategoryTypeId = catTypeId;
-
-            //remap the items from TicketStatusModel
-            foreach (TicketStatusModel items in ticketStatusList)
-            {
-                if (items.Id == selectedTicketStatus.Id)
-                {
-                    selectedTicketStatus.Id = items.Id;
-                    selectedTicketStatus.StatusName = items.StatusName;
-                }
-            }
-
-            currTicket.PriorityLevelId = priorityLevelValue;
-            if (currTicket.TicketDate != dateTimeToday) {
-                 currTicket.TicketDate = dateTimeToday ?? DateTime.Now;
-            }
-           
-            currTicket.TicketId = currTicket.Id;
-
-            if (!compareHashFile())
-            {
-                if (removedFileList.Count != 0)
-                {
-                    currTicket.RemovedFileAttachmentModels = removedFileList;
-                    currTicket.RemovedFileAttachmentModels.ForEach(x => x.TicketId = currTicket.Id);
-                }
-                var newAttachedFiles = new List<TicketFileAttachmentModel>();
-                foreach (TicketFileAttachmentModel items in filesAttachedList)
-                {
-                    if (items.Id == 0)
-                    {
-                        newAttachedFiles.Add(items);
-                    }
-                }
-                currTicket.TicketFileAttachmentModels = newAttachedFiles;
-                currTicket.TicketFileAttachmentModels.ForEach(x => x.TicketId = currTicket.Id);
-            }
-            else
-            {
-                Console.WriteLine("No changes to HASH");
-            }
-            currTicket.Activity = "Update ticket";
-        }
-
-        //map audit trail
-
-        //string IP = Request.UserHostName;
-        //string compName = ComputerNameHelper.DetermineCompName(IP);
-
-        currTicket.UserId = GlobalClass.CurrentUserAccount.EmployeeId;
-        currTicket.PCName = "";
-
-        return currTicket;
-    }
-    #endregion
-
-    #region Submit Ticket
-
-    private async void SubmitTicket()
-    {
-        isVisible = true;
-        ResetValidationBools();
-        Task t = Task.WhenAll(ValidateTicketEntry());
-        await t;
-        if (t.Status == TaskStatus.RanToCompletion && isValid == true)
-        {
-            string ContentText, ButtonText, DialogContentText;
-            if (_action == Enums.CrudeMode.Add)
-            {
-                ContentText = "Ticket";
-                ButtonText = "Submit";
-                DialogContentText = "Submit Ticket?";
-            }
-            else
-            {
-                ContentText = "Ticket";
-                ButtonText = "Update";
-                DialogContentText = "Update Ticket?";
-            }
-
-            var parameters = new DialogParameters();
-            parameters.Add("ContentText", ContentText);
-            parameters.Add("ButtonText", ButtonText);
-            parameters.Add("Color", Color.Success);
-            parameters.Add("DialogContentText", DialogContentText);
-
-            var options = new DialogOptions() { CloseButton = false, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-
-            var resultDialog = await DialogService.Show<Shared.Dialogs.SubmitTicketDialog>("Submit Ticket", parameters,
-            options).Result;
-            if (!resultDialog.Cancelled)
-            {
-                await dateConcat();
-                if (_action == Enums.CrudeMode.Add)
-                {
-                    var _ticket = Task.Run(async () => { return await ticketService.SaveTicket(MapProperties(), Token); });
-                    await _ticket;
-                    if (_ticket.Status == TaskStatus.RanToCompletion)
-                    {
-                        ValidationEnd();
-                        currentUrl = NavigationManager.Uri;
-                        string toCheck = "subtask";
-                        currTicket = _ticket.Result ?? new TicketModel();
-                        currTicket.TicketNumber = currTicket.TicketNumber;
-
-                        if (!currentUrl.Contains(toCheck))
-                            NavigationManager.NavigateTo($"/ticketlist");
-                        else
-                            NavigationManager.NavigateTo($"/subtask/{parentId}");
-
-                        ShowAlert("Ticket submitted", Severity.Success);
-                    }
-                    else
-                    {
-                        ValidationEnd();
-                        ShowAlert("Error submitting ticket", Severity.Error);
-                    }
-                }
-                else if (_action == Enums.CrudeMode.Edit)
-                {
-                    var _ticket = Task.Run(async () => { return await ticketService.UpdateTicket(MapProperties(), Token); });
-                    await _ticket;
-                    if (_ticket.Status == TaskStatus.RanToCompletion)
-                    {
-                        ValidationEnd();
-                        NavigationManager.NavigateTo($"/ticketlist");
-                        ShowAlert("Ticket updated", Severity.Success);
-                    }
-                    else
-                    {
-                        ValidationEnd();
-                        ShowAlert("Error updating ticket", Severity.Error);
-                    }
-                }
-            }
-            ValidationEnd();
-            await InvokeSignalR();
-        }
-        else
-        {
-            ValidationEnd();
-            ShowAlert("Required fields are empty", Severity.Error);
-        }
-    }
-    #endregion
-
-    #region Cancel
-    private async void Cancel()
-    {
-        var parameters = new DialogParameters();
-        parameters.Add("ContentText", "Cancel Entry?");
-        parameters.Add("ButtonText", "Confirm");
-        parameters.Add("Color", Color.Error);
-
-        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-
-        var resultDialog = await DialogService.Show<Shared.Dialogs.CancelDialog>("Cancel", parameters, options).Result;
-        if (!resultDialog.Cancelled)
-        {
-            string thisPage = "ticketcreate";
-            NavigationManager.NavigateTo($"/refresh/{thisPage}");
-        }
-       
-    }
-    #endregion
-
-    #region Alerts
-    void ShowAlert(string message, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
-        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
-        Snackbar.Add($"{message}", severity);
-    }
-    #endregion
-
-    #region Validate Ticket Entry
-    private async Task ValidateTicketEntry()
-    {
-        await Task.Run(() =>
-        {
-            if (string.IsNullOrEmpty(currTicket.IssueSummary))
-                isTitleError = true;
-            if (selectedTicketCategory == null || string.IsNullOrWhiteSpace(selectedTicketCategory.CategoryName))
-                isCategoryError = true;       
-            if (selectedTicketBranch == null)
-                isBranchError = true;
-            if (string.IsNullOrEmpty(currTicket.TaskDescription))
-                isDescriptionError = true;
-            if (string.IsNullOrEmpty(currTicket.Location))
-                isLocationError = true;
-            if (isTitleError == false && isCategoryError == false && isBranchError == false && isDescriptionError == false && isLocationError == false)
-                isValid = true;
-        });
-    }
-    #endregion
-
-    #region Reset Validation bools
-    void ResetValidationBools()
-    {
-        isTitleError = false;
-        isCategoryError = false;
-        isBranchError = false;
-        isLocationError = false;
-        isDescriptionError = false;
-        isValid = false;
-    }
-    #endregion
-
-    #region Check URL
-    private void CheckUrl()
-    {
-        currentUrl = NavigationManager.Uri;
-        string toCheck = "create";
-        if (currentUrl.Contains(toCheck))
-        {
-            _action = Enums.CrudeMode.Add;
-            btnSubmitLabel = "Submit";
-        }
-        else
-        {
-            _action = Enums.CrudeMode.Edit;
-            btnSubmitLabel = "Update";
-        }
-    }
-    #endregion
-
-    #region  Check Global Class 
-    private async Task GlobalClassValidation()
-    {
-        while (GlobalClass.CurrentUserAccount == null)
-        {
-            //Delay UI if GlobalClass is not loaded yet
-            await Task.Delay(1);
-        }
-        
-    }
-    #endregion
-
-    #region Check Action Mode
-    private void CheckActionsMode()
-    {
-        if (_action == Enums.CrudeMode.Add) {
-            headerTitle = "NEW";
-            issueTitleHeader = "REPORT A PROBLEM / CONCERN";
-            isClearable = true;
-            CheckAccessLevel();
-        }
-        else if (currTicket.TicketStatusId == 1 && _action == Enums.CrudeMode.Edit) {
-            headerTitle = "MODIFY";
-            issueTitleHeader = "ISSUE / CONCERN";
-            isClearable = true;
-            CheckAccessLevel();
-        }
-        else if (currTicket.TicketStatusId > 1 && _action == Enums.CrudeMode.Edit) {
-            headerTitle = "VIEW";
-            issueTitleHeader = "ISSUE / CONCERN";
-            isBtnDisabled = true;
-            isClearable = false;
-            isRadioDisabled =  true;
-        }
-    }
-
-    private bool CheckAccessLevel()
-    {
-        if (GlobalClass.CurrentUserAccount.AccessLevel == Enums.AccessLevel.Client) {
-            isPriorityReadOnly = true;
-            return true;
-        }
-        else {
-            isPriorityReadOnly = false;
-            return false;
-        }
-    }
-    #endregion
-
-    #region To Ticket List
-    private void ToTicketList()
-    {
-        NavigationManager.NavigateTo($"/ticketlist");
-    }
-    #endregion
-
-    #region Map Ticket Audit Trail
-
-    #endregion
-
-    #region File Attachments
-    private void RemoveUploadedItem(TicketFileAttachmentModel fileName)
-    {
-        filesAttachedList.Remove(fileName);
-        @* files.Remove(fileName); *@
-    }
-
-    private void RemoveCurrentItem(TicketFileAttachmentModel fileName)
-    {
-        filesAttachedList.Remove(fileName);
-        if (fileName.Id != 0)
-        {
-            fileName.IsActive = false;
-            removedFileList.Add(fileName);
-            ShowAlert("File " + fileName.FileName + " removed", Severity.Normal);
-        }
-
-    }
-
-    private async void UploadFiles(InputFileChangeEventArgs e)
-    {
-        if (_action == Enums.CrudeMode.Add )
-        {
-            files = new List<IBrowserFile>();
-            foreach (var file in e.GetMultipleFiles())
-            {
-                if (file.Size > maxAllowedSize)
-                {
-                    ShowAlert("File size is too large", Severity.Error);
-                    return;
-                }
-
-                foreach (var attachedFiles in filesAttachedList)
-                {
-                    if (attachedFiles.FileName == file.Name)
-                    {
-                        ShowAlert("Duplicate file not allowed", Severity.Warning);
-                        return;
-                    }
-                }
-
-                files.Add(file);
-            }
-
-            Task t = Task.WhenAll(convertAttachedFiles());
-            await t;
-            if (t.Status == TaskStatus.RanToCompletion)
-            {
-                StateHasChanged();
-                ShowAlert("File attached", Severity.Normal);
-            }
-        }
-        if (_action == Enums.CrudeMode.Edit)
-        {
-            files = new List<IBrowserFile>();
-            foreach (var file in e.GetMultipleFiles())
-            {
-                if (file.Size > maxAllowedSize)
-                {
-                    ShowAlert("File size is too large", Severity.Error);
-                    return;
-                }
-
-                foreach (var attachedFiles in filesAttachedList)
-                {
-                    if (attachedFiles.FileName == file.Name)
-                    {
-                        ShowAlert("Duplicate file not allowed", Severity.Warning);
-                        return;
-                    }
-                }
-                files.Add(file);
-            }
-
-            Task t = Task.WhenAll(convertAttachedFiles());
-            await t;
-            if (t.Status == TaskStatus.RanToCompletion)
-            {
-                StateHasChanged();
-                ShowAlert("File attached", Severity.Normal);
-            }
-        }
-    }
-
-    private async Task convertAttachedFiles()
-    {
-        if (files.Count() != 0)
-        {
-            foreach (var file in files)
-            {
-                currFile = new TicketFileAttachmentModel();
-
-                var fileSize = new byte[file.Size];
-                await file.OpenReadStream(maxAllowedSize).ReadAsync(fileSize);
-                string content = file.ContentType;
-                string fileAttachment = Convert.ToBase64String(fileSize);
-
-                 //check conversion prefix
-                    @* string convertedFile = $"data:{content};base64,{Convert.ToBase64String(fileSize)}";
-                        Console.WriteLine(convertedFile); *@
-
-                currFile.FileName = file.Name;
-                currFile.FileAttachment = Convert.FromBase64String(fileAttachment);
-                currFile.UserAccountId = GlobalClass.CurrentUserAccount.EmployeeId;
-                currFile.Remarks = "";
-                currFile.IsActive = true;
-
-                //secondary
-                @* if (_action == Enums.CrudeMode.Edit)
-                    currFile.TicketId = ticketId; *@
-
-                filesAttachedList.Add(currFile);
-
-                foreach (var item in filesAttachedList)
-                {
-                    Console.WriteLine(item.FileName);
-                }
-            }
-        }
-        else
-        {
-            Console.WriteLine("No files attached");
-        }
-
-        Console.WriteLine(filesAttachedList.Count());
-        foreach (var items in filesAttachedList) {
-            Console.WriteLine(items.FileName);
-        }
-    }
-
-    public async void DownloadFile(TicketFileAttachmentModel file)
-    {
-        string jpg = "data:image/jpeg;base64,",
-        png = "data:image/png;base64,",
-        pdf = "data:application/pdf;base64,",
-        doc = "data:application/msword;base64,",
-        docx = "data:application/vnd.openxmlformats-officedocument.wordprocessingml.document;base64,",
-        xls = "data:application/vnd.ms-excel;base64,",
-        xlsx = "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,",
-        contentType = "", fileName = file.FileName;
-
-        if (file.FileName.Contains(".jpg") || file.FileName.Contains(".jpeg"))
-            contentType = jpg + Convert.ToBase64String(file.FileAttachment);
-
-        if (file.FileName.Contains(".png"))
-            contentType = png + Convert.ToBase64String(file.FileAttachment);
-
-        if (file.FileName.Contains(".pdf"))
-            contentType = pdf + Convert.ToBase64String(file.FileAttachment);
-
-        if (file.FileName.Contains(".doc"))
-            contentType = doc + Convert.ToBase64String(file.FileAttachment);
-
-        if (file.FileName.Contains(".docx"))
-             contentType    = docx + Convert.ToBase64String(file.FileAttachment);
-
-        if (file.FileName.Contains(".xls") || file.FileName.Contains(".csv"))
-            contentType = xls + Convert.ToBase64String(file.FileAttachment);
-
-        if (file.FileName.Contains(".xlsx"))
-            contentType = xlsx + Convert.ToBase64String(file.FileAttachment);
-        await JSRuntime.InvokeAsync<object>("saveFile", fileName, contentType);
-    }
-    
-    public bool compareHashFile()
-    {
-        string compareHashNames = "";
-        foreach (TicketFileAttachmentModel items in filesAttachedList)
-        {
-            compareHashNames += items.FileName;
-        }
-
-        using (SHA512 sha512Hash = SHA512.Create())
-        {
-            byte[] sourceBytes = Encoding.UTF8.GetBytes(compareHashNames);
-            byte[] hashBytes = sha512Hash.ComputeHash(sourceBytes);
-            fileHashCompare = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
-        }
-
-        if (currFileHashStr == fileHashCompare)
-            return true;
-        return false;
-    }
-    public void TriggerDomRefresh()
-    {
-        @* Trigger a DOM Refresh *@
-    }
-    public void ConverToUpperStr(string stringConv, int selection)
-    {
-        if (!string.IsNullOrEmpty(currTicket.IssueSummary)) {
-            if (selection == 1) 
-                currTicket.IssueSummary = Convert.ToString(char.ToUpper(currTicket.IssueSummary[0]) + currTicket.IssueSummary.Substring(1));
-        }
-        if (!string.IsNullOrEmpty(currTicket.TaskDescription)) {
-            if (selection == 2) 
-                currTicket.TaskDescription = Convert.ToString(char.ToUpper(currTicket.TaskDescription[0]) + currTicket.TaskDescription.Substring(1));
-        }
-        if (!string.IsNullOrEmpty(currTicket.Location)) {
-            if (selection == 3)
-                currTicket.Location = Convert.ToString(char.ToUpper(currTicket.Location[0]) + currTicket.Location.Substring(1));
-        }
-    }
-    #endregion
-    #endregion
-
-    private async Task dateConcat()
-    {
-        GlobalContentTitle.contentServerTime = await globalService.LoadServerTime();
-        dateTimeToday = Convert.ToDateTime(Convert.ToDateTime(dateTimeToday).ToString("MM/dd/yyyy") + " " + GlobalContentTitle.contentServerTime.ToString("h:mm:ss tt"));
-    }
-
-    private async Task MapGlobalTime()
-    {
-        DateTime _serverTime = await globalService.LoadServerTime();
-        GlobalContentTitle.contentServerTime = _serverTime;
-    }
-
-    private async void AccessLevelPrompt()
-    {
-        if (CheckAccessLevel())
-        {
-            var parameters = new DialogParameters();
-            parameters.Add("ContentText", "Your access level is not allowed to change priority. Contact IT for further info");
-            parameters.Add("ButtonText", "Understood");
-            parameters.Add("Color", Color.Success);
-            parameters.Add("DialogMode", Enums.DialogMode.Inform);
-
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-
-            var resultDialog = await DialogService.Show<Shared.Dialogs.GenericDialogs.GenericDialog>("Access Level", parameters, options).Result;
-        }
-    }
-
-    private async void CheckCharLimit(string elementId)
-    { 
-        if (currTicket.TaskDescription.Count() < 20)
-        {
-            var parameters = new DialogParameters();
-            parameters.Add("ContentText", "Task Description is less than 20 characters. Please lengthen or explain further your issue.");
-            parameters.Add("ButtonText", "Retry");
-            parameters.Add("Color", Color.Success);
-            parameters.Add("DialogMode", Enums.DialogMode.Warning);
-
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true };
-
-            var resultDialog = await DialogService.Show<Shared.Dialogs.GenericDialogs.GenericDialog>("Access Level", parameters, options).Result;
-            if (!resultDialog.Cancelled)
-                await JSRuntime.InvokeVoidAsync("focusElement", elementId);
-            else {
-                string thisPage = "ticketcreate";
-                NavigationManager.NavigateTo($"/refresh/{thisPage}");
-            }
-        }
-    }
-}
-
-@* await JSRuntime.InvokeAsync<string>("getCookie", "token"); *@
+    </MudPaper>
+</div>

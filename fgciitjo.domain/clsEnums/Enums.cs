@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace fgciitjo.domain.clsEnums
 {
@@ -18,9 +13,12 @@ namespace fgciitjo.domain.clsEnums
             [Description("Delete")]
             Delete = 2,
             [Description("Voided")]
-            Void = 3
+            Void = 3,
+            [Description("View")]
+            View = 4,
+            [Description("Cancel")]
+            Cancel = 5
         }
-
         public enum UserType : byte
         {
             [Description("IT")]
@@ -28,7 +26,6 @@ namespace fgciitjo.domain.clsEnums
             [Description("Client")]
             Client = 1,
         }
-
         public enum PriorityLevel
         {
             [Description("Low")]
@@ -38,7 +35,6 @@ namespace fgciitjo.domain.clsEnums
             [Description("High")]
             High = 2,
         }
-
          public enum AccessLevel : byte
         {
             [Description("Administrator")]
@@ -87,13 +83,21 @@ namespace fgciitjo.domain.clsEnums
             EquipmentPPEType = 14,
             None = 15
         }
-
         public enum DialogMode
         {
             Inform = 0,
             Warning = 1,
             Error = 2,
             Success = 3
+        }
+        public enum NotificationViewType : byte 
+        {
+            [Description("All")]
+            All = 0,
+            [Description("Read")]
+            Read = 1,
+            [Description("Unread")]
+            Unread = 2
         }
     }
 }

@@ -53,6 +53,10 @@ namespace fgciitjo.domain.clsUserAccount
         public string Password { get; set; }
         public string SystemName { get; set; }
         public string Token { get; set; }
-        public Enums.AccessLevel AccessLevel { get; set; }     
+        public Enums.AccessLevel AccessLevel { get; set; }
+
+        //Additional
+        public System.Net.HttpStatusCode httpResponse { get; set; }
+        public string httpResponseMesg { get; set; } = string.Empty;
     }
 }

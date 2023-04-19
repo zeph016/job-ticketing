@@ -292,7 +292,7 @@
 
         var resultDialog = await DialogService.Show<Shared.Dialogs.TicketListFilterDialog>("Search Filter", parameters,
         options).Result;
-        if (!resultDialog.Cancelled)
+        if (!resultDialog.Canceled)
         {
             if (!string.IsNullOrEmpty(searchTerm))
             {

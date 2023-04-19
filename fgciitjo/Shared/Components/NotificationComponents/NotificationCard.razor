@@ -1,0 +1,27 @@
+@inherits NotificationCardBase
+
+<div class='notification-pop-up'>
+    <div class='notification-pop-up__container'>
+        <div class='notification-pop-up__grid'>
+            <div class='ntfp-header'>
+                <MudIcon Icon='@Icons.Material.Filled.NotificationsActive' Size='Size.Small' />
+                <p class='notification-pop-up__header-title'>New notification</p>
+                <MudSpacer />
+            </div>
+            <div class='ntfp-avatar'>
+                <img class='notification-pop-up__avatar' src='@($"data:image/png;base64, {Convert.ToBase64String(Employee.Picture)}")'/>
+            </div>
+            <div class='ntfp-activity'>
+                <p class='notification-pop-up__emp-lbl'>@Employee.EmployeeName</p>
+                <p class='notification-pop-up__issue-lbl'>@Ticket.IssueSummary</p>
+            </div>
+            <div class='ntfp-timespan'>
+                <p class='notification-pop-up__timespan-lbl'>
+                    @Convert.ToDateTime(Ticket.TicketDate).ToString("MMMM dd, yyyy hh:mm tt")</p>
+            </div>
+            <div class='ntfp-footer'>
+
+            </div>
+        </div>
+    </div>
+</div>

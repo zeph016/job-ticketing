@@ -11,11 +11,11 @@ namespace fgciitjo.domain.clsTicketComment
         public Int64 Id { get; set; }
         public Int64 TicketId { get; set; }
         public DateTime DateTimeLog { get; set; }
-        public string Comment { get; set; }
+        public string Comment { get; set; } = string.Empty;
         public Int64 UserId { get; set; }
-        public string EmployeeName { get; set; }
-        public byte[] Picture { get; set; }
+        public string EmployeeName { get; set; } = string.Empty;
+        public byte[] Picture { get; set; } = new byte[]{};
         public bool IsActive { get; set; }
-        public string Token { get; set; }
+        public string Token { get; set; } = string.Empty;
     }
 }

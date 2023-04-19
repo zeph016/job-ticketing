@@ -1,0 +1,31 @@
+@page "/refresh"
+@page "/refresh/{urlTo}"
+@page "/refresh/{urlTo}/{pcashid:long}"
+
+@inject NavigationManager navigationManager
+
+<h1>If you see this text, Then you are not force refreshing your content page</h1>
+
+@code {
+    [Parameter] public string urlTo { get; set; } = string.Empty;
+    [Parameter] public long pcashid { get; set; }
+
+    private string refreshTo = string.Empty;
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        Console.WriteLine(urlTo);
+        await base.SetParametersAsync(parameters);
+    }
+
+    protected override void OnInitialized()
+    {
+        if (!String.IsNullOrEmpty(urlTo))
+        {
+            if (urlTo.Contains("create-ticket", StringComparison.InvariantCultureIgnoreCase))
+                navigationManager.NavigateTo($"/ticket/create");
+            if (urlTo.Contains("ticket-list", StringComparison.InvariantCultureIgnoreCase))
+                navigationManager.NavigateTo($"/ticket/list");
+        }
+    }
+}

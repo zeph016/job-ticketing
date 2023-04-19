@@ -1,30 +1,47 @@
-<MudDialog>
+<MudDialog Class='custom-dialog1'>
+    <TitleContent>
+        <div class='d-flex align-center gap-2 custom-dialog1__title'>
+            @if (actionMode == Enums.CrudeMode.Edit)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" />
+            }
+            else if (actionMode == Enums.CrudeMode.Add)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3" />
+            }
+            else if (actionMode == Enums.CrudeMode.Cancel)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Cancel" Class="mr-3" />
+            }
+            <MudText Typo='Typo.h6'>@DialogTitle</MudText>
+        </div>
+    </TitleContent>
     <DialogContent>
-        <MudText>@ContentText</MudText>
+        <MudText Class='font14 pa-2'>
+            @ContentText
+        </MudText>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel" style='@styleString'>Cancel</MudButton>
-        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+        <MudButton Class='btn-ios-d font12' OnClick="Cancel" Size='Size.Small' DisableElevation>Cancel</MudButton>
+        <MudButton Class='btn-ios-d font12' OnClick="Submit" Color="@Color" Variant="Variant.Filled" Size='Size.Small' DisableElevation>@ButtonText</MudButton>
     </DialogActions>
 </MudDialog>
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-
-    [Parameter] public string ContentText { get; set; }
-
-    [Parameter] public string ButtonText { get; set; }
-
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = new MudDialogInstance();
+    [Parameter] public string DialogTitle { get; set; } =  string.Empty;
+    [Parameter] public string ContentText { get; set; } = string.Empty;
+    [Parameter] public string ButtonText { get; set; } = string.Empty;
     [Parameter] public Color Color { get; set; }
-    [Parameter] public Enums.DialogMode DialogMode { get; set; }
-    public string styleString { get; set; } = default!;
+    [Parameter] public Enums.DialogMode dialogMode { get; set; }
+    [Parameter] public Enums.CrudeMode actionMode { get; set;}
 
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        await base.SetParametersAsync(parameters);
+    }
     protected override async Task OnInitializedAsync() 
     {
-        await Task.Delay(1);
-        if (DialogMode == Enums.DialogMode.Inform)
-            styleString = "display: none;";
-        if (DialogMode == Enums.DialogMode.Warning)
-            styleString = "display: block; color: red;";
+        await Task.Run(() => CheckActionsMode());
         StateHasChanged();
     }
 
@@ -36,6 +53,28 @@
     void Cancel()
     {
         MudDialog.Cancel();
+    }
+
+    private void CheckActionsMode()
+    {
+        if (actionMode == Enums.CrudeMode.Add)
+        {
+            ContentText = $"Are you sure you want to {ContentText}?";
+            ButtonText = "Submit";
+            Color = Color.Success;
+        }
+        else if (actionMode == Enums.CrudeMode.Edit)
+        {
+            ContentText = $"Are you sure you want to update {ContentText}?";
+            ButtonText = "Confirm";
+            Color = Color.Info;
+        }
+        else if (actionMode == Enums.CrudeMode.Cancel)
+        {
+            ContentText = $"Are you sure you want to {ContentText}?";
+            ButtonText = "Confirm";
+            Color = Color.Error; 
+        }
     }
 
 }

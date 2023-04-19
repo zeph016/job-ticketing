@@ -79,5 +79,15 @@ namespace fgciitjo.service.TicketListServices
                 return null;
             }
         }
+        public async Task<long> CountTickets(FilterParameter filterParameter, string token)
+        {
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            HttpResponseMessage response = await httpClient.PostAsJsonAsync("ticket/dashboard-list", filterParameter);
+            if (response.IsSuccessStatusCode)
+            {
+                ticketModels = await response.Content.ReadAsAsync<List<TicketModel>>();
+            }
+            return ticketModels.Count();
+        }
   }
 }

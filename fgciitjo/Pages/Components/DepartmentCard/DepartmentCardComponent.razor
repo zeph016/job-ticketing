@@ -1,0 +1,57 @@
+
+@if (!dataFetched)
+{
+    <MudSkeleton Animation='Animation.Wave' />
+}
+else
+{
+    <div class='d-flex align-center gap-2 mt-1'>
+        <MudIcon Icon='@Icons.Material.Filled.Apartment' Size='Size.Small' />
+        <MudText Class='font12 txt-oflow-elipsis'>@currentRequestor.DepartmentName</MudText>
+    </div>
+}
+
+
+@code {
+    [Parameter] public long employeeId { get; set; }
+    [Parameter] public string departmentName { get; set; } = string.Empty;
+    private bool dataFetched;
+    private UserAccount currentRequestor = new UserAccount();
+    private List<Department> DepartmentList = new List<Department>();
+    private Department department = new Department();
+
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        await base.SetParametersAsync(parameters);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        while (GlobalList.TemporaryEmployeeList.Count() == 0)
+            await Task.Delay(1);
+        Task t = Task.WhenAll(LoadTempRequestor());
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion)
+        {
+            CompletedFetch();
+        }
+    }
+
+    private void CompletedFetch()
+    {
+        dataFetched = true;
+        StateHasChanged();
+    }
+    
+    private async Task LoadTempRequestor()
+    {
+        var result = await Task.Run(() => GlobalList.TemporaryEmployeeList.Where(x=>x.EmployeeId == employeeId).FirstOrDefault());
+        if (result == null)
+        {
+            await Task.Delay(10);
+            await LoadTempRequestor();
+        }
+        else if (result != null)
+            currentRequestor = result;
+    }
+}

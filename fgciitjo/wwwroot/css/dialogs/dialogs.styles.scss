@@ -2,13 +2,12 @@
 
 .ticketStatusDialog,
 .ticketCategoryDialog {
-
   .mud-grid {
     .mud-grid-item:nth-child(2) {
       display: flex;
       align-items: end;
       .mud-input-slot {
-        font-size: 12px
+        font-size: 12px;
       }
     }
     .mud-grid-item:nth-child(4) {
@@ -22,11 +21,11 @@
     width: 20px;
     height: 20px;
     margin: 5px;
-    border: 1px solid rgba(0, 0, 0, .2);
-  }  
+    border: 1px solid rgba(0, 0, 0, 0.2);
+  }
 }
 
-.pTicketStatus, 
+.pTicketStatus,
 .pAddTicketCategory,
 .pMasterListSearch,
 .pTicketListFilter,
@@ -36,141 +35,93 @@
 .pAttachFiles,
 .pSubTicket,
 .pUpdateTicketStatus {
-    font-family: 'Theramin';
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    color: rgba(0,0,0,.6);
+  font-family: "Theramin";
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.6);
 
-    .mud-icon-root {
-        padding-right: 10px;
-    }
+  .mud-icon-root {
+    padding-right: 10px;
+  }
 }
 
 .dialogFileAttachments {
-    .tbarFileAttachment {
-        background-color: whitesmoke;
+  .tbarFileAttachment {
+    background-color: whitesmoke;
+  }
+  .attachedListContainer {
+    overflow: auto;
+    background-color: whitesmoke;
+    min-height: 75px;
+    max-height: 300px;
+    margin-top: 10px;
+
+    .mud-grid {
+      padding-top: 15px;
+
+      .mud-typography {
+        word-break: break-all;
+        padding-left: 5px;
+      }
     }
-    .attachedListContainer {
-        overflow: auto;
-        background-color: whitesmoke;
-        min-height: 75px;
-        max-height: 300px;
-        margin-top: 10px;
+    .mud-grid-item {
+      display: flex;
+      align-items: center;
 
-        .mud-grid {
-            padding-top: 15px;
-
-            .mud-typography {
-                word-break: break-all;
-                padding-left: 5px;
-            }
-        }
-        .mud-grid-item {
-            display: flex;
-            align-items: center;
-
-            code {
-                text-align: left;
-                font-weight: bold;
-                padding: 0px 5px;
-            }
-        }
+      code {
+        text-align: left;
+        font-weight: bold;
+        padding: 0px 5px;
+      }
     }
+  }
 }
-.dialog-container{
+.dialog-container {
   display: flex;
   justify-content: center;
-  
 }
-.dfields{
-  display: inline-grid;
-  span{
-    border-bottom: 1px dotted;
-    margin: 10px 10px 0px 10px;
-    font-family: 'Roboto';
-    font-weight: bold;
-    font-size: 12px;
-    width: 220px;
-  }
-  small{
-    margin: 0px 15px 15px 11px;
-  }
+.releaseImage {
+  width: 140px;
+  height: 40px;
 }
-.dreq-name{
-  display: inline-grid;
-  span{
-    border-bottom: 1px dotted;
-    margin: 10px 10px 0px 10px;
-    font-family: 'Roboto';
-    font-weight: bold;
-    font-size: 12px;
-    width: 220px;
+
+.custom-dialog1 {
+  .mud-dialog-title {
+    background-color: #012340 !important;
   }
-  small{
-    margin: 0px 15px 15px 11px;
+  &__title {
+    color: white !important;
+    .mud-typography {
+      font-family: "Theramin" !important;
+      letter-spacing: 1px !important;
+      text-transform: uppercase;
+    }
   }
-}
-.desc-name{
-  display: inline-grid;
-  span{
-    border-bottom: 1px dotted;
-    margin: 10px 10px 0px 10px;
-    font-family: 'Roboto';
-    font-weight: bold;
-    font-size: 12px;
-    width: 450px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
+  &__info {
+    background-color: #80808021;
+    padding: 8px;
   }
-  small{
-    margin: 0px 15px 15px 11px;
-  }
-}
-.dissue-summary{
-  display: inline-grid;
-  span{
-    border-bottom: 1px dotted;
-    margin: 10px 10px 0px 10px;
-    font-family: 'Roboto';
-    font-weight: bold;
-    font-size: 12px;
-    width: 220px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-  small{
-    margin: 0px 15px 15px 11px;
+  &__actions {
   }
 }
 
-.dpriority-field{
-  display: inline-grid;
-  height: 18px;
-  width: 247px;
-  .mud-chip-filled{
-    height: 18px;
-  }
-  small{
-    border-top: 1px dotted;
-    margin: 0px 15px 15px 15px;
-  }
-  .mud-chip{
-    border-bottom: 1px dotted;
-    margin: 10px 10px 0px 10px;
-    font-family: 'Roboto';
+.small-dotted-field {
+  display: flex;
+  flex-direction: column;
+  span {
+    border-bottom: dotted thin black;
     font-weight: bold;
-    font-size: 10px;
-    width: 100px;
+    height: 24px;
+    text-align: left;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
-}
-#dgrid-container{
-  margin-top: 20px;
-  border-top: 1.5px dotted #525252
-}
-.releaseImage{
-  width: 140px;
-  height: 40px;
+  .mud-chip {
+    bottom: 2px;
+    height: 18px !important;
+    position: relative;
+    width: 85px;
+  }
 }

@@ -1,82 +1,103 @@
 @inject ITicketStatusService ticketService
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService localStorage
-@inject ISnackbar Snackbar
+@inject ISnackbar SnackbarService
 
-<MudDialog class='ticketStatusDialog'>
+<MudDialog Class='custom-dialog1'>
     <TitleContent>
-        <MudText Typo='Typo.h6'>
-            <p class='pTicketStatus'>
-                <MudIcon Icon="@Icons.Material.Filled.EditAttributes" Size='Size.Large' />
-                @ContentText
-            </p>
-        </MudText>
+        <div class='d-flex align-center gap-2 custom-dialog1__title'>
+            @if (_action == Enums.CrudeMode.Edit)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" />
+            }
+            else if (_action == Enums.CrudeMode.Add)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.Add" Class="mr-3" />
+            }
+            <MudText Typo='Typo.h6'>@ContentText</MudText>
+        </div>
     </TitleContent>
     <DialogContent>
-      <MudForm >
         <MudGrid Spacing='1'>
             <MudItem xs='8'>
                 <MudTextField Error='notValid' Required='true' RequiredError='Status name is required!' @bind-Value='@currTicketStatus.StatusName' Label='Status Name'/>
             </MudItem>
-            <MudItem xs='4'>
-                <div class='smallColorBox' style='@($"background-color:{_selectedColor};")'>
-                   
+            <MudItem Class='d-flex align-center justify-center' xs='4'>
+                <div class='small-color-box' style='@($"background-color:{_selectedColor};")'>
                 </div>
-                <MudColorPicker Label='Color' ColorPickerView='ColorPickerView.Grid' ColorPickerMode='ColorPickerMode.HEX' Value='_selectedColor' ValueChanged='UpdateSelectedColor' />
             </MudItem>
              <MudItem xs='8'>
                <MudSelect @bind-Value="@currTicketStatus.StatusTypeId" Label="Status Type">
-                    @foreach (Enums.TicketStatusType item in Enum.GetValues(typeof(Enums.TicketStatusType)))
-                    {
-                        <MudSelectItem Value="@item" >
-                            <MudText>@Extensions.GetEnumDescription((Enums.TicketStatusType)@item)</MudText>
-                        </MudSelectItem>  
-                    }
+                @foreach (Enums.TicketStatusType item in Enum.GetValues(typeof(Enums.TicketStatusType)))
+                {
+                    <MudSelectItem Value="@item" >
+                        <MudText>@Extensions.GetEnumDescription((Enums.TicketStatusType)@item)</MudText>
+                    </MudSelectItem>  
+                }
                </MudSelect>
             </MudItem>
-            <MudItem xs='4'>
-                <MudCheckBox @bind-Checked='@currTicketStatus.IsActive' Label='Active' />
+            <MudItem xs=4>
+                <MudColorPicker Label='Color' ColorPickerView='ColorPickerView.Grid' ColorPickerMode='ColorPickerMode.HEX' Value='_selectedColor' ValueChanged='UpdateSelectedColor' 
+                    IconSize='Size.Small' />
             </MudItem>
-           
         </MudGrid>
-        </MudForm>
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="Cancel" Variant='Variant.Text' Color='Color.Error'>Cancel</MudButton>
-        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+        @if (currTicketStatus.Id != 0)
+        {
+            <MudCheckBox @bind-Checked='@currTicketStatus.IsActive' Label='Active' Dense Color='Color.Dark' Size='Size.Small' />
+        }
+        <MudSpacer />
+        <MudButton Class='btn-ios-d font12' OnClick="Cancel" Variant='Variant.Text' Size='Size.Small' DisableElevation>Cancel</MudButton>
+        <MudButton Class='btn-ios-d font12' OnClick="Submit" Variant="Variant.Filled" Size='Size.Small' DisableElevation
+            Color="@(!currTicketStatus.IsActive ? Color.Error : @Color)" >
+            @(!currTicketStatus.IsActive ? "Deactivate" : @ButtonText)
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public string ContentText { get; set; }
-    [Parameter] public string ButtonText { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = new MudDialogInstance();
+    [Parameter] public string ContentText { get; set; } = string.Empty;
+    [Parameter] public string ButtonText { get; set; } = string.Empty;
     [Parameter] public Color Color { get; set; }
     [Parameter] public TicketStatusModel currTicketStatus { get; set; } = new TicketStatusModel();
     [Parameter] public Enums.CrudeMode _action { get; set; }
     Enums.TicketStatusType TicketStatus {get; set;}
     bool notValid;
-    private MudColor _selectedColor;
-
+    private MudColor _selectedColor = new MudColor("#FFFFFF");
     protected override async Task OnInitializedAsync()
     {
-        if (currTicketStatus.StatusColor == null) 
-            _selectedColor = new MudColor ("FFFFFF");
+        await Task.Delay(1);
+        if (_action == Enums.CrudeMode.Add)
+        {
+            currTicketStatus.IsActive = true;
+            _selectedColor = new MudColor ("#FFFFFF");
+        }
         else 
             _selectedColor = currTicketStatus.StatusColor;
     }
 
-    async void Submit()
+    private async void Submit()
     {
-     
+        if (!currTicketStatus.IsActive)
+            _action = Enums.CrudeMode.Delete;
         if (!string.IsNullOrWhiteSpace(currTicketStatus.StatusName))
         {
-          if (currTicketStatus.Id == 0) {
-            await ticketService.AddTicketStatus(currTicketStatus, await localStorage.GetItemAsync<string>("token"));
-            ShowAlert("Ticket Status Added", Variant.Filled, Severity.Success); }
-          else {
-            await ticketService.UpdateTickeStatus(currTicketStatus, await localStorage.GetItemAsync<string>("token")); 
-            ShowAlert("Ticket Status Updated", Variant.Filled, Severity.Success); }
+            if (_action == Enums.CrudeMode.Add) {
+                await ticketService.AddTicketStatus(currTicketStatus, GlobalClass.Token);
+                Extensions.ShowAlert("Ticket status has been added", Variant.Filled, SnackbarService, Severity.Success, string.Empty);
+            }
+            else if (_action == Enums.CrudeMode.Edit) {
+                await ticketService.UpdateTickeStatus(currTicketStatus, GlobalClass.Token); 
+                Extensions.ShowAlert("Ticket status has been updated", Variant.Filled, SnackbarService, Severity.Info, string.Empty);
+            
+            }
+            else if (_action == Enums.CrudeMode.Delete)
+            {
+                await ticketService.UpdateTickeStatus(currTicketStatus, GlobalClass.Token); 
+                Extensions.ShowAlert("Ticket status has been deactivated", Variant.Filled, SnackbarService, Severity.Warning, string.Empty);
+            }
             MudDialog.Close(DialogResult.Ok(true));
         }
         else
@@ -85,23 +106,10 @@
         }
       
     }
-    void Cancel()
+    private void Cancel()
     {
+        Extensions.ShowAlert("Action Cancelled", Variant.Filled, SnackbarService, Severity.Normal, string.Empty);
         MudDialog.Cancel();
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-        Snackbar.Configuration.SnackbarVariant = Variant.Filled;
-        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
-        Snackbar.Add($"Cancelled action", Severity.Error);
-    }
-
-    void ShowAlert(string message, Variant variant, Severity severity)
-    {
-        Snackbar.Clear();
-        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
-        Snackbar.Configuration.SnackbarVariant = variant;
-        Snackbar.Configuration.MaxDisplayedSnackbars = 10;
-        Snackbar.Add($"{message}", severity);
     }
 
     private void UpdateSelectedColor(MudColor colorValue)

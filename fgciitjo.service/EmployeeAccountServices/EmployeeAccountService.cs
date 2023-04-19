@@ -47,7 +47,7 @@ namespace fgciitjo.service.EmployeeAccountServices
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                Console.WriteLine(ex + "I am error");
                 return null;
             }
         }

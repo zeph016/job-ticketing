@@ -24,7 +24,7 @@
         @if (httpstatus == 404) 
         {
             <img class='errorpagecontainer__img' src="images/pagenotfound404.png" asp-append-version="true" />
-            <MudButton class='errorpagecontainer__btn' OnClick='BackToDashboard' Variant='Variant.Filled'>Back to Dashboard</MudButton>
+            <MudButton class='errorpagecontainer__btn' OnClick='BackToDashboard' Variant='Variant.Filled' Color='Color.Primary'>Back to Dashboard</MudButton>
         }
         @if (httpstatus == 200 && currentUrl.Contains("logout")) {
             <img class='errorpagecontainer__img' src="images/pageloggedout.png" asp-append-version="true" />
@@ -37,7 +37,7 @@
 
 @code {
     [Parameter] public int httpstatus { get; set; }
-    private string currentUrl;
+    private string currentUrl = string.Empty;
     private bool isCompletedFetch;
 
     protected override async Task OnInitializedAsync()

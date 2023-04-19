@@ -1,183 +1,199 @@
-.activitycontainer {
-  background-color: #e0e0e0;
-  display: -ms-grid !important;
-  display: grid !important;
-  gap: 2px;
-  -ms-grid-columns: 1fr 0.3fr;
-      grid-template-columns: 1fr 0.3fr;
-  -ms-grid-rows: 50px 1fr;
-      grid-template-rows: 50px 1fr;
-      grid-template-areas: 'topcontainer topcontainer' 'centercontainer rightcontainer';
-  height: 100%;
-  padding-left: 0px !important;
-  padding-right: 0px !important;
+.dflex-row, .ticket-activity__grid .activity-header, .ticket-activity__grid-other-act .activity-header {
+  align-items: center;
+  display: flex !important;
 }
 
-.activitycontainer__subcontainer {
-  padding: 0px !important;
+.dflex-col {
+  flex-direction: column;
+  display: flex;
 }
 
-.activitycontainer__subcontainer:nth-child(1) {
-  background-color: white;
-  -ms-grid-row: 1;
-  -ms-grid-column: 1;
-  -ms-grid-column-span: 2;
-  grid-area: topcontainer;
+.dflex-ac {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  padding: 8px;
 }
 
-.activitycontainer__subcontainer:nth-child(2) {
-  -ms-grid-row: 2;
-  -ms-grid-column: 1;
-  grid-area: centercontainer;
+.flex-full {
+  flex: 1 1 0%;
 }
 
-.activitycontainer__subcontainer:nth-child(3) {
-  background-color: white;
-  -ms-grid-row: 2;
-  -ms-grid-column: 2;
-  grid-area: rightcontainer;
+.flex-grow {
+  flex-grow: 1 !important;
 }
 
-.activitycontainer .activitytable {
-  height: calc(100vh - 165px);
+.dflex {
+  display: flex;
 }
 
-.activitycontainer .activitytable .mud-toolbar {
+.dblock {
+  display: block;
+}
+
+.dblock-inline {
+  display: inline-block;
+}
+
+.line-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3, .ticket-info-card__txt-issue {
+  -webkit-line-clamp: 3;
+}
+
+.line-clamp-8, .ticket-info-card__txt-description {
+  -webkit-line-clamp: 8;
+}
+
+.line-clamp-10 {
+  -webkit-line-clamp: 10;
+}
+
+.line-clamp-16 {
+  -webkit-line-clamp: 16;
+}
+
+.line-clamp-props, .line-clamp-2, .line-clamp-3, .ticket-info-card__txt-issue, .line-clamp-8, .ticket-info-card__txt-description, .line-clamp-10, .line-clamp-16 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+} 
+.activity-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 300px;
+  grid-template-rows: 35px 1fr 1fr 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas: "act-content act-content act-content act-sidebar" "act-content act-content act-content act-sidebar" "act-content act-content act-content act-sidebar" "act-content act-content act-content act-sidebar";
+  height: calc(100vh - 125px);
+  margin-right: auto;
+  margin-left: auto;
+  max-width: 2560px;
+}
+.activity-container .act-content {
+  grid-area: act-content;
+}
+.activity-container .act-sidebar {
+  grid-area: act-sidebar;
+}
+.activity-container .activity-table {
+  margin: 8px;
+}
+.activity-container .activity-table .mud-toolbar {
   background-color: white;
   border-radius: 5px;
   height: 40px !important;
 }
-
-.activitycontainer .activitytable .mud-toolbar .mud-button-label {
+.activity-container .activity-table .mud-toolbar .mud-button-label {
+  font-size: 12px;
+}
+.activity-container .activity-table .mud-toolbar .mud-input-root-text {
   font-size: 12px;
 }
 
-.activitycontainer .activitytable .mud-toolbar .mud-input-root-text {
-  font-size: 12px;
+.ticket-activity {
+  padding: 8px;
 }
-
-.activitycontainer .activitytable .mud-table-container {
-  height: calc(100vh - 245px);
-  width: 100% !important;
-  overflow-x: hidden;
-  overflow-y: auto;
-}
-
-.activitycontainer .activitytable__txtsearch {
-  margin-top: 0px !important;
-  margin-left: 5px !important;
-  margin-bottom: 15px !important;
-}
-
-.activitycontainer .activitytable__txtsearch .mud-input-control-input-container {
-  width: calc(20vw - 30px);
-}
-
-.activitycontainer .activitytable .mud-table-cell {
-  font-size: 13px;
-}
-
-.activitycontainer .activitytable .mud-table-pagination-information {
-  font-size: 12px;
-}
-
-.activitycontainer .activitytable .mud-table-pagination-caption {
-  font-size: 12px;
-}
-
-.activitycontainer .activitytable__tableheader {
-  text-align: center;
-}
-
-.activitycontainer .activitytable__tableheader:nth-child(1) {
-  width: 15vw;
-}
-
-.activitycontainer .activitytable__tableheader:nth-child(2) {
-  width: 45vw;
-}
-
-.activitycontainer .activitytable__tableheader:nth-child(3) {
-  width: 40vw;
-}
-
-.activitycontainer .activitytable__tableheader:nth-child(4) {
-  width: 70px;
-}
-
-.activitycontainer .activitytable__rowcontainer {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-}
-
-.activitycontainer .activitytable__rowcontainer .mud-typography {
-  font-size: 12px;
-}
-
-.activitycontainer .activitytable__rowcontainer:nth-child(1) {
-  -ms-flex-line-pack: center;
-      align-content: center;
-  display: -ms-grid;
+.ticket-activity__grid {
   display: grid;
-  text-align: center;
+  grid-template-columns: 1fr 1fr 1fr minmax(150px, 300px);
+  grid-template-rows: auto 1fr 1fr 1fr;
+  gap: 0px;
+  grid-template-areas: "activity-header activity-header activity-header activity-header" "activity-content activity-content activity-content activity-info" "activity-content activity-content activity-content activity-info" "activity-content activity-content activity-content activity-info";
+}
+.ticket-activity__grid .activity-header {
+  grid-area: activity-header;
+}
+.ticket-activity__grid .activity-content {
+  grid-area: activity-content;
+}
+.ticket-activity__grid .activity-info {
+  grid-area: activity-info;
+}
+.ticket-activity__grid .activity-header {
+  border-bottom: solid thin var(--mud-palette-table-lines);
+  padding: 4px;
+}
+.ticket-activity__grid .activity-info {
+  border-left: solid thin var(--mud-palette-table-lines);
+  padding: 8px 16px;
+}
+.ticket-activity__grid-other-act {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr minmax(150px, 300px);
+  grid-template-rows: auto 1fr 1fr 1fr;
+  gap: 0px;
+  grid-template-areas: "activity-header activity-header activity-header activity-header" "activity-content activity-content activity-content activity-content" "activity-content activity-content activity-content activity-content" "activity-content activity-content activity-content activity-content";
+}
+.ticket-activity__grid-other-act .activity-header {
+  grid-area: activity-header;
+}
+.ticket-activity__grid-other-act .activity-content {
+  grid-area: activity-content;
+}
+.ticket-activity__grid-other-act .activity-header {
+  border-bottom: solid thin var(--mud-palette-table-lines);
+  padding: 4px;
 }
 
-.activitycontainer .activitytable__itemchip {
-  color: white;
+.ticket-info-card__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 4px;
+  grid-template-areas: "tinfo-header tinfo-header tinfo-header tinfo-header" "tinfo-req tinfo-req tinfo-req tinfo-req" "tinfo-assigned tinfo-assigned tinfo-assigned tinfo-assigned" "tinfo-ticketnum tinfo-ticketnum tinfo-ticketdate tinfo-ticketdate" "tinfo-task-title tinfo-task-title tinfo-task-title tinfo-task-title" "tinfo-task-desc tinfo-task-desc tinfo-task-desc tinfo-task-desc" "tinfo-priority tinfo-priority tinfo-status tinfo-status";
+}
+.ticket-info-card__grid .tinfo-header {
+  grid-area: tinfo-header;
+}
+.ticket-info-card__grid .tinfo-req {
+  grid-area: tinfo-req;
+}
+.ticket-info-card__grid .tinfo-assigned {
+  grid-area: tinfo-assigned;
+}
+.ticket-info-card__grid .tinfo-ticketnum {
+  grid-area: tinfo-ticketnum;
+}
+.ticket-info-card__grid .tinfo-ticketdate {
+  grid-area: tinfo-ticketdate;
+}
+.ticket-info-card__grid .tinfo-task-title {
+  grid-area: tinfo-task-title;
+}
+.ticket-info-card__grid .tinfo-task-desc {
+  grid-area: tinfo-task-desc;
+}
+.ticket-info-card__grid .tinfo-priority {
+  grid-area: tinfo-priority;
+}
+.ticket-info-card__grid .tinfo-status {
+  grid-area: tinfo-status;
+}
+.ticket-info-card__grid .tinfo-header {
+  font-family: "SF-Pro-Display Regular";
+  font-size: 14px;
   font-weight: bold;
-  border-radius: 2px !important;
-  width: 100%;
 }
-
-.activitycontainer .ticketinfo__container {
-  padding: 16px;
+.ticket-info-card__grid .tinfo-req, .ticket-info-card__grid .tinfo-assigned {
+  border-bottom: solid thin var(--mud-palette-table-lines);
 }
-
-.activitycontainer .ticketinfo__title {
-  text-align: center;
+.ticket-info-card__grid .tinfo-task-desc {
+  padding-top: 8px;
 }
-
-.activitycontainer .ticketinfo .mud-input-control .mud-input {
+.ticket-info-card__txt {
+  font-family: "SF-Pro-Display Regular";
   font-size: 12px;
-  font-weight: bold;
 }
-
-.activitycontainer .ticketinfo__txtchip {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  font-size: 13px;
+.ticket-info-card__txt-description {
+  font-family: "SF-Pro-Display Regular";
+  font-size: 12px;
+  max-height: calc(100vh - 600px);
+  min-height: 100px;
 }
-
-.activitycontainer .ticketinfo__txtchip .mud-chip-content {
-  color: white;
-}
-
-.activitycontainer__toolbar {
-  -webkit-box-align: center !important;
-      -ms-flex-align: center !important;
-          align-items: center !important;
-  display: -webkit-box !important;
-  display: -ms-flexbox !important;
-  display: flex !important;
-  padding-left: 5px !important;
-  padding-right: 5px !important;
-}
-
-.activitycontainer__itemchipset {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-}
-
-.activitycontainer__itemchipset .mud-chip {
-  border-radius: 2px !important;
-  color: white;
-}
-/*# sourceMappingURL=ticketactivity.styles.css.map */
+.ticket-info-card__txt-issue {
+  font-family: "SF-Pro-Display Regular";
+  font-size: 14px;
+}/*# sourceMappingURL=ticketactivity.styles.css.map */

@@ -1,0 +1,57 @@
+
+@if (!dataFetched)
+{
+    <MudSkeleton Width='24px' Height='24px' Animation='Animation.Wave' />
+}
+else
+{
+    <MudTooltip Text='@toolTipText' Arrow Placement='Placement.Top'>
+        <MudIcon Class='mt-1' Icon='@iconString'
+            Size='Size.Small' />
+    </MudTooltip>
+}
+
+
+@code {
+    [Parameter] public long TicketCategoryId { get; set; }
+    public bool dataFetched;
+    private string toolTipText = string.Empty, iconString = string.Empty;
+    public override async Task SetParametersAsync(ParameterView parameters)
+    {
+        await base.SetParametersAsync(parameters);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Task t = Task.WhenAll(DetermineCategoryTypeIDByCategoryId(TicketCategoryId));
+        await t;
+        if (t.Status == TaskStatus.RanToCompletion)
+            CompletedFetch();
+    }
+
+    private void CompletedFetch()
+    {
+        dataFetched = true;
+        StateHasChanged();
+    }
+
+    private async Task DetermineCategoryTypeIDByCategoryId(long categoryId)
+    {
+        var result = await Extensions.GetCategoryTypeId(categoryId);
+        if (result == Enums.TicketCategoryType.Admin)
+        {
+            iconString = Icons.Material.Filled.AdminPanelSettings; 
+            toolTipText = Extensions.GetEnumDescription(result);
+        }
+        else if (result == Enums.TicketCategoryType.Hardware)
+        {
+            toolTipText = Extensions.GetEnumDescription(result);
+            iconString = Icons.Material.Filled.Computer; 
+        }
+        else if (result == Enums.TicketCategoryType.Software)
+        {
+            toolTipText = Extensions.GetEnumDescription(result);
+            iconString = Icons.Material.Filled.Code; 
+        }
+    }
+}
